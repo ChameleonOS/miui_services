@@ -7,8 +7,8 @@
 
 
 # annotations
-.annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/android/server/PowerManagerService;->reboot(Ljava/lang/String;)V
+.annotation system Ldalvik/annotation/EnclosingClass;
+    value = Lcom/android/server/PowerManagerService;
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -20,20 +20,15 @@
 # instance fields
 .field final synthetic this$0:Lcom/android/server/PowerManagerService;
 
-.field final synthetic val$finalReason:Ljava/lang/String;
-
 
 # direct methods
-.method constructor <init>(Lcom/android/server/PowerManagerService;Ljava/lang/String;)V
-    .registers 3
-    .parameter
+.method constructor <init>(Lcom/android/server/PowerManagerService;)V
+    .registers 2
     .parameter
 
     .prologue
-    .line 2799
+    .line 2694
     iput-object p1, p0, Lcom/android/server/PowerManagerService$10;->this$0:Lcom/android/server/PowerManagerService;
-
-    iput-object p2, p0, Lcom/android/server/PowerManagerService$10;->val$finalReason:Ljava/lang/String;
 
     invoke-direct/range {p0 .. p0}, Ljava/lang/Object;-><init>()V
 
@@ -43,40 +38,90 @@
 
 # virtual methods
 .method public run()V
-    .registers 4
+    .registers 5
 
     .prologue
-    .line 2801
-    monitor-enter p0
+    .line 2696
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$10;->this$0:Lcom/android/server/PowerManagerService;
 
-    .line 2802
-    :try_start_1
-    iget-object v0, p0, Lcom/android/server/PowerManagerService$10;->this$0:Lcom/android/server/PowerManagerService;
+    #getter for: Lcom/android/server/PowerManagerService;->mLocks:Lcom/android/server/PowerManagerService$LockList;
+    invoke-static {v1}, Lcom/android/server/PowerManagerService;->access$500(Lcom/android/server/PowerManagerService;)Lcom/android/server/PowerManagerService$LockList;
 
-    #getter for: Lcom/android/server/PowerManagerService;->mContext:Landroid/content/Context;
-    invoke-static {v0}, Lcom/android/server/PowerManagerService;->access$3700(Lcom/android/server/PowerManagerService;)Landroid/content/Context;
+    move-result-object v2
 
-    move-result-object v0
+    monitor-enter v2
 
-    iget-object v1, p0, Lcom/android/server/PowerManagerService$10;->val$finalReason:Ljava/lang/String;
+    .line 2697
+    :try_start_7
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$10;->this$0:Lcom/android/server/PowerManagerService;
 
-    const/4 v2, 0x0
+    #getter for: Lcom/android/server/PowerManagerService;->mLightSensorPendingDecrease:Z
+    invoke-static {v1}, Lcom/android/server/PowerManagerService;->access$6200(Lcom/android/server/PowerManagerService;)Z
 
-    invoke-static {v0, v1, v2}, Lcom/android/server/pm/ShutdownThread;->reboot(Landroid/content/Context;Ljava/lang/String;Z)V
+    move-result v1
 
-    .line 2803
-    monitor-exit p0
+    if-nez v1, :cond_17
 
-    .line 2805
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$10;->this$0:Lcom/android/server/PowerManagerService;
+
+    #getter for: Lcom/android/server/PowerManagerService;->mLightSensorPendingIncrease:Z
+    invoke-static {v1}, Lcom/android/server/PowerManagerService;->access$6300(Lcom/android/server/PowerManagerService;)Z
+
+    move-result v1
+
+    if-eqz v1, :cond_30
+
+    .line 2698
+    :cond_17
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$10;->this$0:Lcom/android/server/PowerManagerService;
+
+    #getter for: Lcom/android/server/PowerManagerService;->mLightSensorPendingValue:F
+    invoke-static {v1}, Lcom/android/server/PowerManagerService;->access$6400(Lcom/android/server/PowerManagerService;)F
+
+    move-result v1
+
+    float-to-int v0, v1
+
+    .line 2699
+    .local v0, value:I
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$10;->this$0:Lcom/android/server/PowerManagerService;
+
+    const/4 v3, 0x0
+
+    #setter for: Lcom/android/server/PowerManagerService;->mLightSensorPendingDecrease:Z
+    invoke-static {v1, v3}, Lcom/android/server/PowerManagerService;->access$6202(Lcom/android/server/PowerManagerService;Z)Z
+
+    .line 2700
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$10;->this$0:Lcom/android/server/PowerManagerService;
+
+    const/4 v3, 0x0
+
+    #setter for: Lcom/android/server/PowerManagerService;->mLightSensorPendingIncrease:Z
+    invoke-static {v1, v3}, Lcom/android/server/PowerManagerService;->access$6302(Lcom/android/server/PowerManagerService;Z)Z
+
+    .line 2701
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$10;->this$0:Lcom/android/server/PowerManagerService;
+
+    const/4 v3, 0x0
+
+    #calls: Lcom/android/server/PowerManagerService;->lightSensorChangedLocked(IZ)V
+    invoke-static {v1, v0, v3}, Lcom/android/server/PowerManagerService;->access$6500(Lcom/android/server/PowerManagerService;IZ)V
+
+    .line 2703
+    .end local v0           #value:I
+    :cond_30
+    monitor-exit v2
+
+    .line 2704
     return-void
 
-    .line 2803
-    :catchall_f
-    move-exception v0
+    .line 2703
+    :catchall_32
+    move-exception v1
 
-    monitor-exit p0
-    :try_end_11
-    .catchall {:try_start_1 .. :try_end_11} :catchall_f
+    monitor-exit v2
+    :try_end_34
+    .catchall {:try_start_7 .. :try_end_34} :catchall_32
 
-    throw v0
+    throw v1
 .end method

@@ -808,6 +808,19 @@ _L1:
                 super();
             }
         };
+        mReleaseProximitySensorRunnable = new Runnable() {
+
+            public void run() {
+                mContext.sendBroadcast(new Intent("miui.intent.action.RELEASE_PROXIMITY_SENSOR"));
+            }
+
+            final PowerManagerService this$0;
+
+             {
+                this$0 = PowerManagerService.this;
+                super();
+            }
+        };
         mProximityTask = new Runnable() {
 
             public void run() {
@@ -1423,6 +1436,19 @@ _L2:
 _L3:
     }
 
+    private void releaseProximitySensor(int i, int j) {
+        if((i & 1) == 0) goto _L2; else goto _L1
+_L1:
+        mHandler.removeCallbacks(mReleaseProximitySensorRunnable);
+_L4:
+        return;
+_L2:
+        if(mBootCompleted && 4 != j)
+            mHandler.post(mReleaseProximitySensorRunnable);
+        if(true) goto _L4; else goto _L3
+_L3:
+    }
+
     private void releaseWakeLockLocked(IBinder ibinder, int i, boolean flag) {
         WakeLock wakelock = mLocks.removeLock(ibinder);
         if(wakelock != null) goto _L2; else goto _L1
@@ -1544,6 +1570,7 @@ _L3:
     }
 
     private void setPowerState(int i, boolean flag, int j) {
+        releaseProximitySensor(i, j);
         LockList locklist = mLocks;
         locklist;
         JVM INSTR monitorenter ;
@@ -1656,7 +1683,7 @@ _L8:
 _L13:
         mPowerState = -2 & mPowerState;
         if(mScreenBrightnessAnimator.isAnimating())
-            break MISSING_BLOCK_LABEL_576;
+            break MISSING_BLOCK_LABEL_582;
         screenOffFinishedAnimatingLocked(j);
           goto _L12
         remoteexception;
@@ -3225,6 +3252,7 @@ _L1:
     private boolean mProximitySensorEnabled;
     private Runnable mProximityTask;
     private int mProximityWakeLockCount;
+    private Runnable mReleaseProximitySensorRunnable;
     private ScreenBrightnessAnimator mScreenBrightnessAnimator;
     private int mScreenBrightnessDim;
     private Handler mScreenBrightnessHandler;

@@ -39,11 +39,11 @@
     .end annotation
 .end field
 
-.field private mAlarmBootCompleted:Z
-
 .field private mContext:Landroid/content/Context;
 
 .field private mCurrentMmsIfname:Ljava/lang/String;
+
+.field private mFlag:I
 
 .field private mIfnames:Ljava/util/HashMap;
     .annotation system Ldalvik/annotation/Signature;
@@ -454,6 +454,11 @@
 
     iput-object v0, p0, Lcom/miui/server/FirewallService;->mCurrentMmsIfname:Ljava/lang/String;
 
+    .line 111
+    const/4 v0, 0x0
+
+    iput v0, p0, Lcom/miui/server/FirewallService;->mFlag:I
+
     .line 177
     iput-object p1, p0, Lcom/miui/server/FirewallService;->mContext:Landroid/content/Context;
 
@@ -468,7 +473,7 @@
     .prologue
     const/16 v5, 0x22
 
-    .line 416
+    .line 429
     const-string v4, "\""
 
     invoke-virtual {p1, v4}, Ljava/lang/String;->startsWith(Ljava/lang/String;)Z
@@ -485,23 +490,23 @@
 
     if-eqz v4, :cond_13
 
-    .line 439
+    .line 452
     .end local p1
     :goto_12
     return-object p1
 
-    .line 420
+    .line 433
     .restart local p1
     :cond_13
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 421
+    .line 434
     .local v0, builder:Ljava/lang/StringBuilder;
     invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
 
-    .line 422
+    .line 435
     invoke-virtual {p1}, Ljava/lang/String;->length()I
 
     move-result v3
@@ -513,25 +518,25 @@
     :goto_20
     if-ge v2, v3, :cond_41
 
-    .line 423
+    .line 436
     invoke-virtual {p1, v2}, Ljava/lang/String;->charAt(I)C
 
     move-result v1
 
-    .line 424
+    .line 437
     .local v1, c:C
     sparse-switch v1, :sswitch_data_4a
 
-    .line 435
+    .line 448
     invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
 
-    .line 422
+    .line 435
     :goto_2c
     add-int/lit8 v2, v2, 0x1
 
     goto :goto_20
 
-    .line 426
+    .line 439
     :sswitch_2f
     const-string v4, "\\\""
 
@@ -539,7 +544,7 @@
 
     goto :goto_2c
 
-    .line 429
+    .line 442
     :sswitch_35
     const-string v4, "\\\\"
 
@@ -547,7 +552,7 @@
 
     goto :goto_2c
 
-    .line 432
+    .line 445
     :sswitch_3b
     const-string v4, "\\$"
 
@@ -555,19 +560,19 @@
 
     goto :goto_2c
 
-    .line 438
+    .line 451
     .end local v1           #c:C
     :cond_41
     invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
 
-    .line 439
+    .line 452
     invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 
     move-result-object p1
 
     goto :goto_12
 
-    .line 424
+    .line 437
     nop
 
     :sswitch_data_4a
@@ -596,13 +601,13 @@
     .end annotation
 
     .prologue
-    .line 345
+    .line 358
     .local p3, uids:Ljava/lang/Iterable;,"Ljava/lang/Iterable<Ljava/lang/Integer;>;"
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 347
+    .line 360
     .local v0, builder:Ljava/lang/StringBuilder;
     sget-object v3, Lcom/miui/server/FirewallService;->REMOVE_CHAIN_CMD:Ljava/lang/String;
 
@@ -614,7 +619,7 @@
 
     invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 349
+    .line 362
     sget-object v3, Lcom/miui/server/FirewallService;->ADD_CHAIN_FOR_REJECT_CMD:Ljava/lang/String;
 
     const-string v4, "%0%"
@@ -631,10 +636,10 @@
 
     invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    .line 350
+    .line 363
     if-eqz p3, :cond_4d
 
-    .line 352
+    .line 365
     invoke-interface {p3}, Ljava/lang/Iterable;->iterator()Ljava/util/Iterator;
 
     move-result-object v1
@@ -657,7 +662,7 @@
 
     move-result v2
 
-    .line 353
+    .line 366
     .local v2, uid:I
     sget-object v3, Lcom/miui/server/FirewallService;->INSERT_ACCEPT_RULE_TO_CHAIN_CMD:Ljava/lang/String;
 
@@ -681,7 +686,7 @@
 
     goto :goto_27
 
-    .line 357
+    .line 370
     .end local v1           #i$:Ljava/util/Iterator;
     .end local v2           #uid:I
     :cond_4d
@@ -691,7 +696,7 @@
 
     invoke-direct {p0, v3}, Lcom/miui/server/FirewallService;->runCommands(Ljava/lang/String;)V
 
-    .line 358
+    .line 371
     return-void
 .end method
 
@@ -699,12 +704,12 @@
     .registers 2
 
     .prologue
-    .line 386
+    .line 399
     sget-object v0, Lcom/miui/server/FirewallService;->CLEAR_ALL_MIUI_CHAIN_CMD:Ljava/lang/String;
 
     invoke-direct {p0, v0}, Lcom/miui/server/FirewallService;->runCommands(Ljava/lang/String;)V
 
-    .line 387
+    .line 400
     return-void
 .end method
 
@@ -854,7 +859,7 @@
     .parameter "uid"
 
     .prologue
-    .line 367
+    .line 380
     sget-object v0, Lcom/miui/server/FirewallService;->INSERT_ACCEPT_RULE_TO_CHAIN_CMD:Ljava/lang/String;
 
     const-string v1, "%0%"
@@ -875,7 +880,7 @@
 
     invoke-direct {p0, v0}, Lcom/miui/server/FirewallService;->runCommands(Ljava/lang/String;)V
 
-    .line 369
+    .line 382
     return-void
 .end method
 
@@ -884,7 +889,7 @@
     .parameter "chain"
 
     .prologue
-    .line 395
+    .line 408
     sget-object v0, Lcom/miui/server/FirewallService;->REMOVE_CHAIN_CMD:Ljava/lang/String;
 
     const-string v1, "%0%"
@@ -895,7 +900,7 @@
 
     invoke-direct {p0, v0}, Lcom/miui/server/FirewallService;->runCommands(Ljava/lang/String;)V
 
-    .line 396
+    .line 409
     return-void
 .end method
 
@@ -905,7 +910,7 @@
     .parameter "uid"
 
     .prologue
-    .line 378
+    .line 391
     sget-object v0, Lcom/miui/server/FirewallService;->REMOVE_RULE_OF_CHAIN_CMD:Ljava/lang/String;
 
     const-string v1, "%0%"
@@ -926,7 +931,7 @@
 
     invoke-direct {p0, v0}, Lcom/miui/server/FirewallService;->runCommands(Ljava/lang/String;)V
 
-    .line 380
+    .line 393
     return-void
 .end method
 
@@ -935,7 +940,7 @@
     .parameter "commands"
 
     .prologue
-    .line 406
+    .line 419
     const-string v0, "root"
 
     new-instance v1, Ljava/lang/StringBuilder;
@@ -966,7 +971,7 @@
 
     invoke-static {v0, v1, v2}, Lmiui/util/CommandLineUtils;->run(Ljava/lang/String;Ljava/lang/String;[Ljava/lang/Object;)Z
 
-    .line 407
+    .line 420
     return-void
 .end method
 
@@ -1071,24 +1076,24 @@
     .parameter "packageName"
 
     .prologue
-    .line 312
+    .line 325
     iget-object v1, p0, Lcom/miui/server/FirewallService;->mAccessControlPassPackages:Ljava/util/HashSet;
 
     monitor-enter v1
 
-    .line 313
+    .line 326
     :try_start_3
     iget-object v0, p0, Lcom/miui/server/FirewallService;->mAccessControlPassPackages:Ljava/util/HashSet;
 
     invoke-virtual {v0, p1}, Ljava/util/HashSet;->add(Ljava/lang/Object;)Z
 
-    .line 314
+    .line 327
     monitor-exit v1
 
-    .line 315
+    .line 328
     return-void
 
-    .line 314
+    .line 327
     :catchall_a
     move-exception v0
 
@@ -1099,17 +1104,33 @@
     throw v0
 .end method
 
+.method public addOneShotFlag(I)V
+    .registers 3
+    .parameter "flag"
+
+    .prologue
+    .line 308
+    iget v0, p0, Lcom/miui/server/FirewallService;->mFlag:I
+
+    or-int/2addr v0, p1
+
+    iput v0, p0, Lcom/miui/server/FirewallService;->mFlag:I
+
+    .line 309
+    return-void
+.end method
+
 .method public checkAccessControlPass(Ljava/lang/String;)Z
     .registers 4
     .parameter "packageName"
 
     .prologue
-    .line 330
+    .line 343
     iget-object v1, p0, Lcom/miui/server/FirewallService;->mAccessControlPassPackages:Ljava/util/HashSet;
 
     monitor-enter v1
 
-    .line 331
+    .line 344
     :try_start_3
     iget-object v0, p0, Lcom/miui/server/FirewallService;->mAccessControlPassPackages:Ljava/util/HashSet;
 
@@ -1121,7 +1142,7 @@
 
     return v0
 
-    .line 332
+    .line 345
     :catchall_b
     move-exception v0
 
@@ -1132,14 +1153,27 @@
     throw v0
 .end method
 
-.method public getAlarmBootCompleted()Z
-    .registers 2
+.method public getOneShotFlag(I)Z
+    .registers 3
+    .parameter "flag"
 
     .prologue
-    .line 307
-    iget-boolean v0, p0, Lcom/miui/server/FirewallService;->mAlarmBootCompleted:Z
+    .line 320
+    iget v0, p0, Lcom/miui/server/FirewallService;->mFlag:I
 
+    and-int/2addr v0, p1
+
+    if-eqz v0, :cond_7
+
+    const/4 v0, 0x1
+
+    :goto_6
     return v0
+
+    :cond_7
+    const/4 v0, 0x0
+
+    goto :goto_6
 .end method
 
 .method public onDataConnected(ILjava/lang/String;Ljava/lang/String;)V
@@ -1504,12 +1538,12 @@
     .parameter "packageName"
 
     .prologue
-    .line 319
+    .line 332
     iget-object v1, p0, Lcom/miui/server/FirewallService;->mAccessControlPassPackages:Ljava/util/HashSet;
 
     monitor-enter v1
 
-    .line 320
+    .line 333
     :try_start_3
     const-string v0, "*"
 
@@ -1519,19 +1553,19 @@
 
     if-eqz v0, :cond_12
 
-    .line 321
+    .line 334
     iget-object v0, p0, Lcom/miui/server/FirewallService;->mAccessControlPassPackages:Ljava/util/HashSet;
 
     invoke-virtual {v0}, Ljava/util/HashSet;->clear()V
 
-    .line 325
+    .line 338
     :goto_10
     monitor-exit v1
 
-    .line 326
+    .line 339
     return-void
 
-    .line 323
+    .line 336
     :cond_12
     iget-object v0, p0, Lcom/miui/server/FirewallService;->mAccessControlPassPackages:Ljava/util/HashSet;
 
@@ -1539,7 +1573,7 @@
 
     goto :goto_10
 
-    .line 325
+    .line 338
     :catchall_18
     move-exception v0
 
@@ -1548,17 +1582,4 @@
     .catchall {:try_start_3 .. :try_end_1a} :catchall_18
 
     throw v0
-.end method
-
-.method public setAlarmBootCompleted()V
-    .registers 2
-
-    .prologue
-    .line 302
-    const/4 v0, 0x1
-
-    iput-boolean v0, p0, Lcom/miui/server/FirewallService;->mAlarmBootCompleted:Z
-
-    .line 303
-    return-void
 .end method

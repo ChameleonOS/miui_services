@@ -25,7 +25,7 @@
     .parameter "x0"
 
     .prologue
-    .line 585
+    .line 587
     iput-object p1, p0, Lcom/android/server/PowerManagerService$1;->this$0:Lcom/android/server/PowerManagerService;
 
     invoke-direct {p0, p2}, Landroid/os/HandlerThread;-><init>(Ljava/lang/String;)V
@@ -39,14 +39,14 @@
     .registers 2
 
     .prologue
-    .line 588
+    .line 590
     invoke-super {p0}, Landroid/os/HandlerThread;->onLooperPrepared()V
 
-    .line 589
+    .line 591
     iget-object v0, p0, Lcom/android/server/PowerManagerService$1;->this$0:Lcom/android/server/PowerManagerService;
 
     invoke-virtual {v0}, Lcom/android/server/PowerManagerService;->initInThread()V
 
-    .line 590
+    .line 592
     return-void
 .end method

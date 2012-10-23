@@ -21,6 +21,7 @@ public class FirewallService extends miui.net.IFirewall.Stub {
         mLastUsingMmsUids = new HashMap();
         mIfnames = new HashMap();
         mCurrentMmsIfname = null;
+        mFlag = 0;
         mContext = context;
     }
 
@@ -163,6 +164,10 @@ _L10:
         return;
     }
 
+    public void addOneShotFlag(int i) {
+        mFlag = i | mFlag;
+    }
+
     public boolean checkAccessControlPass(String s) {
         HashSet hashset = mAccessControlPassPackages;
         hashset;
@@ -171,8 +176,13 @@ _L10:
         return flag;
     }
 
-    public boolean getAlarmBootCompleted() {
-        return mAlarmBootCompleted;
+    public boolean getOneShotFlag(int i) {
+        boolean flag;
+        if((i & mFlag) != 0)
+            flag = true;
+        else
+            flag = false;
+        return flag;
     }
 
     public void onDataConnected(int i, String s, String s1) {
@@ -238,10 +248,6 @@ _L10:
         return;
     }
 
-    public void setAlarmBootCompleted() {
-        mAlarmBootCompleted = true;
-    }
-
     private static final String ADD_CHAIN_FOR_REJECT_CMD = (new StringBuilder()).append(IPTABLES_CMD).append(" -N %0%; ").append(IPTABLES_CMD).append(" -A %0% -j REJECT; ").append(IPTABLES_CMD).append(" -A OUTPUT -o %1% -j %0%; ").toString();
     private static final String AWK_CMD = getAwkCommand();
     private static final String CLEAR_ALL_MIUI_CHAIN_CMD = (new StringBuilder()).append("for chain in `").append(IPTABLES_CMD).append(" -L | ").append(GREP_CMD).append(" \"^Chain ").append("miui_").append("\" | ").append(AWK_CMD).append(" '{print $2}'`; do ").append(IPTABLES_CMD).append(" -D OUTPUT `").append(IPTABLES_CMD).append(" -S OUTPUT | ").append(AWK_CMD).append(" -v chain=${chain} '$6==chain {print NR-2}'`; ").append(IPTABLES_CMD).append(" -F $chain; ").append(IPTABLES_CMD).append(" -X $chain; ").append("done;").toString();
@@ -254,9 +260,9 @@ _L10:
     private static final String REMOVE_CHAIN_CMD = (new StringBuilder()).append(IPTABLES_CMD).append(" -D OUTPUT `").append(IPTABLES_CMD).append(" -S OUTPUT | ").append(AWK_CMD).append(" '$6==\"%0%\" {print NR-1}'`; ").append(IPTABLES_CMD).append(" -F %0%; ").append(IPTABLES_CMD).append(" -X %0%; ").toString();
     private static final String REMOVE_RULE_OF_CHAIN_CMD = (new StringBuilder()).append(IPTABLES_CMD).append(" -D %0% `").append(IPTABLES_CMD).append(" -S %0% | ").append(AWK_CMD).append(" '$6==\"%1%\" {print NR-1}'`; ").toString();
     private final HashSet mAccessControlPassPackages = new HashSet();
-    private boolean mAlarmBootCompleted;
     private Context mContext;
     private String mCurrentMmsIfname;
+    private int mFlag;
     private HashMap mIfnames;
     private HashMap mLastUsingMmsUids;
 
