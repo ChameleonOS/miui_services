@@ -114,7 +114,7 @@ _L1:
         dialog.setContentView(view);
         dialog.setCancelable(false);
         dialog.getWindow().setType(2021);
-        dialog.getWindow().setBackgroundDrawableResource(0x60201e4);
+        dialog.getWindow().setBackgroundDrawableResource(0x6020034);
         dialog.show();
         ((AnimationDrawable)imageview.getDrawable()).start();
     }

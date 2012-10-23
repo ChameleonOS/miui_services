@@ -11833,4 +11833,451 @@ label0:
     }
 
     android.app.ActivityManager.RunningServiceInfo makeRunningServiceInfoLocked(ServiceRecord servicerecord) {
-        android.app.ActivityManager.RunningServiceInfo runningserviceinfo = new android.app.Activit
+        android.app.ActivityManager.RunningServiceInfo runningserviceinfo = new android.app.ActivityManager.RunningServiceInfo();
+        runningserviceinfo.service = servicerecord.name;
+        if(servicerecord.app != null)
+            runningserviceinfo.pid = servicerecord.app.pid;
+        runningserviceinfo.uid = servicerecord.appInfo.uid;
+        runningserviceinfo.process = servicerecord.processName;
+        runningserviceinfo.foreground = servicerecord.isForeground;
+        runningserviceinfo.activeSince = servicerecord.createTime;
+        runningserviceinfo.started = servicerecord.startRequested;
+        runningserviceinfo.clientCount = servicerecord.connections.size();
+        runningserviceinfo.crashCount = servicerecord.crashCount;
+        runningserviceinfo.lastActivityTime = servicerecord.lastActivity;
+        if(servicerecord.isForeground)
+            runningserviceinfo.flags = 2 | runningserviceinfo.flags;
+        if(servicerecord.startRequested)
+            runningserviceinfo.flags = 1 | runningserviceinfo.flags;
+        if(servicerecord.app != null && servicerecord.app.pid == MY_PID)
+            runningserviceinfo.flags = 4 | runningserviceinfo.flags;
+        if(servicerecord.app != null && servicerecord.app.persistent)
+            runningserviceinfo.flags = 8 | runningserviceinfo.flags;
+        Iterator iterator = servicerecord.connections.values().iterator();
+label0:
+        do {
+label1:
+            {
+                if(iterator.hasNext()) {
+                    ArrayList arraylist = (ArrayList)iterator.next();
+                    ConnectionRecord connectionrecord;
+                    for(int i = 0; i >= arraylist.size(); i++)
+                        continue label0;
+
+                    connectionrecord = (ConnectionRecord)arraylist.get(i);
+                    if(connectionrecord.clientLabel == 0)
+                        break label1;
+                    runningserviceinfo.clientPackage = connectionrecord.binding.client.info.packageName;
+                    runningserviceinfo.clientLabel = connectionrecord.clientLabel;
+                }
+                return runningserviceinfo;
+            }
+        } while(true);
+    }
+
+    public void monitor() {
+        this;
+        JVM INSTR monitorenter ;
+    }
+
+    public boolean moveActivityTaskToBack(IBinder ibinder, boolean flag) {
+        boolean flag1;
+        flag1 = false;
+        enforceNotIsolatedCaller("moveActivityTaskToBack");
+        this;
+        JVM INSTR monitorenter ;
+        long l = Binder.clearCallingIdentity();
+        boolean flag2;
+        int i;
+        if(!flag)
+            flag2 = true;
+        else
+            flag2 = false;
+        i = getTaskForActivityLocked(ibinder, flag2);
+        if(i >= 0)
+            flag1 = mMainStack.moveTaskToBackLocked(i, null);
+        else
+            Binder.restoreCallingIdentity(l);
+        return flag1;
+    }
+
+    public void moveTaskBackwards(int i) {
+        enforceCallingPermission("android.permission.REORDER_TASKS", "moveTaskBackwards()");
+        this;
+        JVM INSTR monitorenter ;
+        if(checkAppSwitchAllowedLocked(Binder.getCallingPid(), Binder.getCallingUid(), "Task backwards")) {
+            long l = Binder.clearCallingIdentity();
+            moveTaskBackwardsLocked(i);
+            Binder.restoreCallingIdentity(l);
+        }
+        return;
+    }
+
+    public void moveTaskToBack(int i) {
+        enforceCallingPermission("android.permission.REORDER_TASKS", "moveTaskToBack()");
+        this;
+        JVM INSTR monitorenter ;
+        if(mMainStack.mResumedActivity == null || mMainStack.mResumedActivity.task.taskId != i || checkAppSwitchAllowedLocked(Binder.getCallingPid(), Binder.getCallingUid(), "Task to back")) {
+            long l = Binder.clearCallingIdentity();
+            mMainStack.moveTaskToBackLocked(i, null);
+            Binder.restoreCallingIdentity(l);
+        }
+        return;
+    }
+
+    public void moveTaskToFront(int i, int j, Bundle bundle) {
+        enforceCallingPermission("android.permission.REORDER_TASKS", "moveTaskToFront()");
+        this;
+        JVM INSTR monitorenter ;
+        if(checkAppSwitchAllowedLocked(Binder.getCallingPid(), Binder.getCallingUid(), "Task to front")) goto _L2; else goto _L1
+_L1:
+        ActivityOptions.abort(bundle);
+        this;
+        JVM INSTR monitorexit ;
+          goto _L3
+_L2:
+        long l = Binder.clearCallingIdentity();
+        TaskRecord taskrecord = taskForIdLocked(i);
+        if(taskrecord == null) goto _L5; else goto _L4
+_L4:
+        if((j & 2) == 0)
+            mMainStack.mUserLeaving = true;
+        if((j & 1) != 0)
+            mMainStack.moveHomeToFrontLocked();
+        mMainStack.moveTaskToFrontLocked(taskrecord, null, bundle);
+        Binder.restoreCallingIdentity(l);
+        this;
+        JVM INSTR monitorexit ;
+          goto _L3
+        Exception exception;
+        exception;
+        throw exception;
+_L5:
+        int k = -1 + mMainStack.mHistory.size();
+_L8:
+        if(k < 0) goto _L7; else goto _L6
+_L6:
+        ActivityRecord activityrecord = (ActivityRecord)mMainStack.mHistory.get(k);
+        if(activityrecord.task.taskId != i)
+            break MISSING_BLOCK_LABEL_231;
+        if((j & 2) == 0)
+            mMainStack.mUserLeaving = true;
+        if((j & 1) != 0)
+            mMainStack.moveHomeToFrontLocked();
+        mMainStack.moveTaskToFrontLocked(activityrecord.task, null, bundle);
+        Binder.restoreCallingIdentity(l);
+        this;
+        JVM INSTR monitorexit ;
+          goto _L3
+        Exception exception1;
+        exception1;
+        Binder.restoreCallingIdentity(l);
+        throw exception1;
+_L7:
+        Binder.restoreCallingIdentity(l);
+        ActivityOptions.abort(bundle);
+        this;
+        JVM INSTR monitorexit ;
+_L3:
+        return;
+        k--;
+          goto _L8
+    }
+
+    public boolean navigateUpTo(IBinder ibinder, Intent intent, int i, Intent intent1) {
+        ComponentName componentname = intent.getComponent();
+        this;
+        JVM INSTR monitorenter ;
+        ActivityRecord activityrecord = ActivityRecord.forToken(ibinder);
+        if(activityrecord != null) goto _L2; else goto _L1
+_L1:
+        boolean flag = false;
+          goto _L3
+_L2:
+        ArrayList arraylist;
+        int j;
+        arraylist = activityrecord.stack.mHistory;
+        j = arraylist.indexOf(activityrecord);
+        if(j >= 0) goto _L5; else goto _L4
+_L4:
+        flag = false;
+          goto _L3
+        Exception exception;
+        exception;
+        throw exception;
+_L5:
+        int k;
+        ActivityRecord activityrecord1;
+        k = j - 1;
+        activityrecord1 = null;
+        flag = false;
+        if(componentname == null) goto _L7; else goto _L6
+_L6:
+        TaskRecord taskrecord;
+        int j2;
+        taskrecord = activityrecord.task;
+        j2 = j - 1;
+_L21:
+        if(j2 < 0) goto _L7; else goto _L8
+_L8:
+        ActivityRecord activityrecord4 = (ActivityRecord)arraylist.get(j2);
+        if(taskrecord == activityrecord4.task) goto _L10; else goto _L9
+_L9:
+        k = Math.min(j - 1, j2 + 1);
+        activityrecord1 = (ActivityRecord)arraylist.get(k);
+_L7:
+        if(mController == null) goto _L12; else goto _L11
+_L11:
+        ActivityRecord activityrecord3 = mMainStack.topRunningActivityLocked(ibinder, 0);
+        if(activityrecord3 == null) goto _L12; else goto _L13
+_L13:
+        boolean flag1 = true;
+        boolean flag2 = mController.activityResuming(activityrecord3.packageName);
+        flag1 = flag2;
+_L15:
+        if(flag1) goto _L12; else goto _L14
+_L14:
+        flag = false;
+        this;
+        JVM INSTR monitorexit ;
+          goto _L3
+_L10:
+        if(!((ComponentInfo) (activityrecord4.info)).packageName.equals(componentname.getPackageName()) || !((ComponentInfo) (activityrecord4.info)).name.equals(componentname.getClassName()))
+            break MISSING_BLOCK_LABEL_515;
+        k = j2;
+        activityrecord1 = activityrecord4;
+        flag = true;
+          goto _L7
+        RemoteException remoteexception1;
+        remoteexception1;
+        mController = null;
+          goto _L15
+_L12:
+        long l;
+        l = Binder.clearCallingIdentity();
+        for(int i1 = j; i1 > k; i1--) {
+            ActivityRecord activityrecord2 = (ActivityRecord)arraylist.get(i1);
+            mMainStack.requestFinishActivityLocked(activityrecord2.appToken, i, intent1, "navigate-up");
+            i = 0;
+            intent1 = null;
+        }
+
+        if(activityrecord1 == null || !flag) goto _L17; else goto _L16
+_L16:
+        int j1;
+        int k1;
+        j1 = activityrecord1.info.launchMode;
+        k1 = intent.getFlags();
+        if(j1 != 3 && j1 != 2 && j1 != 1 && (0x4000000 & k1) == 0) goto _L19; else goto _L18
+_L18:
+        int l1 = activityrecord.info.applicationInfo.uid;
+        activityrecord1.deliverNewIntentLocked(l1, intent);
+_L17:
+        Binder.restoreCallingIdentity(l);
+        this;
+        JVM INSTR monitorexit ;
+          goto _L3
+_L19:
+        int i2;
+        ActivityInfo activityinfo = AppGlobals.getPackageManager().getActivityInfo(intent.getComponent(), 0, UserId.getCallingUserId());
+        i2 = mMainStack.startActivityLocked(activityrecord.app.thread, intent, null, activityinfo, activityrecord1.appToken, null, 0, -1, activityrecord1.launchedFromUid, 0, null, true, null);
+        if(i2 == 0)
+            flag = true;
+        else
+            flag = false;
+_L20:
+        mMainStack.requestFinishActivityLocked(activityrecord1.appToken, i, intent1, "navigate-up");
+          goto _L17
+        RemoteException remoteexception;
+        remoteexception;
+        flag = false;
+          goto _L20
+_L3:
+        return flag;
+        j2--;
+          goto _L21
+    }
+
+
+// JavaClassFileOutputException: Prev chain is broken
+
+    public IBinder newUriPermissionOwner(String s) {
+        enforceNotIsolatedCaller("newUriPermissionOwner");
+        this;
+        JVM INSTR monitorenter ;
+        Binder binder = (new UriPermissionOwner(this, s)).getExternalTokenLocked();
+        return binder;
+    }
+
+    public void noteWakeupAlarm(IIntentSender iintentsender) {
+        if(iintentsender instanceof PendingIntentRecord) goto _L2; else goto _L1
+_L1:
+        return;
+_L2:
+        BatteryStatsImpl batterystatsimpl = mBatteryStatsService.getActiveStatistics();
+        batterystatsimpl;
+        JVM INSTR monitorenter ;
+        if(!mBatteryStatsService.isOnBattery()) goto _L4; else goto _L3
+_L3:
+        PendingIntentRecord pendingintentrecord;
+        int j;
+        mBatteryStatsService.enforceCallingPermission();
+        pendingintentrecord = (PendingIntentRecord)iintentsender;
+        int i = Binder.getCallingUid();
+        if(pendingintentrecord.uid != i)
+            break MISSING_BLOCK_LABEL_88;
+        j = 1000;
+_L5:
+        batterystatsimpl.getPackageStatsLocked(j, pendingintentrecord.key.packageName).incWakeupsLocked();
+_L4:
+        batterystatsimpl;
+        JVM INSTR monitorexit ;
+          goto _L1
+        Exception exception;
+        exception;
+        throw exception;
+        j = pendingintentrecord.uid;
+          goto _L5
+    }
+
+    void onCoreSettingsChange(Bundle bundle) {
+        int i = -1 + mLruProcesses.size();
+        while(i >= 0)  {
+            ProcessRecord processrecord = (ProcessRecord)mLruProcesses.get(i);
+            try {
+                if(processrecord.thread != null)
+                    processrecord.thread.setCoreSettings(bundle);
+            }
+            catch(RemoteException remoteexception) { }
+            i--;
+        }
+    }
+
+    public boolean onTransact(int i, Parcel parcel, Parcel parcel1, int j) throws RemoteException {
+        if(i != 0x5f535052) goto _L2; else goto _L1
+_L1:
+        ArrayList arraylist = new ArrayList();
+        this;
+        JVM INSTR monitorenter ;
+        Iterator iterator = mProcessNames.getMap().values().iterator();
+_L9:
+        if(!iterator.hasNext()) goto _L4; else goto _L3
+_L3:
+        SparseArray sparsearray;
+        int i1;
+        int j1;
+        sparsearray = (SparseArray)iterator.next();
+        i1 = sparsearray.size();
+        j1 = 0;
+_L7:
+        if(j1 >= i1)
+            continue; /* Loop/switch isn't completed */
+        ProcessRecord processrecord = (ProcessRecord)sparsearray.valueAt(j1);
+        if(processrecord.thread != null)
+            arraylist.add(processrecord.thread.asBinder());
+          goto _L5
+_L4:
+        this;
+        JVM INSTR monitorexit ;
+        int k = arraylist.size();
+        int l = 0;
+        while(l < k)  {
+            Parcel parcel2 = Parcel.obtain();
+            Exception exception;
+            RuntimeException runtimeexception;
+            boolean flag;
+            try {
+                ((IBinder)arraylist.get(l)).transact(0x5f535052, parcel2, null, 0);
+            }
+            catch(RemoteException remoteexception) { }
+            parcel2.recycle();
+            l++;
+        }
+          goto _L2
+        exception;
+        this;
+        JVM INSTR monitorexit ;
+        throw exception;
+_L2:
+        try {
+            flag = super.onTransact(i, parcel, parcel1, j);
+        }
+        // Misplaced declaration of an exception variable
+        catch(RuntimeException runtimeexception) {
+            if(!(runtimeexception instanceof SecurityException))
+                Slog.e("ActivityManager", "Activity Manager Crash", runtimeexception);
+            throw runtimeexception;
+        }
+        return flag;
+_L5:
+        j1++;
+        if(true) goto _L7; else goto _L6
+_L6:
+        if(true) goto _L9; else goto _L8
+_L8:
+    }
+
+    public ParcelFileDescriptor openContentUri(Uri uri) throws RemoteException {
+        String s;
+        android.app.IActivityManager.ContentProviderHolder contentproviderholder;
+        ParcelFileDescriptor parcelfiledescriptor;
+        enforceNotIsolatedCaller("openContentUri");
+        s = uri.getAuthority();
+        contentproviderholder = getContentProviderExternalUnchecked(s, null);
+        parcelfiledescriptor = null;
+        if(contentproviderholder == null) goto _L2; else goto _L1
+_L1:
+        sCallerIdentity.set(new Identity(Binder.getCallingPid(), Binder.getCallingUid()));
+        ParcelFileDescriptor parcelfiledescriptor1 = contentproviderholder.provider.openFile(uri, "r");
+        ThreadLocal threadlocal;
+        parcelfiledescriptor = parcelfiledescriptor1;
+        threadlocal = sCallerIdentity;
+_L6:
+        threadlocal.remove();
+        removeContentProviderExternalUnchecked(s, null);
+_L4:
+        return parcelfiledescriptor;
+        Exception exception;
+        exception;
+        sCallerIdentity.remove();
+        throw exception;
+_L2:
+        Slog.d("ActivityManager", (new StringBuilder()).append("Failed to get provider for authority '").append(s).append("'").toString());
+        if(true) goto _L4; else goto _L3
+_L3:
+        FileNotFoundException filenotfoundexception;
+        filenotfoundexception;
+        threadlocal = sCallerIdentity;
+        if(true) goto _L6; else goto _L5
+_L5:
+    }
+
+    public void overridePendingTransition(IBinder ibinder, String s, int i, int j) {
+        this;
+        JVM INSTR monitorenter ;
+        ActivityRecord activityrecord = mMainStack.isInStackLocked(ibinder);
+        if(activityrecord != null) {
+            long l = Binder.clearCallingIdentity();
+            if(activityrecord.state == ActivityStack.ActivityState.RESUMED || activityrecord.state == ActivityStack.ActivityState.PAUSING)
+                mWindowManager.overridePendingAppTransition(s, i, j, null);
+            Binder.restoreCallingIdentity(l);
+        }
+        return;
+    }
+
+    public IBinder peekService(Intent intent, String s) {
+        enforceNotIsolatedCaller("peekService");
+        if(intent != null && intent.hasFileDescriptors())
+            throw new IllegalArgumentException("File descriptors passed in Intent");
+        IBinder ibinder = null;
+        this;
+        JVM INSTR monitorenter ;
+        ServiceLookupResult servicelookupresult;
+        servicelookupresult = findServiceLocked(intent, s, UserId.getCallingUserId());
+        if(servicelookupresult == null)
+            break MISSING_BLOCK_LABEL_173;
+        if(servicelookupresult.record == null)
+            throw new SecurityException((new StringBuilder()).append("Permission Denial: Accessing service ").append(servicelookupresult.record.name).append(" from pid=").append(Binder.getCallingPid()).append(", uid=").append(Binder.getCallingUid()).append(" requires ").append(servicelookupresult.permission).toString());
+        break MISSING_BLOCK_LABEL_138;
+        Exception exception;
+   
