@@ -1770,8 +1770,8 @@ _L7:
     }
 
     private int setScreenStateLocked(boolean flag) {
-        if(flag && mInitialized && ((1 & mPowerState) == 0 || mSkippedScreenOn))
-            mScreenBrightnessAnimator.animateTo(0, 2, 0);
+        if(flag && mInitialized && (1 & mPowerState) != 0)
+            if(!mSkippedScreenOn);
         int i = nativeSetScreenState(flag);
         if(i == 0) {
             long l;

@@ -27,7 +27,7 @@
     .parameter
 
     .prologue
-    .line 3418
+    .line 3419
     iput-object p1, p0, Lcom/android/server/PowerManagerService$14;->this$0:Lcom/android/server/PowerManagerService;
 
     invoke-direct/range {p0 .. p0}, Ljava/lang/Object;-><init>()V
@@ -43,7 +43,7 @@
     .parameter "accuracy"
 
     .prologue
-    .line 3442
+    .line 3443
     return-void
 .end method
 
@@ -52,7 +52,7 @@
     .parameter "event"
 
     .prologue
-    .line 3424
+    .line 3425
     iget-object v0, p0, Lcom/android/server/PowerManagerService$14;->this$0:Lcom/android/server/PowerManagerService;
 
     #getter for: Lcom/android/server/PowerManagerService;->mLocks:Lcom/android/server/PowerManagerService$LockList;
@@ -62,7 +62,7 @@
 
     monitor-enter v1
 
-    .line 3426
+    .line 3427
     :try_start_7
     iget-object v0, p0, Lcom/android/server/PowerManagerService$14;->this$0:Lcom/android/server/PowerManagerService;
 
@@ -73,14 +73,14 @@
 
     if-eqz v0, :cond_11
 
-    .line 3427
+    .line 3428
     monitor-exit v1
 
-    .line 3437
+    .line 3438
     :goto_10
     return-void
 
-    .line 3429
+    .line 3430
     :cond_11
     iget-object v0, p0, Lcom/android/server/PowerManagerService$14;->this$0:Lcom/android/server/PowerManagerService;
 
@@ -102,7 +102,7 @@
     #calls: Lcom/android/server/PowerManagerService;->handleLightSensorValue(IZ)V
     invoke-static {v0, v2, v3}, Lcom/android/server/PowerManagerService;->access$7300(Lcom/android/server/PowerManagerService;IZ)V
 
-    .line 3430
+    .line 3431
     iget-object v0, p0, Lcom/android/server/PowerManagerService$14;->this$0:Lcom/android/server/PowerManagerService;
 
     #getter for: Lcom/android/server/PowerManagerService;->mWaitingForFirstLightSensor:Z
@@ -121,7 +121,7 @@
 
     if-nez v0, :cond_38
 
-    .line 3434
+    .line 3435
     iget-object v0, p0, Lcom/android/server/PowerManagerService$14;->this$0:Lcom/android/server/PowerManagerService;
 
     const/4 v2, 0x0
@@ -129,7 +129,7 @@
     #setter for: Lcom/android/server/PowerManagerService;->mWaitingForFirstLightSensor:Z
     invoke-static {v0, v2}, Lcom/android/server/PowerManagerService;->access$7202(Lcom/android/server/PowerManagerService;Z)Z
 
-    .line 3436
+    .line 3437
     :cond_38
     monitor-exit v1
 
