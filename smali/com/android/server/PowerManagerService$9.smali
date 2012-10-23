@@ -27,7 +27,7 @@
     .parameter
 
     .prologue
-    .line 2681
+    .line 2678
     iput-object p1, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
 
     invoke-direct/range {p0 .. p0}, Ljava/lang/Object;-><init>()V
@@ -41,100 +41,87 @@
     .registers 5
 
     .prologue
-    const/4 v0, 0x1
-
-    const/4 v3, -0x1
-
-    .line 2683
+    .line 2680
     iget-object v1, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
 
     #getter for: Lcom/android/server/PowerManagerService;->mLocks:Lcom/android/server/PowerManagerService$LockList;
     invoke-static {v1}, Lcom/android/server/PowerManagerService;->access$500(Lcom/android/server/PowerManagerService;)Lcom/android/server/PowerManagerService$LockList;
 
-    move-result-object v1
+    move-result-object v2
 
-    monitor-enter v1
+    monitor-enter v2
+
+    .line 2681
+    :try_start_7
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
+
+    #getter for: Lcom/android/server/PowerManagerService;->mLightSensorPendingDecrease:Z
+    invoke-static {v1}, Lcom/android/server/PowerManagerService;->access$6200(Lcom/android/server/PowerManagerService;)Z
+
+    move-result v1
+
+    if-nez v1, :cond_17
+
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
+
+    #getter for: Lcom/android/server/PowerManagerService;->mLightSensorPendingIncrease:Z
+    invoke-static {v1}, Lcom/android/server/PowerManagerService;->access$6300(Lcom/android/server/PowerManagerService;)Z
+
+    move-result v1
+
+    if-eqz v1, :cond_30
+
+    .line 2682
+    :cond_17
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
+
+    #getter for: Lcom/android/server/PowerManagerService;->mLightSensorPendingValue:F
+    invoke-static {v1}, Lcom/android/server/PowerManagerService;->access$6400(Lcom/android/server/PowerManagerService;)F
+
+    move-result v1
+
+    float-to-int v0, v1
+
+    .line 2683
+    .local v0, value:I
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
+
+    const/4 v3, 0x0
+
+    #setter for: Lcom/android/server/PowerManagerService;->mLightSensorPendingDecrease:Z
+    invoke-static {v1, v3}, Lcom/android/server/PowerManagerService;->access$6202(Lcom/android/server/PowerManagerService;Z)Z
 
     .line 2684
-    :try_start_9
-    iget-object v2, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
 
-    #getter for: Lcom/android/server/PowerManagerService;->mProximityPendingValue:I
-    invoke-static {v2}, Lcom/android/server/PowerManagerService;->access$5900(Lcom/android/server/PowerManagerService;)I
+    const/4 v3, 0x0
 
-    move-result v2
-
-    if-eq v2, v3, :cond_24
+    #setter for: Lcom/android/server/PowerManagerService;->mLightSensorPendingIncrease:Z
+    invoke-static {v1, v3}, Lcom/android/server/PowerManagerService;->access$6302(Lcom/android/server/PowerManagerService;Z)Z
 
     .line 2685
-    iget-object v2, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
 
-    iget-object v3, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
+    const/4 v3, 0x0
 
-    #getter for: Lcom/android/server/PowerManagerService;->mProximityPendingValue:I
-    invoke-static {v3}, Lcom/android/server/PowerManagerService;->access$5900(Lcom/android/server/PowerManagerService;)I
+    #calls: Lcom/android/server/PowerManagerService;->lightSensorChangedLocked(IZ)V
+    invoke-static {v1, v0, v3}, Lcom/android/server/PowerManagerService;->access$6500(Lcom/android/server/PowerManagerService;IZ)V
 
-    move-result v3
-
-    if-ne v3, v0, :cond_3b
-
-    :goto_1b
-    #calls: Lcom/android/server/PowerManagerService;->proximityChangedLocked(Z)V
-    invoke-static {v2, v0}, Lcom/android/server/PowerManagerService;->access$6000(Lcom/android/server/PowerManagerService;Z)V
-
-    .line 2686
-    iget-object v0, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
-
-    const/4 v2, -0x1
-
-    #setter for: Lcom/android/server/PowerManagerService;->mProximityPendingValue:I
-    invoke-static {v0, v2}, Lcom/android/server/PowerManagerService;->access$5902(Lcom/android/server/PowerManagerService;I)I
+    .line 2687
+    .end local v0           #value:I
+    :cond_30
+    monitor-exit v2
 
     .line 2688
-    :cond_24
-    iget-object v0, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
-
-    #getter for: Lcom/android/server/PowerManagerService;->mProximityPartialLock:Lcom/android/server/PowerManagerService$UnsynchronizedWakeLock;
-    invoke-static {v0}, Lcom/android/server/PowerManagerService;->access$6100(Lcom/android/server/PowerManagerService;)Lcom/android/server/PowerManagerService$UnsynchronizedWakeLock;
-
-    move-result-object v0
-
-    invoke-virtual {v0}, Lcom/android/server/PowerManagerService$UnsynchronizedWakeLock;->isHeld()Z
-
-    move-result v0
-
-    if-eqz v0, :cond_39
-
-    .line 2689
-    iget-object v0, p0, Lcom/android/server/PowerManagerService$9;->this$0:Lcom/android/server/PowerManagerService;
-
-    #getter for: Lcom/android/server/PowerManagerService;->mProximityPartialLock:Lcom/android/server/PowerManagerService$UnsynchronizedWakeLock;
-    invoke-static {v0}, Lcom/android/server/PowerManagerService;->access$6100(Lcom/android/server/PowerManagerService;)Lcom/android/server/PowerManagerService$UnsynchronizedWakeLock;
-
-    move-result-object v0
-
-    invoke-virtual {v0}, Lcom/android/server/PowerManagerService$UnsynchronizedWakeLock;->release()V
-
-    .line 2691
-    :cond_39
-    monitor-exit v1
-
-    .line 2692
     return-void
 
-    .line 2685
-    :cond_3b
-    const/4 v0, 0x0
+    .line 2687
+    :catchall_32
+    move-exception v1
 
-    goto :goto_1b
+    monitor-exit v2
+    :try_end_34
+    .catchall {:try_start_7 .. :try_end_34} :catchall_32
 
-    .line 2691
-    :catchall_3d
-    move-exception v0
-
-    monitor-exit v1
-    :try_end_3f
-    .catchall {:try_start_9 .. :try_end_3f} :catchall_3d
-
-    throw v0
+    throw v1
 .end method

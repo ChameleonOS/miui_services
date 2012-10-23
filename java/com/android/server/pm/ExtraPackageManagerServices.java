@@ -8,14 +8,22 @@ import android.content.pm.PackageParser;
 import android.os.FileUtils;
 import android.util.Log;
 import java.io.*;
-import java.util.ArrayList;
+import java.util.*;
 
 // Referenced classes of package com.android.server.pm:
-//            Settings, GrantedPermissions
+//            PackageSetting, Settings, BasePermission, GrantedPermissions, 
+//            PackageManagerService, PackageSettingBase
 
 class ExtraPackageManagerServices {
 
     ExtraPackageManagerServices() {
+    }
+
+    private static void deleteOdexFile(String s) {
+        String s1 = s.replace(".apk", ".odex");
+        File file = new File((new StringBuilder()).append("/data/app/").append(s1).toString());
+        if(file.exists())
+            file.delete();
     }
 
     private static void installPreinstallApp(File file) {
@@ -23,10 +31,7 @@ class ExtraPackageManagerServices {
         File file1 = new File((new StringBuilder()).append("/data/app/").append(s).toString());
         FileUtils.copyFile(file, file1);
         file1.setReadable(true, false);
-        String s1 = s.replace(".apk", ".odex");
-        File file2 = new File((new StringBuilder()).append("/data/app/").append(s1).toString());
-        if(file2.exists())
-            file2.delete();
+        deleteOdexFile(s);
     }
 
     private static final boolean isPackageFilename(String s) {
@@ -36,6 +41,37 @@ class ExtraPackageManagerServices {
         else
             flag = false;
         return flag;
+    }
+
+    private static void packagePermissionsUpdate(Settings settings, PackageSetting packagesetting, android.content.pm.PackageParser.Package package1) {
+        Object obj;
+        int i;
+        int j;
+        if(packagesetting.sharedUser != null)
+            obj = packagesetting.sharedUser;
+        else
+            obj = packagesetting;
+        i = package1.requestedPermissions.size();
+        j = 0;
+        while(j < i)  {
+            String s = (String)package1.requestedPermissions.get(j);
+            BasePermission basepermission = (BasePermission)settings.mPermissions.get(s);
+            if(basepermission != null) {
+                String s1 = basepermission.name;
+                if(!((GrantedPermissions) (obj)).grantedPermissions.contains(s1)) {
+                    ((GrantedPermissions) (obj)).grantedPermissions.add(s1);
+                    obj.gids = PackageManagerService.appendInts(((GrantedPermissions) (obj)).gids, basepermission.gids);
+                } else
+                if(!((PackageSettingBase) (packagesetting)).haveGids)
+                    obj.gids = PackageManagerService.appendInts(((GrantedPermissions) (obj)).gids, basepermission.gids);
+            }
+            j++;
+        }
+    }
+
+    private static android.content.pm.PackageParser.Package parsePackage(File file) {
+        String s = file.getPath();
+        return (new PackageParser(s)).parsePackage(file, s, null, 4);
     }
 
     public static void performPreinstallApp(Settings settings) {
@@ -49,54 +85,43 @@ _L1:
 _L4:
         return;
 _L2:
-        File file1;
-        String as1[];
-        ArrayList arraylist;
-        int i;
-        file1 = new File("/data/app/");
-        as1 = file1.list();
-        arraylist = readPreinstallAppHistory("/data/system/preinstall_history");
-        i = 0;
-_L5:
-        if(i >= as.length) goto _L4; else goto _L3
-_L3:
-        File file2;
-        String s = as[i];
-        if(isPackageFilename(s)) {
-label0:
-            {
-                file2 = new File(file, s);
-                File file3 = new File(file1, s);
-                if(!arraylist.contains(s))
-                    break label0;
-                if(file3.exists() && file3.length() != file2.length())
-                    installPreinstallApp(file2);
+        ArrayList arraylist = readPreinstallAppHistory("/data/system/preinstall_history");
+        File file1 = new File("/data/media/preinstall_apps/reinstall_apps");
+        boolean flag = file1.exists();
+        int i = 0;
+        while(i < as.length)  {
+            String s = as[i];
+            if(isPackageFilename(s)) {
+                boolean flag1 = arraylist.contains(s);
+                File file2 = new File(file, s);
+                android.content.pm.PackageParser.Package package1 = parsePackage(file2);
+                if(package1 == null) {
+                    Log.d("ExtraPackageManager", (new StringBuilder()).append("preinstall app ").append(s).append(" package parser fail!").toString());
+                } else {
+                    PackageSetting packagesetting = settings.peekPackageLPr(package1.packageName);
+                    if(packagesetting != null) {
+                        if(package1.mVersionCode > ((PackageSettingBase) (packagesetting)).versionCode) {
+                            if((1 & ((GrantedPermissions) (packagesetting)).pkgFlags) == 0) {
+                                File file3 = ((PackageSettingBase) (packagesetting)).codePath;
+                                deleteOdexFile(file3.getName());
+                                file3.delete();
+                            }
+                            installPreinstallApp(file2);
+                            packagePermissionsUpdate(settings, packagesetting, package1);
+                        }
+                    } else
+                    if(!flag1 || flag)
+                        installPreinstallApp(file2);
+                    if(!flag1)
+                        writePreinstallAppHistory("/data/system/preinstall_history", s);
+                }
             }
+            i++;
         }
-_L8:
-        i++;
-          goto _L5
-          goto _L4
-        if(as1 != null && as1.length != 0) goto _L7; else goto _L6
-_L6:
-        installPreinstallApp(file2);
-_L9:
-        writePreinstallAppHistory("/data/system/preinstall_history", file2.getName());
-          goto _L8
-_L7:
-        android.content.pm.PackageParser.Package package1;
-label1:
-        {
-            package1 = (new PackageParser(file2.getPath())).parsePackage(file2, file2.getPath(), null, 4);
-            if(package1 != null)
-                break label1;
-            Log.d("ExtraPackageManager", (new StringBuilder()).append("preinstall app ").append(file2.getName()).append(" package parser fail!").toString());
-        }
-          goto _L8
-        PackageSetting packagesetting = settings.peekPackageLPr(package1.packageName);
-        if(packagesetting == null || (1 & ((GrantedPermissions) (packagesetting)).pkgFlags) != 0)
-            installPreinstallApp(file2);
-          goto _L9
+        if(flag)
+            file1.delete();
+        if(true) goto _L4; else goto _L3
+_L3:
     }
 
     private static ArrayList readPreinstallAppHistory(String s) {
@@ -141,5 +166,6 @@ _L1:
     private static final String INSTALL_DIR = "/data/app/";
     private static final String PREINSTALL_DIR = "/data/media/preinstall_apps/";
     private static final String PREINSTALL_HISTORY_FILE = "/data/system/preinstall_history";
+    private static final String REINSTALL_MARK_FILE = "/data/media/preinstall_apps/reinstall_apps";
     private static final String TAG = "ExtraPackageManager";
 }

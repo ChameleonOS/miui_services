@@ -215,6 +215,22 @@ _L12:
             printwriter.println((new StringBuilder()).append("  currentMask:").append(PowerManagerService.dumpPowerState(currentMask)).toString());
         }
 
+        public void forceAnimateTo(int i, int j) {
+            this;
+            JVM INSTR monitorenter ;
+            endValue = i;
+            currentValue = i;
+            this;
+            JVM INSTR monitorexit ;
+            mScreenBrightnessHandler.removeCallbacksAndMessages(null);
+            return;
+            Exception exception;
+            exception;
+            this;
+            JVM INSTR monitorexit ;
+            throw exception;
+        }
+
         public int getCurrentBrightness() {
             this;
             JVM INSTR monitorenter ;
@@ -799,19 +815,6 @@ _L1:
 
             public void run() {
                 forceReenableScreen();
-            }
-
-            final PowerManagerService this$0;
-
-             {
-                this$0 = PowerManagerService.this;
-                super();
-            }
-        };
-        mReleaseProximitySensorRunnable = new Runnable() {
-
-            public void run() {
-                mContext.sendBroadcast(new Intent("miui.intent.action.RELEASE_PROXIMITY_SENSOR"));
             }
 
             final PowerManagerService this$0;
@@ -1436,19 +1439,6 @@ _L2:
 _L3:
     }
 
-    private void releaseProximitySensor(int i, int j) {
-        if((i & 1) == 0) goto _L2; else goto _L1
-_L1:
-        mHandler.removeCallbacks(mReleaseProximitySensorRunnable);
-_L4:
-        return;
-_L2:
-        if(mBootCompleted && 4 != j)
-            mHandler.post(mReleaseProximitySensorRunnable);
-        if(true) goto _L4; else goto _L3
-_L3:
-    }
-
     private void releaseWakeLockLocked(IBinder ibinder, int i, boolean flag) {
         WakeLock wakelock = mLocks.removeLock(ibinder);
         if(wakelock != null) goto _L2; else goto _L1
@@ -1570,7 +1560,6 @@ _L3:
     }
 
     private void setPowerState(int i, boolean flag, int j) {
-        releaseProximitySensor(i, j);
         LockList locklist = mLocks;
         locklist;
         JVM INSTR monitorenter ;
@@ -1683,7 +1672,7 @@ _L8:
 _L13:
         mPowerState = -2 & mPowerState;
         if(mScreenBrightnessAnimator.isAnimating())
-            break MISSING_BLOCK_LABEL_582;
+            break MISSING_BLOCK_LABEL_576;
         screenOffFinishedAnimatingLocked(j);
           goto _L12
         remoteexception;
@@ -1770,8 +1759,8 @@ _L7:
     }
 
     private int setScreenStateLocked(boolean flag) {
-        if(flag && mInitialized && (1 & mPowerState) != 0)
-            if(!mSkippedScreenOn);
+        if(flag && mInitialized && ((1 & mPowerState) == 0 || mSkippedScreenOn))
+            mScreenBrightnessAnimator.forceAnimateTo(0, 2);
         int i = nativeSetScreenState(flag);
         if(i == 0) {
             long l;
@@ -3252,7 +3241,6 @@ _L1:
     private boolean mProximitySensorEnabled;
     private Runnable mProximityTask;
     private int mProximityWakeLockCount;
-    private Runnable mReleaseProximitySensorRunnable;
     private ScreenBrightnessAnimator mScreenBrightnessAnimator;
     private int mScreenBrightnessDim;
     private Handler mScreenBrightnessHandler;

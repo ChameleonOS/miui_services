@@ -1,14 +1,11 @@
 .class Lcom/android/server/PowerManagerService$11;
-.super Ljava/lang/Object;
+.super Ljava/lang/Thread;
 .source "PowerManagerService.java"
-
-# interfaces
-.implements Ljava/lang/Runnable;
 
 
 # annotations
 .annotation system Ldalvik/annotation/EnclosingMethod;
-    value = Lcom/android/server/PowerManagerService;->reboot(Ljava/lang/String;)V
+    value = Lcom/android/server/PowerManagerService;->crash(Ljava/lang/String;)V
 .end annotation
 
 .annotation system Ldalvik/annotation/InnerClass;
@@ -20,22 +17,23 @@
 # instance fields
 .field final synthetic this$0:Lcom/android/server/PowerManagerService;
 
-.field final synthetic val$finalReason:Ljava/lang/String;
+.field final synthetic val$message:Ljava/lang/String;
 
 
 # direct methods
-.method constructor <init>(Lcom/android/server/PowerManagerService;Ljava/lang/String;)V
-    .registers 3
+.method constructor <init>(Lcom/android/server/PowerManagerService;Ljava/lang/String;Ljava/lang/String;)V
+    .registers 4
     .parameter
+    .parameter "x0"
     .parameter
 
     .prologue
-    .line 2826
+    .line 2838
     iput-object p1, p0, Lcom/android/server/PowerManagerService$11;->this$0:Lcom/android/server/PowerManagerService;
 
-    iput-object p2, p0, Lcom/android/server/PowerManagerService$11;->val$finalReason:Ljava/lang/String;
+    iput-object p3, p0, Lcom/android/server/PowerManagerService$11;->val$message:Ljava/lang/String;
 
-    invoke-direct/range {p0 .. p0}, Ljava/lang/Object;-><init>()V
+    invoke-direct {p0, p2}, Ljava/lang/Thread;-><init>(Ljava/lang/String;)V
 
     return-void
 .end method
@@ -43,40 +41,15 @@
 
 # virtual methods
 .method public run()V
-    .registers 4
+    .registers 3
 
     .prologue
-    .line 2828
-    monitor-enter p0
+    .line 2839
+    new-instance v0, Ljava/lang/RuntimeException;
 
-    .line 2829
-    :try_start_1
-    iget-object v0, p0, Lcom/android/server/PowerManagerService$11;->this$0:Lcom/android/server/PowerManagerService;
+    iget-object v1, p0, Lcom/android/server/PowerManagerService$11;->val$message:Ljava/lang/String;
 
-    #getter for: Lcom/android/server/PowerManagerService;->mContext:Landroid/content/Context;
-    invoke-static {v0}, Lcom/android/server/PowerManagerService;->access$3700(Lcom/android/server/PowerManagerService;)Landroid/content/Context;
-
-    move-result-object v0
-
-    iget-object v1, p0, Lcom/android/server/PowerManagerService$11;->val$finalReason:Ljava/lang/String;
-
-    const/4 v2, 0x0
-
-    invoke-static {v0, v1, v2}, Lcom/android/server/pm/ShutdownThread;->reboot(Landroid/content/Context;Ljava/lang/String;Z)V
-
-    .line 2830
-    monitor-exit p0
-
-    .line 2832
-    return-void
-
-    .line 2830
-    :catchall_f
-    move-exception v0
-
-    monitor-exit p0
-    :try_end_11
-    .catchall {:try_start_1 .. :try_end_11} :catchall_f
+    invoke-direct {v0, v1}, Ljava/lang/RuntimeException;-><init>(Ljava/lang/String;)V
 
     throw v0
 .end method

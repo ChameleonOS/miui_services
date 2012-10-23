@@ -109,6 +109,13 @@ _L11:
         return s;
     }
 
+    private static String getIMEI() {
+        String s = TelephonyManager.getDefault().getDeviceId();
+        if(TextUtils.isEmpty(s))
+            s = "";
+        return s;
+    }
+
     private static String getNetworkName(Context context) {
         return ((TelephonyManager)context.getSystemService("phone")).getNetworkOperatorName();
     }
@@ -158,6 +165,7 @@ label0:
     protected static void populateCommonData(JSONObject jsonobject, Context context, ProcessRecord processrecord) {
         jsonobject.put("network", getNetworkName(context));
         jsonobject.put("device", getDeviceString());
+        jsonobject.put("imei", getIMEI());
         jsonobject.put("platform", android.os.Build.VERSION.RELEASE);
         jsonobject.put("build_version", android.os.Build.VERSION.INCREMENTAL);
         jsonobject.put("package_name", processrecord.info.packageName);
