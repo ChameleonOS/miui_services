@@ -806,7 +806,7 @@
     .line 42
     const-string v2, "com.miui.bugreport"
 
-    const-string v3, "com.miui.bugreport.MiuiFcPreviewActivity"
+    const-string v3, "com.miui.bugreport.ui.MiuiFcPreviewActivity"
 
     invoke-virtual {v0, v2, v3}, Landroid/content/Intent;->setClassName(Ljava/lang/String;Ljava/lang/String;)Landroid/content/Intent;
 

@@ -30,7 +30,7 @@
     .parameter
 
     .prologue
-    .line 719
+    .line 732
     iput-object p1, p0, Lcom/android/server/AppWidgetServiceImpl$1;->this$0:Lcom/android/server/AppWidgetServiceImpl;
 
     iput-object p2, p0, Lcom/android/server/AppWidgetServiceImpl$1;->val$intent:Landroid/content/Intent;
@@ -48,12 +48,12 @@
     .parameter "service"
 
     .prologue
-    .line 722
+    .line 735
     invoke-static {p2}, Lcom/android/internal/widget/IRemoteViewsFactory$Stub;->asInterface(Landroid/os/IBinder;)Lcom/android/internal/widget/IRemoteViewsFactory;
 
     move-result-object v0
 
-    .line 724
+    .line 737
     .local v0, cb:Lcom/android/internal/widget/IRemoteViewsFactory;
     :try_start_4
     iget-object v2, p0, Lcom/android/server/AppWidgetServiceImpl$1;->val$intent:Landroid/content/Intent;
@@ -63,7 +63,7 @@
     .catch Landroid/os/RemoteException; {:try_start_4 .. :try_end_9} :catch_11
     .catch Ljava/lang/RuntimeException; {:try_start_4 .. :try_end_9} :catch_16
 
-    .line 730
+    .line 743
     :goto_9
     iget-object v2, p0, Lcom/android/server/AppWidgetServiceImpl$1;->this$0:Lcom/android/server/AppWidgetServiceImpl;
 
@@ -71,25 +71,25 @@
 
     invoke-virtual {v2, p0}, Landroid/content/Context;->unbindService(Landroid/content/ServiceConnection;)V
 
-    .line 731
+    .line 744
     return-void
 
-    .line 725
+    .line 738
     :catch_11
     move-exception v1
 
-    .line 726
+    .line 739
     .local v1, e:Landroid/os/RemoteException;
     invoke-virtual {v1}, Landroid/os/RemoteException;->printStackTrace()V
 
     goto :goto_9
 
-    .line 727
+    .line 740
     .end local v1           #e:Landroid/os/RemoteException;
     :catch_16
     move-exception v1
 
-    .line 728
+    .line 741
     .local v1, e:Ljava/lang/RuntimeException;
     invoke-virtual {v1}, Ljava/lang/RuntimeException;->printStackTrace()V
 
@@ -101,6 +101,6 @@
     .parameter "name"
 
     .prologue
-    .line 736
+    .line 749
     return-void
 .end method

@@ -340,6 +340,22 @@ _L3:
         hashset.add(Integer.valueOf(i));
     }
 
+    private boolean isDuplicateWidgetId(int i) {
+        Iterator iterator = mAppWidgetIds.iterator();
+_L4:
+        if(!iterator.hasNext()) goto _L2; else goto _L1
+_L1:
+        if(((AppWidgetId)iterator.next()).appWidgetId != i) goto _L4; else goto _L3
+_L3:
+        boolean flag = true;
+_L6:
+        return flag;
+_L2:
+        flag = false;
+        if(true) goto _L6; else goto _L5
+_L5:
+    }
+
     private Provider parseProviderInfoXml(ComponentName componentname, ResolveInfo resolveinfo) {
         ActivityInfo activityinfo;
         XmlResourceParser xmlresourceparser;
@@ -1294,7 +1310,7 @@ _L10:
                 ((Provider)mInstalledProviders.get(j)).instances.clear();
 
         }
-        break MISSING_BLOCK_LABEL_898;
+        break MISSING_BLOCK_LABEL_910;
         namenotfoundexception1;
         as = new String[1];
         as[0] = s3;
@@ -1336,14 +1352,16 @@ _L13:
 _L14:
         appwidgetid = new AppWidgetId();
         appwidgetid.appWidgetId = Integer.parseInt(xmlpullparser.getAttributeValue(null, "id"), 16);
+        if(isDuplicateWidgetId(appwidgetid.appWidgetId)) goto _L2; else goto _L15
+_L15:
         if(appwidgetid.appWidgetId >= mNextAppWidgetId)
             mNextAppWidgetId = 1 + appwidgetid.appWidgetId;
         s1 = xmlpullparser.getAttributeValue(null, "p");
-        if(s1 == null) goto _L16; else goto _L15
-_L15:
-        appwidgetid.provider = (Provider)hashmap.get(Integer.valueOf(Integer.parseInt(s1, 16)));
-        if(appwidgetid.provider == null) goto _L2; else goto _L16
+        if(s1 == null) goto _L17; else goto _L16
 _L16:
+        appwidgetid.provider = (Provider)hashmap.get(Integer.valueOf(Integer.parseInt(s1, 16)));
+        if(appwidgetid.provider == null) goto _L2; else goto _L17
+_L17:
         j1 = Integer.parseInt(xmlpullparser.getAttributeValue(null, "h"), 16);
         appwidgetid.host = (Host)mHosts.get(j1);
         if(appwidgetid.host != null) {
@@ -1387,6 +1405,21 @@ _L16:
         Exception exception;
         exception;
         Binder.restoreCallingIdentity(l);
+        throw exception;
+    }
+
+    public void reload() {
+        synchronized(mAppWidgetIds) {
+            mAppWidgetIds.clear();
+            mHosts.clear();
+            mInstalledProviders.clear();
+            mStateLoaded = false;
+        }
+        sendInitialBroadcasts();
+        return;
+        exception;
+        arraylist;
+        JVM INSTR monitorexit ;
         throw exception;
     }
 

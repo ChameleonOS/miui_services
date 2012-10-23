@@ -215,7 +215,7 @@ _L1:
             break MISSING_BLOCK_LABEL_102;
         intent = new Intent();
         intent.setPackage("com.miui.bugreport");
-        intent.setClassName("com.miui.bugreport", "com.miui.bugreport.MiuiFcPreviewActivity");
+        intent.setClassName("com.miui.bugreport", "com.miui.bugreport.ui.MiuiFcPreviewActivity");
         intent.putExtra("extra_fc_report", jsonobject.toString());
         intent.setFlags(0x10000000);
         try {

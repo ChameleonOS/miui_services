@@ -114,7 +114,7 @@ _L4:
 _L2:
                 if(!"android.intent.action.RESTORE_FINISH".equals(s))
                     break; /* Loop/switch isn't completed */
-                getImplForUser().sendInitialBroadcasts();
+                getImplForUser().reload();
                 if(true) goto _L4; else goto _L3
 _L3:
                 if(!"android.intent.action.CONFIGURATION_CHANGED".equals(s))

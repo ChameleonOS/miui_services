@@ -91,7 +91,7 @@
 
     move-result-object v3
 
-    invoke-virtual {v3}, Lcom/android/server/AppWidgetServiceImpl;->sendInitialBroadcasts()V
+    invoke-virtual {v3}, Lcom/android/server/AppWidgetServiceImpl;->reload()V
 
     goto :goto_15
 
