@@ -1327,7 +1327,7 @@ _L1:
         if((0x10 & mPowerState) != 0) goto _L2; else goto _L3
 _L3:
         int j;
-        int i1;
+        byte byte0;
         j = getAutoBrightnessValue(i, mLcdBacklightValues);
         int k = getAutoBrightnessValue(i, mButtonBacklightValues);
         int l;
@@ -1342,9 +1342,9 @@ _L3:
 _L4:
         if(!flag) goto _L7; else goto _L6
 _L6:
-        i1 = 4;
+        byte0 = 4;
 _L8:
-        mScreenBrightnessAnimator.animateTo(j, i, 2, i1 * 16);
+        mScreenBrightnessAnimator.animateTo(j, i, 2, byte0 * 16);
 _L5:
         if(mButtonBrightnessOverride < 0)
             mButtonLight.setBrightness(k);
@@ -1356,9 +1356,9 @@ _L7:
         screenbrightnessanimator;
         JVM INSTR monitorenter ;
         if(mScreenBrightnessAnimator.currentValue <= j)
-            i1 = 120;
+            byte0 = 120;
         else
-            i1 = 0x147ae1;
+            byte0 = 120;
           goto _L8
     }
 
@@ -3123,7 +3123,7 @@ _L1:
     private static final int ANIM_SETTING_ON = 1;
     static final int ANIM_STEPS = 60;
     static final int AUTOBRIGHTNESS_ANIM_STEPS = 120;
-    static final int AUTODIMNESS_ANIM_STEPS = 0x147ae1;
+    static final int AUTODIMNESS_ANIM_STEPS = 120;
     private static final int BATTERY_LOW_BIT = 16;
     private static final int BUTTON_BRIGHT_BIT = 4;
     static final boolean DEBUG_SCREEN_ON = false;

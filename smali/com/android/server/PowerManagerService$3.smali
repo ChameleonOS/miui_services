@@ -27,7 +27,7 @@
     .parameter
 
     .prologue
-    .line 1477
+    .line 1478
     iput-object p1, p0, Lcom/android/server/PowerManagerService$3;->this$0:Lcom/android/server/PowerManagerService;
 
     invoke-direct/range {p0 .. p0}, Ljava/lang/Object;-><init>()V
@@ -41,7 +41,7 @@
     .registers 6
 
     .prologue
-    .line 1479
+    .line 1480
     iget-object v0, p0, Lcom/android/server/PowerManagerService$3;->this$0:Lcom/android/server/PowerManagerService;
 
     #getter for: Lcom/android/server/PowerManagerService;->mLocks:Lcom/android/server/PowerManagerService$LockList;
@@ -51,7 +51,7 @@
 
     monitor-enter v1
 
-    .line 1480
+    .line 1481
     :try_start_7
     iget-object v0, p0, Lcom/android/server/PowerManagerService$3;->this$0:Lcom/android/server/PowerManagerService;
 
@@ -62,7 +62,7 @@
 
     if-eqz v0, :cond_49
 
-    .line 1481
+    .line 1482
     iget-object v0, p0, Lcom/android/server/PowerManagerService$3;->this$0:Lcom/android/server/PowerManagerService;
 
     const/4 v2, 0x0
@@ -70,7 +70,7 @@
     #setter for: Lcom/android/server/PowerManagerService;->mPreparingForScreenOn:Z
     invoke-static {v0, v2}, Lcom/android/server/PowerManagerService;->access$3102(Lcom/android/server/PowerManagerService;Z)Z
 
-    .line 1482
+    .line 1483
     iget-object v0, p0, Lcom/android/server/PowerManagerService$3;->this$0:Lcom/android/server/PowerManagerService;
 
     iget-object v2, p0, Lcom/android/server/PowerManagerService$3;->this$0:Lcom/android/server/PowerManagerService;
@@ -85,7 +85,7 @@
     #calls: Lcom/android/server/PowerManagerService;->updateLightsLocked(II)V
     invoke-static {v0, v2, v3}, Lcom/android/server/PowerManagerService;->access$3200(Lcom/android/server/PowerManagerService;II)V
 
-    .line 1483
+    .line 1484
     const/16 v0, 0xaa7
 
     const/4 v2, 0x2
@@ -121,7 +121,7 @@
 
     invoke-static {v0, v2}, Landroid/util/EventLog;->writeEvent(I[Ljava/lang/Object;)I
 
-    .line 1485
+    .line 1486
     iget-object v0, p0, Lcom/android/server/PowerManagerService$3;->this$0:Lcom/android/server/PowerManagerService;
 
     #getter for: Lcom/android/server/PowerManagerService;->mBroadcastWakeLock:Lcom/android/server/PowerManagerService$UnsynchronizedWakeLock;
@@ -131,14 +131,14 @@
 
     invoke-virtual {v0}, Lcom/android/server/PowerManagerService$UnsynchronizedWakeLock;->release()V
 
-    .line 1487
+    .line 1488
     :cond_49
     monitor-exit v1
 
-    .line 1488
+    .line 1489
     return-void
 
-    .line 1487
+    .line 1488
     :catchall_4b
     move-exception v0
 
