@@ -52,7 +52,7 @@ public class WindowAnimator {
     }
 
     private void performAnimationsLocked() {
-        mForceHiding = false;
+        mForceHiding = 0;
         mDetachedWallpaper = null;
         mWindowAnimationBackground = null;
         mWindowAnimationBackgroundColor = 0;
@@ -177,16 +177,28 @@ _L5:
                         mService.debugLayoutRepeats("updateWindowsAndWallpaperLocked 3", mPendingLayoutChanges);
                         mService.mFocusMayChange = true;
                     }
-                    if(windowstate.isReadyForDisplay() && windowstateanimator1.mAnimationIsEntrance)
-                        mForceHiding = true;
+                    if(windowstate.isReadyForDisplay())
+                        if(flag2) {
+                            if(windowstateanimator1.mAnimationIsEntrance)
+                                mForceHiding = 1;
+                            else
+                                mForceHiding = 3;
+                        } else {
+                            mForceHiding = 2;
+                        }
                 } else
                 if(mPolicy.canBeForceHidden(windowstate, windowstate.mAttrs)) {
                     boolean flag3;
-                    if(mForceHiding && (!windowstateanimator1.isAnimating() || (0x80000 & windowstateanimator1.mAttrFlags) == 0)) {
-                        flag3 = windowstate.hideLw(false, false);
+                    boolean flag4;
+                    if((0x80000 & windowstateanimator1.mAttrFlags) == 0)
+                        flag3 = true;
+                    else
+                        flag3 = false;
+                    if(mForceHiding == 1 && (!windowstateanimator1.isAnimating() || flag3) || mForceHiding == 2 && flag3) {
+                        flag4 = windowstate.hideLw(false, false);
                     } else {
-                        flag3 = windowstate.showLw(false, false);
-                        if(flag3) {
+                        flag4 = windowstate.showLw(false, false);
+                        if(flag4) {
                             if((4 & mBulkUpdateParams) != 0 && windowstate.isVisibleNow()) {
                                 if(arraylist == null)
                                     arraylist = new ArrayList();
@@ -198,7 +210,7 @@ _L5:
                                 mService.mFocusMayChange = true;
                         }
                     }
-                    if(flag3 && (0x100000 & k) != 0) {
+                    if(flag4 && (0x100000 & k) != 0) {
                         mBulkUpdateParams = 2 | mBulkUpdateParams;
                         mPendingLayoutChanges = 4 | mPendingLayoutChanges;
                         mService.debugLayoutRepeats("updateWindowsAndWallpaperLocked 4", mPendingLayoutChanges);
@@ -477,6 +489,10 @@ label0:
         mService.mH.sendMessage(mService.mH.obtainMessage(0x186a3, null));
     }
 
+    private static final int KEYGUARD_ANIMATING_IN = 1;
+    private static final int KEYGUARD_ANIMATING_OUT = 3;
+    private static final int KEYGUARD_NOT_SHOWN = 0;
+    private static final int KEYGUARD_SHOWN = 2;
     private static final String TAG = "WindowAnimator";
     static final int WALLPAPER_ACTION_PENDING = 1;
     int mAdjResult;
@@ -491,7 +507,7 @@ label0:
     DimAnimator mDimAnimator;
     DimAnimator.Parameters mDimParams;
     int mDw;
-    boolean mForceHiding;
+    int mForceHiding;
     int mInnerDh;
     int mInnerDw;
     int mPendingActions;

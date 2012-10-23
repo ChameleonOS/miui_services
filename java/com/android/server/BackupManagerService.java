@@ -1564,7 +1564,7 @@ _L1:
             int i = extractLine(abyte0, 0, as);
             j = Integer.parseInt(as[0]);
             if(j != 1)
-                break MISSING_BLOCK_LABEL_767;
+                break MISSING_BLOCK_LABEL_830;
             k = extractLine(abyte0, i, as);
             s = as[0];
             if(!s.equals(filemetadata.packageName)) goto _L4; else goto _L3
@@ -1611,50 +1611,53 @@ _L10:
             PackageInfo packageinfo = mPackageManager.getPackageInfo(filemetadata.packageName, 64);
             if((0x8000 & packageinfo.applicationInfo.flags) == 0) goto _L14; else goto _L13
 _L13:
-            if(!signaturesMatch(asignature, packageinfo)) goto _L16; else goto _L15
+            if(packageinfo.applicationInfo.uid < 10000 && packageinfo.applicationInfo.backupAgentName == null) goto _L16; else goto _L15
 _L15:
-            if(packageinfo.versionCode < i1) goto _L18; else goto _L17
+            if(!signaturesMatch(asignature, packageinfo)) goto _L18; else goto _L17
 _L17:
+            if(packageinfo.versionCode < i1) goto _L20; else goto _L19
+_L19:
             Slog.i("BackupManagerService", "Sig + version match; taking data");
             restorepolicy = RestorePolicy.ACCEPT;
-_L19:
+_L21:
             if(restorepolicy == RestorePolicy.ACCEPT_IF_APK && !flag)
                 Slog.i("BackupManagerService", (new StringBuilder()).append("Cannot restore package ").append(filemetadata.packageName).append(" without the matching .apk").toString());
-_L20:
+_L22:
             return restorepolicy;
-_L18:
+_L20:
             Slog.d("BackupManagerService", (new StringBuilder()).append("Data version ").append(i1).append(" is newer than installed version ").append(packageinfo.versionCode).append(" - requiring apk").toString());
             restorepolicy = RestorePolicy.ACCEPT_IF_APK;
-              goto _L19
-_L16:
+              goto _L21
+_L18:
             Slog.w("BackupManagerService", (new StringBuilder()).append("Restore manifest signatures do not match installed application for ").append(filemetadata.packageName).toString());
-              goto _L19
+              goto _L21
             android.content.pm.PackageManager.NameNotFoundException namenotfoundexception;
             namenotfoundexception;
             Slog.i("BackupManagerService", (new StringBuilder()).append("Package ").append(filemetadata.packageName).append(" not installed; requiring apk in dataset").toString());
             restorepolicy = RestorePolicy.ACCEPT_IF_APK;
-              goto _L19
-_L14:
+              goto _L21
+_L16:
+            Slog.w("BackupManagerService", (new StringBuilder()).append("Package ").append(filemetadata.packageName).append(" is system level with no agent").toString());
+              goto _L21
             NumberFormatException numberformatexception;
+            numberformatexception;
+            Slog.w("BackupManagerService", (new StringBuilder()).append("Corrupt restore manifest for package ").append(filemetadata.packageName).toString());
+              goto _L22
+_L14:
             Slog.i("BackupManagerService", (new StringBuilder()).append("Restore manifest from ").append(filemetadata.packageName).append(" but allowBackup=false").toString());
-              goto _L19
+              goto _L21
+            IllegalArgumentException illegalargumentexception;
+            illegalargumentexception;
+            Slog.w("BackupManagerService", illegalargumentexception.getMessage());
+              goto _L22
 _L8:
-            try {
-                Slog.i("BackupManagerService", (new StringBuilder()).append("Missing signature on backed-up package ").append(filemetadata.packageName).toString());
-            }
-            // Misplaced declaration of an exception variable
-            catch(NumberFormatException numberformatexception) {
-                Slog.w("BackupManagerService", (new StringBuilder()).append("Corrupt restore manifest for package ").append(filemetadata.packageName).toString());
-            }
-            catch(IllegalArgumentException illegalargumentexception) {
-                Slog.w("BackupManagerService", illegalargumentexception.getMessage());
-            }
-              goto _L20
+            Slog.i("BackupManagerService", (new StringBuilder()).append("Missing signature on backed-up package ").append(filemetadata.packageName).toString());
+              goto _L22
 _L4:
             Slog.i("BackupManagerService", (new StringBuilder()).append("Expected package ").append(filemetadata.packageName).append(" but restore manifest claims ").append(s).toString());
-              goto _L20
+              goto _L22
             Slog.i("BackupManagerService", (new StringBuilder()).append("Unknown restore manifest version ").append(j).append(" for package ").append(filemetadata.packageName).toString());
-              goto _L20
+              goto _L22
         }
 
         int readExactly(InputStream inputstream, byte abyte0[], int i, int j) throws IOException {
@@ -2857,36 +2860,44 @@ _L1:
             if(mAllApps) {
                 obj = mPackageManager.getInstalledPackages(64);
                 if(!mIncludeSystem) {
-                    for(int j1 = 0; j1 < ((List) (obj)).size();)
-                        if((1 & ((PackageInfo)((List) (obj)).get(j1)).applicationInfo.flags) != 0)
-                            ((List) (obj)).remove(j1);
+                    for(int k1 = 0; k1 < ((List) (obj)).size();)
+                        if((1 & ((PackageInfo)((List) (obj)).get(k1)).applicationInfo.flags) != 0)
+                            ((List) (obj)).remove(k1);
                         else
-                            j1++;
+                            k1++;
 
                 }
             }
             if(mPackages != null) {
                 String as[] = mPackages;
-                int l = as.length;
-                int i1 = 0;
-                while(i1 < l)  {
-                    String s1 = as[i1];
+                int i1 = as.length;
+                int j1 = 0;
+                while(j1 < i1)  {
+                    String s1 = as[j1];
                     try {
-                        PackageInfo packageinfo2 = mPackageManager.getPackageInfo(s1, 64);
-                        ((List) (obj)).add(packageinfo2);
+                        PackageInfo packageinfo3 = mPackageManager.getPackageInfo(s1, 64);
+                        ((List) (obj)).add(packageinfo3);
                     }
                     catch(android.content.pm.PackageManager.NameNotFoundException namenotfoundexception1) {
                         Slog.w("BackupManagerService", (new StringBuilder()).append("Unknown package ").append(s1).append(", skipping").toString());
                     }
-                    i1++;
+                    j1++;
                 }
             }
             for(int i = 0; i < ((List) (obj)).size();) {
-                PackageInfo packageinfo1 = (PackageInfo)((List) (obj)).get(i);
-                if((0x8000 & packageinfo1.applicationInfo.flags) == 0 || packageinfo1.packageName.equals("com.android.sharedstoragebackup"))
+                PackageInfo packageinfo2 = (PackageInfo)((List) (obj)).get(i);
+                if((0x8000 & packageinfo2.applicationInfo.flags) == 0 || packageinfo2.packageName.equals("com.android.sharedstoragebackup"))
                     ((List) (obj)).remove(i);
                 else
                     i++;
+            }
+
+            for(int j = 0; j < ((List) (obj)).size();) {
+                PackageInfo packageinfo1 = (PackageInfo)((List) (obj)).get(j);
+                if(packageinfo1.applicationInfo.uid < 10000 && packageinfo1.applicationInfo.backupAgentName == null)
+                    ((List) (obj)).remove(j);
+                else
+                    j++;
             }
 
             fileoutputstream = new FileOutputStream(mOutputFile.getFileDescriptor());
@@ -2901,7 +2912,7 @@ _L3:
             Slog.w("BackupManagerService", "Backup password mismatch; aborting");
             tearDown(null);
             if(true)
-                break MISSING_BLOCK_LABEL_364;
+                break MISSING_BLOCK_LABEL_434;
             throw null;
             mOutputFile.close();
 _L17:
@@ -2940,19 +2951,19 @@ _L12:
             Object obj6;
             fileoutputstream.write(stringbuilder.toString().getBytes("UTF-8"));
             if(false)
-                break MISSING_BLOCK_LABEL_1359;
+                break MISSING_BLOCK_LABEL_1429;
             obj6 = new DeflaterOutputStream(((OutputStream) (obj5)), new Deflater(9), true);
 _L22:
             deflateroutputstream = ((DeflaterOutputStream) (obj6));
             boolean flag1 = mIncludeShared;
             if(!flag1)
-                break MISSING_BLOCK_LABEL_601;
+                break MISSING_BLOCK_LABEL_671;
             packageinfo = mPackageManager.getPackageInfo("com.android.sharedstoragebackup", 0);
             ((List) (obj)).add(packageinfo);
 _L14:
-            int j = ((List) (obj)).size();
-            for(int k = 0; k < j; k++) {
-                packageinfo = (PackageInfo)((List) (obj)).get(k);
+            int k = ((List) (obj)).size();
+            for(int l = 0; l < k; l++) {
+                packageinfo = (PackageInfo)((List) (obj)).get(l);
                 backupOnePackage(packageinfo, deflateroutputstream);
             }
 
@@ -2970,7 +2981,7 @@ _L21:
             Slog.e("BackupManagerService", "Unable to emit archive header", exception8);
             tearDown(null);
             if(true)
-                break MISSING_BLOCK_LABEL_694;
+                break MISSING_BLOCK_LABEL_764;
             throw null;
             mOutputFile.close();
 _L16:
@@ -2994,7 +3005,7 @@ _L16:
             Slog.e("BackupManagerService", "App died during full backup");
             tearDown(packageinfo);
             if(deflateroutputstream == null)
-                break MISSING_BLOCK_LABEL_819;
+                break MISSING_BLOCK_LABEL_889;
             deflateroutputstream.close();
             mOutputFile.close();
 _L19:
@@ -3013,7 +3024,7 @@ _L10:
             finalizeBackup(deflateroutputstream);
             tearDown(packageinfo);
             if(deflateroutputstream == null)
-                break MISSING_BLOCK_LABEL_925;
+                break MISSING_BLOCK_LABEL_995;
             deflateroutputstream.close();
             mOutputFile.close();
 _L15:
@@ -3033,7 +3044,7 @@ _L15:
             Slog.e("BackupManagerService", "Internal exception during full backup", exception3);
             tearDown(packageinfo);
             if(deflateroutputstream == null)
-                break MISSING_BLOCK_LABEL_1038;
+                break MISSING_BLOCK_LABEL_1108;
             deflateroutputstream.close();
             mOutputFile.close();
 _L18:
@@ -3052,7 +3063,7 @@ _L18:
             exception;
             tearDown(packageinfo);
             if(deflateroutputstream == null)
-                break MISSING_BLOCK_LABEL_1140;
+                break MISSING_BLOCK_LABEL_1210;
             deflateroutputstream.close();
             mOutputFile.close();
 _L20:

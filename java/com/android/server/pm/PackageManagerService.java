@@ -6166,7 +6166,7 @@ _L2:
 _L6:
     }
 
-    private void updateExternalMediaStatusInner(boolean flag, boolean flag1) {
+    private void updateExternalMediaStatusInner(boolean flag, boolean flag1, boolean flag2) {
         int ai[];
         HashSet hashset;
         HashMap hashmap;
@@ -6178,7 +6178,7 @@ _L6:
         if(as != null && as.length != 0) goto _L2; else goto _L1
 _L1:
         Log.i("PackageManager", "No secure containers on sdcard");
-_L12:
+_L14:
         Exception exception;
         int j;
         int k;
@@ -6207,7 +6207,7 @@ _L2:
         i = as.length;
         j = 0;
         k = 0;
-_L14:
+_L16:
         if(j >= i) goto _L4; else goto _L3
 _L3:
         s = as[j];
@@ -6226,24 +6226,29 @@ _L8:
         k1 = k;
           goto _L7
 _L9:
-        asecinstallargs = new AsecInstallArgs(s, isForwardLocked(packagesetting));
-        if(((PackageSettingBase) (packagesetting)).codePathString == null || !((PackageSettingBase) (packagesetting)).codePathString.equals(asecinstallargs.getCodePath())) goto _L11; else goto _L10
+        if(!flag2 || flag || isExternal(packagesetting)) goto _L11; else goto _L10
 _L10:
+        k1 = k;
+          goto _L7
+_L11:
+        asecinstallargs = new AsecInstallArgs(s, isForwardLocked(packagesetting));
+        if(((PackageSettingBase) (packagesetting)).codePathString == null || !((PackageSettingBase) (packagesetting)).codePathString.equals(asecinstallargs.getCodePath())) goto _L13; else goto _L12
+_L12:
         hashmap.put(asecinstallargs, ((PackageSettingBase) (packagesetting)).codePathString);
         l1 = packagesetting.appId;
         if(l1 == -1)
-            break MISSING_BLOCK_LABEL_446;
+            break MISSING_BLOCK_LABEL_475;
         k1 = k + 1;
         ai1[k] = l1;
           goto _L7
-_L13:
+_L15:
         hashmap1;
         JVM INSTR monitorexit ;
         throw exception;
-_L11:
+_L13:
         Log.i("PackageManager", (new StringBuilder()).append("Deleting stale container for ").append(s).toString());
         hashset.add(s);
-        break MISSING_BLOCK_LABEL_446;
+        break MISSING_BLOCK_LABEL_475;
 _L4:
         if(k > 0) {
             Arrays.sort(ai1, 0, k);
@@ -6263,16 +6268,16 @@ _L4:
                 i1 = j1;
             }
         }
-          goto _L12
+          goto _L14
         exception;
         k;
-          goto _L13
+          goto _L15
 _L7:
         j++;
         k = k1;
-          goto _L14
+          goto _L16
         exception;
-          goto _L13
+          goto _L15
         k1 = k;
           goto _L7
     }
@@ -9253,7 +9258,7 @@ _L1:
     }
 
     public void scanAvailableAsecs() {
-        updateExternalMediaStatusInner(true, false);
+        updateExternalMediaStatusInner(true, false, false);
     }
 
     void schedulePackageCleaning(String s) {
@@ -9472,7 +9477,7 @@ _L6:
         mHandler.post(new Runnable() {
 
             public void run() {
-                updateExternalMediaStatusInner(mediaStatus, reportStatus);
+                updateExternalMediaStatusInner(mediaStatus, reportStatus, true);
             }
 
             final PackageManagerService this$0;

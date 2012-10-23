@@ -29,12 +29,12 @@
     .parameter
 
     .prologue
-    .line 1499
+    .line 1519
     iput-object p1, p0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
 
     invoke-direct {p0}, Landroid/location/ILocationListener$Stub;-><init>()V
 
-    .line 1501
+    .line 1521
     const/4 v0, 0x0
 
     iput-boolean v0, p0, Lcom/android/server/LocationManagerService$ProximityListener;->isGpsAvailable:Z
@@ -49,7 +49,7 @@
     .parameter "loc"
 
     .prologue
-    .line 1507
+    .line 1527
     invoke-virtual/range {p1 .. p1}, Landroid/location/Location;->getProvider()Ljava/lang/String;
 
     move-result-object v8
@@ -62,14 +62,14 @@
 
     if-eqz v8, :cond_11
 
-    .line 1508
+    .line 1528
     const/4 v8, 0x1
 
     move-object/from16 v0, p0
 
     iput-boolean v8, v0, Lcom/android/server/LocationManagerService$ProximityListener;->isGpsAvailable:Z
 
-    .line 1510
+    .line 1530
     :cond_11
     move-object/from16 v0, p0
 
@@ -89,39 +89,39 @@
 
     if-eqz v8, :cond_24
 
-    .line 1602
+    .line 1626
     :cond_23
     return-void
 
-    .line 1515
+    .line 1535
     :cond_24
     invoke-static {}, Ljava/lang/System;->currentTimeMillis()J
 
     move-result-wide v26
 
-    .line 1516
+    .line 1536
     .local v26, now:J
     invoke-virtual/range {p1 .. p1}, Landroid/location/Location;->getLatitude()D
 
     move-result-wide v2
 
-    .line 1517
+    .line 1537
     .local v2, latitude:D
     invoke-virtual/range {p1 .. p1}, Landroid/location/Location;->getLongitude()D
 
     move-result-wide v4
 
-    .line 1518
+    .line 1538
     .local v4, longitude:D
     invoke-virtual/range {p1 .. p1}, Landroid/location/Location;->getAccuracy()F
 
     move-result v6
 
-    .line 1519
+    .line 1539
     .local v6, accuracy:F
     const/16 v25, 0x0
 
-    .line 1521
+    .line 1541
     .local v25, intentsToRemove:Ljava/util/ArrayList;,"Ljava/util/ArrayList<Landroid/app/PendingIntent;>;"
     move-object/from16 v0, p0
 
@@ -147,7 +147,7 @@
 
     move-result v8
 
-    if-eqz v8, :cond_123
+    if-eqz v8, :cond_130
 
     invoke-interface/range {v23 .. v23}, Ljava/util/Iterator;->next()Ljava/lang/Object;
 
@@ -155,38 +155,52 @@
 
     check-cast v1, Lcom/android/server/LocationManagerService$ProximityAlert;
 
-    .line 1522
+    .line 1542
     .local v1, alert:Lcom/android/server/LocationManagerService$ProximityAlert;
     invoke-virtual {v1}, Lcom/android/server/LocationManagerService$ProximityAlert;->getIntent()Landroid/app/PendingIntent;
 
     move-result-object v7
 
-    .line 1523
+    .line 1543
     .local v7, intent:Landroid/app/PendingIntent;
     invoke-virtual {v1}, Lcom/android/server/LocationManagerService$ProximityAlert;->getExpiration()J
 
     move-result-wide v20
 
-    .line 1525
+    .line 1545
     .local v20, expiration:J
+    move-object/from16 v0, p0
+
+    iget-object v8, v0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
+
+    iget-object v9, v1, Lcom/android/server/LocationManagerService$ProximityAlert;->mPackageName:Ljava/lang/String;
+
+    #calls: Lcom/android/server/LocationManagerService;->inBlacklist(Ljava/lang/String;)Z
+    invoke-static {v8, v9}, Lcom/android/server/LocationManagerService;->access$1600(Lcom/android/server/LocationManagerService;Ljava/lang/String;)Z
+
+    move-result v8
+
+    if-nez v8, :cond_46
+
+    .line 1549
     const-wide/16 v8, -0x1
 
     cmp-long v8, v20, v8
 
-    if-eqz v8, :cond_64
+    if-eqz v8, :cond_70
 
     cmp-long v8, v26, v20
 
-    if-gtz v8, :cond_111
+    if-gtz v8, :cond_11e
 
-    .line 1526
-    :cond_64
+    .line 1550
+    :cond_70
     move-object/from16 v0, p0
 
     iget-object v8, v0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
 
     #getter for: Lcom/android/server/LocationManagerService;->mProximitiesEntered:Ljava/util/HashSet;
-    invoke-static {v8}, Lcom/android/server/LocationManagerService;->access$1600(Lcom/android/server/LocationManagerService;)Ljava/util/HashSet;
+    invoke-static {v8}, Lcom/android/server/LocationManagerService;->access$1700(Lcom/android/server/LocationManagerService;)Ljava/util/HashSet;
 
     move-result-object v8
 
@@ -194,36 +208,36 @@
 
     move-result v19
 
-    .line 1527
+    .line 1551
     .local v19, entered:Z
     invoke-virtual/range {v1 .. v6}, Lcom/android/server/LocationManagerService$ProximityAlert;->isInProximity(DDF)Z
 
     move-result v24
 
-    .line 1529
+    .line 1553
     .local v24, inProximity:Z
-    if-nez v19, :cond_c1
+    if-nez v19, :cond_ce
 
-    if-eqz v24, :cond_c1
+    if-eqz v24, :cond_ce
 
-    .line 1533
+    .line 1557
     move-object/from16 v0, p0
 
     iget-object v8, v0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
 
     #getter for: Lcom/android/server/LocationManagerService;->mProximitiesEntered:Ljava/util/HashSet;
-    invoke-static {v8}, Lcom/android/server/LocationManagerService;->access$1600(Lcom/android/server/LocationManagerService;)Ljava/util/HashSet;
+    invoke-static {v8}, Lcom/android/server/LocationManagerService;->access$1700(Lcom/android/server/LocationManagerService;)Ljava/util/HashSet;
 
     move-result-object v8
 
     invoke-virtual {v8, v1}, Ljava/util/HashSet;->add(Ljava/lang/Object;)Z
 
-    .line 1534
+    .line 1558
     new-instance v10, Landroid/content/Intent;
 
     invoke-direct {v10}, Landroid/content/Intent;-><init>()V
 
-    .line 1535
+    .line 1559
     .local v10, enteredIntent:Landroid/content/Intent;
     const-string v8, "entering"
 
@@ -231,14 +245,14 @@
 
     invoke-virtual {v10, v8, v9}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Z)Landroid/content/Intent;
 
-    .line 1537
-    :try_start_8e
+    .line 1561
+    :try_start_9a
     monitor-enter p0
-    :try_end_8f
-    .catch Landroid/app/PendingIntent$CanceledException; {:try_start_8e .. :try_end_8f} :catch_b3
+    :try_end_9b
+    .catch Landroid/app/PendingIntent$CanceledException; {:try_start_9a .. :try_end_9b} :catch_bf
 
-    .line 1540
-    :try_start_8f
+    .line 1564
+    :try_start_9b
     move-object/from16 v0, p0
 
     iget-object v8, v0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
@@ -265,7 +279,7 @@
 
     invoke-virtual/range {v7 .. v13}, Landroid/app/PendingIntent;->send(Landroid/content/Context;ILandroid/content/Intent;Landroid/app/PendingIntent$OnFinished;Landroid/os/Handler;Ljava/lang/String;)V
 
-    .line 1544
+    .line 1568
     move-object/from16 v0, p0
 
     iget-object v8, v0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
@@ -273,72 +287,72 @@
     #calls: Lcom/android/server/LocationManagerService;->incrementPendingBroadcasts()V
     invoke-static {v8}, Lcom/android/server/LocationManagerService;->access$600(Lcom/android/server/LocationManagerService;)V
 
-    .line 1545
+    .line 1569
     monitor-exit p0
 
     goto :goto_46
 
-    :catchall_b0
+    :catchall_bc
     move-exception v8
 
     monitor-exit p0
-    :try_end_b2
-    .catchall {:try_start_8f .. :try_end_b2} :catchall_b0
+    :try_end_be
+    .catchall {:try_start_9b .. :try_end_be} :catchall_bc
 
-    :try_start_b2
+    :try_start_be
     throw v8
-    :try_end_b3
-    .catch Landroid/app/PendingIntent$CanceledException; {:try_start_b2 .. :try_end_b3} :catch_b3
+    :try_end_bf
+    .catch Landroid/app/PendingIntent$CanceledException; {:try_start_be .. :try_end_bf} :catch_bf
 
-    .line 1546
-    :catch_b3
+    .line 1570
+    :catch_bf
     move-exception v18
 
-    .line 1550
+    .line 1574
     .local v18, e:Landroid/app/PendingIntent$CanceledException;
-    if-nez v25, :cond_bb
+    if-nez v25, :cond_c7
 
-    .line 1551
+    .line 1575
     new-instance v25, Ljava/util/ArrayList;
 
     .end local v25           #intentsToRemove:Ljava/util/ArrayList;,"Ljava/util/ArrayList<Landroid/app/PendingIntent;>;"
     invoke-direct/range {v25 .. v25}, Ljava/util/ArrayList;-><init>()V
 
-    .line 1553
+    .line 1577
     .restart local v25       #intentsToRemove:Ljava/util/ArrayList;,"Ljava/util/ArrayList<Landroid/app/PendingIntent;>;"
-    :cond_bb
+    :cond_c7
     move-object/from16 v0, v25
 
     invoke-virtual {v0, v7}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z
 
-    goto :goto_46
+    goto/16 :goto_46
 
-    .line 1555
+    .line 1579
     .end local v10           #enteredIntent:Landroid/content/Intent;
     .end local v18           #e:Landroid/app/PendingIntent$CanceledException;
-    :cond_c1
+    :cond_ce
     if-eqz v19, :cond_46
 
     if-nez v24, :cond_46
 
-    .line 1559
+    .line 1583
     move-object/from16 v0, p0
 
     iget-object v8, v0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
 
     #getter for: Lcom/android/server/LocationManagerService;->mProximitiesEntered:Ljava/util/HashSet;
-    invoke-static {v8}, Lcom/android/server/LocationManagerService;->access$1600(Lcom/android/server/LocationManagerService;)Ljava/util/HashSet;
+    invoke-static {v8}, Lcom/android/server/LocationManagerService;->access$1700(Lcom/android/server/LocationManagerService;)Ljava/util/HashSet;
 
     move-result-object v8
 
     invoke-virtual {v8, v1}, Ljava/util/HashSet;->remove(Ljava/lang/Object;)Z
 
-    .line 1560
+    .line 1584
     new-instance v14, Landroid/content/Intent;
 
     invoke-direct {v14}, Landroid/content/Intent;-><init>()V
 
-    .line 1561
+    .line 1585
     .local v14, exitedIntent:Landroid/content/Intent;
     const-string v8, "entering"
 
@@ -346,14 +360,14 @@
 
     invoke-virtual {v14, v8, v9}, Landroid/content/Intent;->putExtra(Ljava/lang/String;Z)Landroid/content/Intent;
 
-    .line 1563
-    :try_start_db
+    .line 1587
+    :try_start_e8
     monitor-enter p0
-    :try_end_dc
-    .catch Landroid/app/PendingIntent$CanceledException; {:try_start_db .. :try_end_dc} :catch_102
+    :try_end_e9
+    .catch Landroid/app/PendingIntent$CanceledException; {:try_start_e8 .. :try_end_e9} :catch_10f
 
-    .line 1566
-    :try_start_dc
+    .line 1590
+    :try_start_e9
     move-object/from16 v0, p0
 
     iget-object v8, v0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
@@ -382,7 +396,7 @@
 
     invoke-virtual/range {v11 .. v17}, Landroid/app/PendingIntent;->send(Landroid/content/Context;ILandroid/content/Intent;Landroid/app/PendingIntent$OnFinished;Landroid/os/Handler;Ljava/lang/String;)V
 
-    .line 1570
+    .line 1594
     move-object/from16 v0, p0
 
     iget-object v8, v0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
@@ -390,63 +404,63 @@
     #calls: Lcom/android/server/LocationManagerService;->incrementPendingBroadcasts()V
     invoke-static {v8}, Lcom/android/server/LocationManagerService;->access$600(Lcom/android/server/LocationManagerService;)V
 
-    .line 1571
+    .line 1595
     monitor-exit p0
 
     goto/16 :goto_46
 
-    :catchall_ff
+    :catchall_10c
     move-exception v8
 
     monitor-exit p0
-    :try_end_101
-    .catchall {:try_start_dc .. :try_end_101} :catchall_ff
+    :try_end_10e
+    .catchall {:try_start_e9 .. :try_end_10e} :catchall_10c
 
-    :try_start_101
+    :try_start_10e
     throw v8
-    :try_end_102
-    .catch Landroid/app/PendingIntent$CanceledException; {:try_start_101 .. :try_end_102} :catch_102
+    :try_end_10f
+    .catch Landroid/app/PendingIntent$CanceledException; {:try_start_10e .. :try_end_10f} :catch_10f
 
-    .line 1572
-    :catch_102
+    .line 1596
+    :catch_10f
     move-exception v18
 
-    .line 1576
+    .line 1600
     .restart local v18       #e:Landroid/app/PendingIntent$CanceledException;
-    if-nez v25, :cond_10a
+    if-nez v25, :cond_117
 
-    .line 1577
+    .line 1601
     new-instance v25, Ljava/util/ArrayList;
 
     .end local v25           #intentsToRemove:Ljava/util/ArrayList;,"Ljava/util/ArrayList<Landroid/app/PendingIntent;>;"
     invoke-direct/range {v25 .. v25}, Ljava/util/ArrayList;-><init>()V
 
-    .line 1579
+    .line 1603
     .restart local v25       #intentsToRemove:Ljava/util/ArrayList;,"Ljava/util/ArrayList<Landroid/app/PendingIntent;>;"
-    :cond_10a
+    :cond_117
     move-object/from16 v0, v25
 
     invoke-virtual {v0, v7}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z
 
     goto/16 :goto_46
 
-    .line 1587
+    .line 1611
     .end local v14           #exitedIntent:Landroid/content/Intent;
     .end local v18           #e:Landroid/app/PendingIntent$CanceledException;
     .end local v19           #entered:Z
     .end local v24           #inProximity:Z
-    :cond_111
-    if-nez v25, :cond_118
+    :cond_11e
+    if-nez v25, :cond_125
 
-    .line 1588
+    .line 1612
     new-instance v25, Ljava/util/ArrayList;
 
     .end local v25           #intentsToRemove:Ljava/util/ArrayList;,"Ljava/util/ArrayList<Landroid/app/PendingIntent;>;"
     invoke-direct/range {v25 .. v25}, Ljava/util/ArrayList;-><init>()V
 
-    .line 1590
+    .line 1614
     .restart local v25       #intentsToRemove:Ljava/util/ArrayList;,"Ljava/util/ArrayList<Landroid/app/PendingIntent;>;"
-    :cond_118
+    :cond_125
     invoke-virtual {v1}, Lcom/android/server/LocationManagerService$ProximityAlert;->getIntent()Landroid/app/PendingIntent;
 
     move-result-object v8
@@ -457,19 +471,19 @@
 
     goto/16 :goto_46
 
-    .line 1595
+    .line 1619
     .end local v1           #alert:Lcom/android/server/LocationManagerService$ProximityAlert;
     .end local v7           #intent:Landroid/app/PendingIntent;
     .end local v20           #expiration:J
-    :cond_123
+    :cond_130
     if-eqz v25, :cond_23
 
-    .line 1596
+    .line 1620
     invoke-virtual/range {v25 .. v25}, Ljava/util/ArrayList;->iterator()Ljava/util/Iterator;
 
     move-result-object v23
 
-    :goto_129
+    :goto_136
     invoke-interface/range {v23 .. v23}, Ljava/util/Iterator;->hasNext()Z
 
     move-result v8
@@ -482,7 +496,7 @@
 
     check-cast v22, Landroid/app/PendingIntent;
 
-    .line 1597
+    .line 1621
     .local v22, i:Landroid/app/PendingIntent;
     move-object/from16 v0, p0
 
@@ -501,20 +515,20 @@
 
     check-cast v1, Lcom/android/server/LocationManagerService$ProximityAlert;
 
-    .line 1598
+    .line 1622
     .restart local v1       #alert:Lcom/android/server/LocationManagerService$ProximityAlert;
     move-object/from16 v0, p0
 
     iget-object v8, v0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
 
     #getter for: Lcom/android/server/LocationManagerService;->mProximitiesEntered:Ljava/util/HashSet;
-    invoke-static {v8}, Lcom/android/server/LocationManagerService;->access$1600(Lcom/android/server/LocationManagerService;)Ljava/util/HashSet;
+    invoke-static {v8}, Lcom/android/server/LocationManagerService;->access$1700(Lcom/android/server/LocationManagerService;)Ljava/util/HashSet;
 
     move-result-object v8
 
     invoke-virtual {v8, v1}, Ljava/util/HashSet;->remove(Ljava/lang/Object;)Z
 
-    .line 1599
+    .line 1623
     move-object/from16 v0, p0
 
     iget-object v8, v0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
@@ -522,9 +536,9 @@
     move-object/from16 v0, v22
 
     #calls: Lcom/android/server/LocationManagerService;->removeProximityAlertLocked(Landroid/app/PendingIntent;)V
-    invoke-static {v8, v0}, Lcom/android/server/LocationManagerService;->access$1700(Lcom/android/server/LocationManagerService;Landroid/app/PendingIntent;)V
+    invoke-static {v8, v0}, Lcom/android/server/LocationManagerService;->access$1800(Lcom/android/server/LocationManagerService;Landroid/app/PendingIntent;)V
 
-    goto :goto_129
+    goto :goto_136
 .end method
 
 .method public onProviderDisabled(Ljava/lang/String;)V
@@ -532,7 +546,7 @@
     .parameter "provider"
 
     .prologue
-    .line 1606
+    .line 1630
     const-string v0, "gps"
 
     invoke-virtual {p1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
@@ -541,12 +555,12 @@
 
     if-eqz v0, :cond_b
 
-    .line 1607
+    .line 1631
     const/4 v0, 0x0
 
     iput-boolean v0, p0, Lcom/android/server/LocationManagerService$ProximityListener;->isGpsAvailable:Z
 
-    .line 1609
+    .line 1633
     :cond_b
     return-void
 .end method
@@ -556,7 +570,7 @@
     .parameter "provider"
 
     .prologue
-    .line 1614
+    .line 1638
     return-void
 .end method
 
@@ -569,23 +583,23 @@
     .parameter "resultExtras"
 
     .prologue
-    .line 1628
+    .line 1652
     monitor-enter p0
 
-    .line 1629
+    .line 1653
     :try_start_1
     iget-object v0, p0, Lcom/android/server/LocationManagerService$ProximityListener;->this$0:Lcom/android/server/LocationManagerService;
 
     #calls: Lcom/android/server/LocationManagerService;->decrementPendingBroadcasts()V
     invoke-static {v0}, Lcom/android/server/LocationManagerService;->access$500(Lcom/android/server/LocationManagerService;)V
 
-    .line 1630
+    .line 1654
     monitor-exit p0
 
-    .line 1631
+    .line 1655
     return-void
 
-    .line 1630
+    .line 1654
     :catchall_8
     move-exception v0
 
@@ -603,7 +617,7 @@
     .parameter "extras"
 
     .prologue
-    .line 1618
+    .line 1642
     const-string v0, "gps"
 
     invoke-virtual {p1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
@@ -616,12 +630,12 @@
 
     if-eq p2, v0, :cond_e
 
-    .line 1620
+    .line 1644
     const/4 v0, 0x0
 
     iput-boolean v0, p0, Lcom/android/server/LocationManagerService$ProximityListener;->isGpsAvailable:Z
 
-    .line 1622
+    .line 1646
     :cond_e
     return-void
 .end method

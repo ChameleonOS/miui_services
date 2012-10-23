@@ -1588,7 +1588,9 @@ _L1:
         return;
 _L2:
         int j;
-        int i = remoteviews.estimateMemoryUsage();
+        int i = 0;
+        if(remoteviews != null)
+            i = remoteviews.estimateMemoryUsage();
         if(i > mMaxWidgetBitmapMemory)
             throw new IllegalArgumentException((new StringBuilder()).append("RemoteViews for widget update exceeds maximum bitmap memory usage (used: ").append(i).append(", max: ").append(mMaxWidgetBitmapMemory).append(") The total memory cannot exceed that required to").append(" fill the device's screen once.").toString());
         if(ai.length == 0)

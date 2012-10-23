@@ -67,6 +67,7 @@ class ServerThread extends Thread {
 
     public void run() {
         int i;
+        AccountManagerService accountmanagerservice;
         MiuiLightsService miuilightsservice;
         VibratorService vibratorservice;
         NetworkStatsService networkstatsservice;
@@ -122,6 +123,7 @@ class ServerThread extends Thread {
         VibratorService vibratorservice1;
         boolean flag4;
         boolean flag5;
+        AccountManagerService accountmanagerservice1;
         EventLog.writeEvent(3010, SystemClock.uptimeMillis());
         Looper.prepare();
         Process.setThreadPriority(-2);
@@ -131,6 +133,7 @@ class ServerThread extends Thread {
         String s1;
         if(s != null && s.length() > 0) {
             final boolean headless;
+            ContentService contentservice;
             NetworkManagementService networkmanagementservice;
             IPackageManager ipackagemanager;
             WindowManagerService windowmanagerservice;
@@ -191,6 +194,8 @@ class ServerThread extends Thread {
         else
             i = Integer.parseInt(s1);
         headless = "1".equals(SystemProperties.get("ro.config.headless", "0"));
+        accountmanagerservice = null;
+        contentservice = null;
         miuilightsservice = null;
         vibratorservice = null;
         networkmanagementservice = null;
@@ -230,28 +235,26 @@ _L1:
         Slog.w("SystemServer", "Detected encryption in progress - only parsing core apps");
         flag = true;
           goto _L3
-_L67:
+_L69:
         ipackagemanager1 = PackageManagerService.main(context, flag1, flag);
         ipackagemanager = ipackagemanager1;
         flag2 = false;
         flag6 = ipackagemanager.isFirstBoot();
         flag2 = flag6;
-_L44:
+_L45:
         ActivityManagerService.setSystemProcess();
         mContentResolver = context.getContentResolver();
-        try {
-            Slog.i("SystemServer", "Account Manager");
-            ServiceManager.addService("account", new AccountManagerService(context));
-        }
-        catch(Throwable throwable47) {
-            Slog.e("SystemServer", "Failure starting Account Manager", throwable47);
-        }
+        Slog.i("SystemServer", "Account Manager");
+        accountmanagerservice1 = new AccountManagerService(context);
+        ServiceManager.addService("account", accountmanagerservice1);
+        accountmanagerservice = accountmanagerservice1;
+_L15:
         Slog.i("SystemServer", "Content Manager");
         if(i != 1) goto _L5; else goto _L4
 _L4:
         flag3 = true;
-_L16:
-        ContentService.main(context, flag3);
+_L17:
+        contentservice = ContentService.main(context, flag3);
         Slog.i("SystemServer", "System Content Providers");
         ActivityManagerService.installSystemProviders();
         Slog.i("SystemServer", "Lights Service");
@@ -273,7 +276,7 @@ _L16:
 _L6:
         flag4 = true;
           goto _L8
-_L17:
+_L18:
         windowmanagerservice = WindowManagerService.main(context, powermanagerservice, flag4, flag5, flag);
         ServiceManager.addService("window", windowmanagerservice);
         inputmanagerservice = windowmanagerservice.getInputManagerService();
@@ -282,10 +285,10 @@ _L17:
         if(!SystemProperties.get("ro.kernel.qemu").equals("1")) goto _L10; else goto _L9
 _L9:
         Slog.i("SystemServer", "No Bluetooh Service (emulator)");
-_L18:
+_L19:
         vibratorservice = vibratorservice1;
         miuilightsservice = miuilightsservice1;
-_L15:
+_L16:
         devicepolicymanagerservice = null;
         statusbarmanagerservice = null;
         inputmethodmanagerservice = null;
@@ -303,16 +306,17 @@ _L11:
         inputmethodmanagerservice1 = new InputMethodManagerService(context, windowmanagerservice);
         ServiceManager.addService("input_method", inputmethodmanagerservice1);
         inputmethodmanagerservice = inputmethodmanagerservice1;
-_L19:
+_L20:
         RuntimeException runtimeexception;
-        Throwable throwable45;
+        Throwable throwable47;
+        Throwable throwable49;
         BluetoothService bluetoothservice1;
         try {
             Slog.i("SystemServer", "Accessibility Manager");
             ServiceManager.addService("accessibility", new AccessibilityManagerService(context));
         }
-        catch(Throwable throwable46) {
-            reportWtf("starting Accessibility Manager", throwable46);
+        catch(Throwable throwable48) {
+            reportWtf("starting Accessibility Manager", throwable48);
         }
 _L12:
         try {
@@ -370,6 +374,8 @@ _L12:
         Throwable throwable42;
         Throwable throwable43;
         Throwable throwable44;
+        Throwable throwable45;
+        Throwable throwable46;
         RemoteException remoteexception1;
         try {
             ActivityManagerNative.getDefault().showBootMessage(context.getResources().getText(0x10403e5), false);
@@ -379,27 +385,27 @@ _L12:
 _L13:
         mountservice = null;
         if("0".equals(SystemProperties.get("system_init.startmountservice")))
-            break MISSING_BLOCK_LABEL_851;
+            break MISSING_BLOCK_LABEL_866;
         Slog.i("SystemServer", "Mount Service");
         mountservice1 = new MountService(context);
         ServiceManager.addService("mount", mountservice1);
         mountservice = mountservice1;
-_L20:
+_L21:
         Slog.i("SystemServer", "LockSettingsService");
         locksettingsservice1 = new LockSettingsService(context);
         ServiceManager.addService("lock_settings", locksettingsservice1);
         locksettingsservice = locksettingsservice1;
-_L21:
+_L22:
         Slog.i("SystemServer", "Device Policy");
         devicepolicymanagerservice1 = new DevicePolicyManagerService(context);
         ServiceManager.addService("device_policy", devicepolicymanagerservice1);
         devicepolicymanagerservice = devicepolicymanagerservice1;
-_L22:
+_L23:
         Slog.i("SystemServer", "Status Bar");
         statusbarmanagerservice1 = new StatusBarManagerService(context, windowmanagerservice);
         ServiceManager.addService("statusbar", statusbarmanagerservice1);
         statusbarmanagerservice = statusbarmanagerservice1;
-_L23:
+_L24:
         BluetoothA2dpService bluetootha2dpservice;
         try {
             Slog.i("SystemServer", "Clipboard Service");
@@ -422,27 +428,27 @@ _L23:
         textservicesmanagerservice1 = new TextServicesManagerService(context);
         ServiceManager.addService("textservices", textservicesmanagerservice1);
         textservicesmanagerservice = textservicesmanagerservice1;
-_L24:
+_L25:
         Slog.i("SystemServer", "NetworkStats Service");
         networkstatsservice1 = new NetworkStatsService(context, networkmanagementservice, alarmmanagerservice);
         ServiceManager.addService("netstats", networkstatsservice1);
         networkstatsservice = networkstatsservice1;
-_L25:
+_L26:
         Slog.i("SystemServer", "NetworkPolicy Service");
         activitymanagerservice = ActivityManagerService.self();
         miuinetworkpolicymanagerservice = new MiuiNetworkPolicyManagerService(context, activitymanagerservice, powermanagerservice, networkstatsservice, networkmanagementservice);
         ServiceManager.addService("netpolicy", miuinetworkpolicymanagerservice);
-_L26:
+_L27:
         Slog.i("SystemServer", "Wi-Fi P2pService");
         wifip2pservice1 = new WifiP2pService(context);
         ServiceManager.addService("wifip2p", wifip2pservice1);
         wifip2pservice = wifip2pservice1;
-_L27:
+_L28:
         Slog.i("SystemServer", "Wi-Fi Service");
         wifiservice1 = new WifiService(context);
         ServiceManager.addService("wifi", wifiservice1);
         wifiservice = wifiservice1;
-_L28:
+_L29:
         Slog.i("SystemServer", "Connectivity Service");
         connectivityservice1 = new ConnectivityService(context, networkmanagementservice, networkstatsservice, miuinetworkpolicymanagerservice);
         ServiceManager.addService("connectivity", connectivityservice1);
@@ -451,7 +457,7 @@ _L28:
         wifiservice.checkAndStartWifi();
         wifip2pservice.connectivityServiceReady();
         connectivityservice = connectivityservice1;
-_L29:
+_L30:
         try {
             Slog.i("SystemServer", "Network Service Discovery Service");
             ServiceManager.addService("servicediscovery", NsdService.create(context));
@@ -464,7 +470,7 @@ _L29:
         throttleservice1 = new ThrottleService(context);
         ServiceManager.addService("throttle", throttleservice1);
         throttleservice = throttleservice1;
-_L30:
+_L31:
         try {
             Slog.i("SystemServer", "UpdateLock Service");
             ServiceManager.addService("updatelock", new UpdateLockService(context));
@@ -475,12 +481,28 @@ _L30:
         }
         if(mountservice != null)
             mountservice.waitForAsecScan();
+        if(accountmanagerservice != null)
+            try {
+                accountmanagerservice.systemReady();
+            }
+            // Misplaced declaration of an exception variable
+            catch(Throwable throwable45) {
+                reportWtf("making Account Manager Service ready", throwable45);
+            }
+        if(contentservice != null)
+            try {
+                contentservice.systemReady();
+            }
+            // Misplaced declaration of an exception variable
+            catch(Throwable throwable44) {
+                reportWtf("making Content Service ready", throwable44);
+            }
         Slog.i("SystemServer", "Notification Manager");
         notificationmanagerservice1 = new NotificationManagerService(context, statusbarmanagerservice, miuilightsservice);
         ServiceManager.addService("notification", notificationmanagerservice1);
         miuinetworkpolicymanagerservice.bindNotificationManager(notificationmanagerservice1);
         notificationmanagerservice = notificationmanagerservice1;
-_L31:
+_L32:
         try {
             Slog.i("SystemServer", "Device Storage Monitor");
             ServiceManager.addService("devicestoragemonitor", new DeviceStorageMonitorService(context));
@@ -493,12 +515,12 @@ _L31:
         locationmanagerservice1 = new LocationManagerService(context);
         ServiceManager.addService("location", locationmanagerservice1);
         locationmanagerservice = locationmanagerservice1;
-_L32:
+_L33:
         Slog.i("SystemServer", "Country Detector");
         countrydetectorservice1 = new CountryDetectorService(context);
         ServiceManager.addService("country_detector", countrydetectorservice1);
         countrydetectorservice = countrydetectorservice1;
-_L33:
+_L34:
         try {
             Slog.i("SystemServer", "Search Service");
             ServiceManager.addService("search", new SearchManagerService(context));
@@ -516,14 +538,14 @@ _L33:
             reportWtf("starting DropBoxManagerService", throwable27);
         }
         if(!context.getResources().getBoolean(0x1110024))
-            break MISSING_BLOCK_LABEL_1558;
+            break MISSING_BLOCK_LABEL_1593;
         Slog.i("SystemServer", "Wallpaper Service");
         if(headless)
-            break MISSING_BLOCK_LABEL_1558;
+            break MISSING_BLOCK_LABEL_1593;
         wallpapermanagerservice1 = new WallpaperManagerService(context);
         ServiceManager.addService("wallpaper", wallpapermanagerservice1);
         wallpapermanagerservice = wallpapermanagerservice1;
-_L34:
+_L35:
         if(!"0".equals(SystemProperties.get("system_init.startaudioservice")))
             try {
                 Slog.i("SystemServer", "Audio Service");
@@ -536,7 +558,7 @@ _L34:
         Slog.i("SystemServer", "Dock Observer");
         dockobserver1 = new DockObserver(context, powermanagerservice);
         dockobserver = dockobserver1;
-_L35:
+_L36:
         try {
             Slog.i("SystemServer", "Wired Accessory Observer");
             new WiredAccessoryObserver(context);
@@ -549,15 +571,15 @@ _L35:
         usbservice1 = new UsbService(context);
         ServiceManager.addService("usb", usbservice1);
         usbservice = usbservice1;
-_L36:
+_L37:
         Slog.i("SystemServer", "Serial Service");
         serialservice = new SerialService(context);
         ServiceManager.addService("serial", serialservice);
-_L37:
+_L38:
         Slog.i("SystemServer", "UI Mode Manager Service");
         uimodemanagerservice1 = new UiModeManagerService(context);
         uimodemanagerservice = uimodemanagerservice1;
-_L38:
+_L39:
         try {
             Slog.i("SystemServer", "Backup Service");
             ServiceManager.addService("backup", new BackupManagerService(context));
@@ -570,11 +592,11 @@ _L38:
         appwidgetservice1 = new AppWidgetService(context);
         ServiceManager.addService("appwidget", appwidgetservice1);
         appwidgetservice = appwidgetservice1;
-_L39:
+_L40:
         Slog.i("SystemServer", "Recognition Service");
         recognitionmanagerservice1 = new RecognitionManagerService(context);
         recognitionmanagerservice = recognitionmanagerservice1;
-_L40:
+_L41:
         try {
             Slog.i("SystemServer", "DiskStats Service");
             ServiceManager.addService("diskstats", new DiskStatsService(context));
@@ -594,12 +616,12 @@ _L40:
         Slog.i("SystemServer", "NetworkTimeUpdateService");
         networktimeupdateservice1 = new NetworkTimeUpdateService(context);
         networktimeupdateservice = networktimeupdateservice1;
-_L41:
+_L42:
         Slog.i("SystemServer", "CommonTimeManagementService");
         commontimemanagementservice1 = new CommonTimeManagementService(context);
         ServiceManager.addService("commontime_management", commontimemanagementservice1);
         commontimemanagementservice = commontimemanagementservice1;
-_L42:
+_L43:
         try {
             Slog.i("SystemServer", "CertBlacklister");
             new CertBlacklister(context);
@@ -609,12 +631,12 @@ _L42:
             reportWtf("starting CertBlacklister", throwable40);
         }
         if(!context.getResources().getBoolean(0x1110038))
-            break MISSING_BLOCK_LABEL_1974;
+            break MISSING_BLOCK_LABEL_2009;
         Slog.i("SystemServer", "Dreams Service");
         dreammanagerservice1 = new DreamManagerService(context);
         ServiceManager.addService("dreams", dreammanagerservice1);
         dreammanagerservice = dreammanagerservice1;
-_L43:
+_L44:
         safeMode = windowmanagerservice.detectSafeMode();
         if(safeMode) {
             ActivityManagerService.self().enterSafeMode();
@@ -707,143 +729,143 @@ _L43:
                     if(batteryF != null)
                         batteryF.systemReady();
                 }
-                catch(Throwable throwable48) {
-                    reportWtf("making Battery Service ready", throwable48);
+                catch(Throwable throwable50) {
+                    reportWtf("making Battery Service ready", throwable50);
                 }
                 try {
                     if(networkManagementF != null)
                         networkManagementF.systemReady();
                 }
-                catch(Throwable throwable49) {
-                    reportWtf("making Network Managment Service ready", throwable49);
+                catch(Throwable throwable51) {
+                    reportWtf("making Network Managment Service ready", throwable51);
                 }
                 try {
                     if(networkStatsF != null)
                         networkStatsF.systemReady();
                 }
-                catch(Throwable throwable50) {
-                    reportWtf("making Network Stats Service ready", throwable50);
+                catch(Throwable throwable52) {
+                    reportWtf("making Network Stats Service ready", throwable52);
                 }
                 try {
                     if(networkPolicyF != null)
                         networkPolicyF.systemReady();
                 }
-                catch(Throwable throwable51) {
-                    reportWtf("making Network Policy Service ready", throwable51);
+                catch(Throwable throwable53) {
+                    reportWtf("making Network Policy Service ready", throwable53);
                 }
                 try {
                     if(connectivityF != null)
                         connectivityF.systemReady();
                 }
-                catch(Throwable throwable52) {
-                    reportWtf("making Connectivity Service ready", throwable52);
+                catch(Throwable throwable54) {
+                    reportWtf("making Connectivity Service ready", throwable54);
                 }
                 try {
                     if(dockF != null)
                         dockF.systemReady();
                 }
-                catch(Throwable throwable53) {
-                    reportWtf("making Dock Service ready", throwable53);
+                catch(Throwable throwable55) {
+                    reportWtf("making Dock Service ready", throwable55);
                 }
                 try {
                     if(usbF != null)
                         usbF.systemReady();
                 }
-                catch(Throwable throwable54) {
-                    reportWtf("making USB Service ready", throwable54);
+                catch(Throwable throwable56) {
+                    reportWtf("making USB Service ready", throwable56);
                 }
                 try {
                     if(uiModeF != null)
                         uiModeF.systemReady();
                 }
-                catch(Throwable throwable55) {
-                    reportWtf("making UI Mode Service ready", throwable55);
+                catch(Throwable throwable57) {
+                    reportWtf("making UI Mode Service ready", throwable57);
                 }
                 try {
                     if(recognitionF != null)
                         recognitionF.systemReady();
                 }
-                catch(Throwable throwable56) {
-                    reportWtf("making Recognition Service ready", throwable56);
+                catch(Throwable throwable58) {
+                    reportWtf("making Recognition Service ready", throwable58);
                 }
                 Watchdog.getInstance().start();
                 try {
                     if(appWidgetF != null)
                         appWidgetF.systemReady(safeMode);
                 }
-                catch(Throwable throwable57) {
-                    reportWtf("making App Widget Service ready", throwable57);
+                catch(Throwable throwable59) {
+                    reportWtf("making App Widget Service ready", throwable59);
                 }
                 try {
                     if(wallpaperF != null)
                         wallpaperF.systemReady();
                 }
-                catch(Throwable throwable58) {
-                    reportWtf("making Wallpaper Service ready", throwable58);
+                catch(Throwable throwable60) {
+                    reportWtf("making Wallpaper Service ready", throwable60);
                 }
                 try {
                     if(immF != null)
                         immF.systemReady(statusBarF);
                 }
-                catch(Throwable throwable59) {
-                    reportWtf("making Input Method Service ready", throwable59);
+                catch(Throwable throwable61) {
+                    reportWtf("making Input Method Service ready", throwable61);
                 }
                 try {
                     if(locationF != null)
                         locationF.systemReady();
                 }
-                catch(Throwable throwable60) {
-                    reportWtf("making Location Service ready", throwable60);
+                catch(Throwable throwable62) {
+                    reportWtf("making Location Service ready", throwable62);
                 }
                 try {
                     if(countryDetectorF != null)
                         countryDetectorF.systemReady();
                 }
-                catch(Throwable throwable61) {
-                    reportWtf("making Country Detector Service ready", throwable61);
+                catch(Throwable throwable63) {
+                    reportWtf("making Country Detector Service ready", throwable63);
                 }
                 try {
                     if(throttleF != null)
                         throttleF.systemReady();
                 }
-                catch(Throwable throwable62) {
-                    reportWtf("making Throttle Service ready", throwable62);
+                catch(Throwable throwable64) {
+                    reportWtf("making Throttle Service ready", throwable64);
                 }
                 try {
                     if(networkTimeUpdaterF != null)
                         networkTimeUpdaterF.systemReady();
                 }
-                catch(Throwable throwable63) {
-                    reportWtf("making Network Time Service ready", throwable63);
+                catch(Throwable throwable65) {
+                    reportWtf("making Network Time Service ready", throwable65);
                 }
                 try {
                     if(commonTimeMgmtServiceF != null)
                         commonTimeMgmtServiceF.systemReady();
                 }
-                catch(Throwable throwable64) {
-                    reportWtf("making Common time management service ready", throwable64);
+                catch(Throwable throwable66) {
+                    reportWtf("making Common time management service ready", throwable66);
                 }
                 try {
                     if(textServiceManagerServiceF != null)
                         textServiceManagerServiceF.systemReady();
                 }
-                catch(Throwable throwable65) {
-                    reportWtf("making Text Services Manager Service ready", throwable65);
+                catch(Throwable throwable67) {
+                    reportWtf("making Text Services Manager Service ready", throwable67);
                 }
                 try {
                     if(dreamyF != null)
                         dreamyF.systemReady();
                 }
-                catch(Throwable throwable66) {
-                    reportWtf("making DreamManagerService ready", throwable66);
+                catch(Throwable throwable68) {
+                    reportWtf("making DreamManagerService ready", throwable68);
                 }
                 if(inputManagerF != null)
                     inputManagerF.systemReady(bluetoothF);
 _L1:
                 return;
-                Throwable throwable67;
-                throwable67;
-                reportWtf("making InputManagerService ready", throwable67);
+                Throwable throwable69;
+                throwable69;
+                reportWtf("making InputManagerService ready", throwable69);
                   goto _L1
             }
 
@@ -915,247 +937,260 @@ _L2:
             flag = true;
         }
           goto _L3
+_L68:
+        Slog.e("SystemServer", "Failure starting Account Manager", throwable49);
+          goto _L15
         runtimeexception;
         alarmmanagerservice = null;
         batteryservice = null;
-_L66:
+_L67:
         Slog.e("System", "******************************************");
         Slog.e("System", "************ Failure starting core service", runtimeexception);
-          goto _L15
+          goto _L16
 _L5:
         flag3 = false;
-          goto _L16
+          goto _L17
 _L7:
         flag4 = false;
           goto _L8
-_L69:
+_L71:
         flag5 = false;
-          goto _L17
+          goto _L18
 _L10:
         if(i != 1)
-            break MISSING_BLOCK_LABEL_2424;
+            break MISSING_BLOCK_LABEL_2457;
         Slog.i("SystemServer", "No Bluetooth Service (factory test)");
-          goto _L18
+          goto _L19
         Slog.i("SystemServer", "Bluetooth Service");
         bluetoothservice1 = new BluetoothService(context);
         ServiceManager.addService("bluetooth", bluetoothservice1);
         bluetoothservice1.initAfterRegistration();
         if("0".equals(SystemProperties.get("system_init.startaudioservice")))
-            break MISSING_BLOCK_LABEL_2497;
+            break MISSING_BLOCK_LABEL_2530;
         bluetootha2dpservice = new BluetoothA2dpService(context, bluetoothservice1);
         ServiceManager.addService("bluetooth_a2dp", bluetootha2dpservice);
         bluetoothservice1.initAfterA2dpRegistration();
         if(android.provider.Settings.Secure.getInt(mContentResolver, "bluetooth_on", 0) != 0)
             bluetoothservice1.enable();
         bluetoothservice = bluetoothservice1;
-          goto _L18
-        throwable45;
-_L65:
-        reportWtf("starting Input Manager Service", throwable45);
           goto _L19
-        throwable44;
-_L64:
-        reportWtf("starting Mount Service", throwable44);
+        throwable47;
+_L66:
+        reportWtf("starting Input Manager Service", throwable47);
           goto _L20
-        throwable8;
-_L63:
-        reportWtf("starting LockSettingsService service", throwable8);
+        throwable46;
+_L65:
+        reportWtf("starting Mount Service", throwable46);
           goto _L21
-        throwable9;
-_L62:
-        reportWtf("starting DevicePolicyService", throwable9);
+        throwable8;
+_L64:
+        reportWtf("starting LockSettingsService service", throwable8);
           goto _L22
-        throwable10;
-_L61:
-        reportWtf("starting StatusBarManagerService", throwable10);
+        throwable9;
+_L63:
+        reportWtf("starting DevicePolicyService", throwable9);
           goto _L23
-        throwable13;
-_L60:
-        reportWtf("starting Text Service Manager Service", throwable13);
+        throwable10;
+_L62:
+        reportWtf("starting StatusBarManagerService", throwable10);
           goto _L24
-        throwable14;
-_L59:
-        reportWtf("starting NetworkStats Service", throwable14);
+        throwable13;
+_L61:
+        reportWtf("starting Text Service Manager Service", throwable13);
           goto _L25
+        throwable14;
+_L60:
+        reportWtf("starting NetworkStats Service", throwable14);
+          goto _L26
         throwable15;
         miuinetworkpolicymanagerservice = null;
-_L58:
+_L59:
         reportWtf("starting NetworkPolicy Service", throwable15);
-          goto _L26
-        throwable16;
-_L57:
-        reportWtf("starting Wi-Fi P2pService", throwable16);
           goto _L27
-        throwable17;
-_L56:
-        reportWtf("starting Wi-Fi Service", throwable17);
+        throwable16;
+_L58:
+        reportWtf("starting Wi-Fi P2pService", throwable16);
           goto _L28
-        throwable18;
-_L55:
-        reportWtf("starting Connectivity Service", throwable18);
+        throwable17;
+_L57:
+        reportWtf("starting Wi-Fi Service", throwable17);
           goto _L29
-        throwable20;
-_L54:
-        reportWtf("starting ThrottleService", throwable20);
+        throwable18;
+_L56:
+        reportWtf("starting Connectivity Service", throwable18);
           goto _L30
-        throwable22;
-_L53:
-        reportWtf("starting Notification Manager", throwable22);
+        throwable20;
+_L55:
+        reportWtf("starting ThrottleService", throwable20);
           goto _L31
-        throwable24;
-_L52:
-        reportWtf("starting Location Manager", throwable24);
+        throwable22;
+_L54:
+        reportWtf("starting Notification Manager", throwable22);
           goto _L32
-        throwable25;
-_L51:
-        reportWtf("starting Country Detector", throwable25);
+        throwable24;
+_L53:
+        reportWtf("starting Location Manager", throwable24);
           goto _L33
-        throwable43;
-_L50:
-        reportWtf("starting Wallpaper Service", throwable43);
+        throwable25;
+_L52:
+        reportWtf("starting Country Detector", throwable25);
           goto _L34
+        throwable43;
+_L51:
+        reportWtf("starting Wallpaper Service", throwable43);
+          goto _L35
         throwable28;
         reportWtf("starting DockObserver", throwable28);
-          goto _L35
-        throwable30;
-_L49:
-        reportWtf("starting UsbService", throwable30);
           goto _L36
-        throwable31;
-_L48:
-        Slog.e("SystemServer", "Failure starting SerialService", throwable31);
+        throwable30;
+_L50:
+        reportWtf("starting UsbService", throwable30);
           goto _L37
+        throwable31;
+_L49:
+        Slog.e("SystemServer", "Failure starting SerialService", throwable31);
+          goto _L38
         throwable32;
         reportWtf("starting UiModeManagerService", throwable32);
-          goto _L38
-        throwable34;
-_L47:
-        reportWtf("starting AppWidget Service", throwable34);
           goto _L39
+        throwable34;
+_L48:
+        reportWtf("starting AppWidget Service", throwable34);
+          goto _L40
         throwable35;
         reportWtf("starting Recognition Service", throwable35);
-          goto _L40
+          goto _L41
         throwable38;
         reportWtf("starting NetworkTimeUpdate service", throwable38);
-          goto _L41
-        throwable39;
-_L46:
-        reportWtf("starting CommonTimeManagementService service", throwable39);
           goto _L42
-        throwable41;
-_L45:
-        reportWtf("starting DreamManagerService", throwable41);
+        throwable39;
+_L47:
+        reportWtf("starting CommonTimeManagementService service", throwable39);
           goto _L43
-        remoteexception1;
+        throwable41;
+_L46:
+        reportWtf("starting DreamManagerService", throwable41);
           goto _L44
+        remoteexception1;
+          goto _L45
         throwable41;
         dreammanagerservice = dreammanagerservice1;
-          goto _L45
+          goto _L46
         throwable39;
         commontimemanagementservice = commontimemanagementservice1;
-          goto _L46
+          goto _L47
         throwable34;
         appwidgetservice = appwidgetservice1;
-          goto _L47
-        throwable31;
           goto _L48
+        throwable31;
+          goto _L49
         throwable30;
         usbservice = usbservice1;
-          goto _L49
+          goto _L50
         throwable43;
         wallpapermanagerservice = wallpapermanagerservice1;
-          goto _L50
+          goto _L51
         throwable25;
         countrydetectorservice = countrydetectorservice1;
-          goto _L51
+          goto _L52
         throwable24;
         locationmanagerservice = locationmanagerservice1;
-          goto _L52
+          goto _L53
         throwable22;
         notificationmanagerservice = notificationmanagerservice1;
-          goto _L53
+          goto _L54
         throwable20;
         throttleservice = throttleservice1;
-          goto _L54
+          goto _L55
         throwable18;
         connectivityservice = connectivityservice1;
-          goto _L55
+          goto _L56
         throwable17;
         wifiservice = wifiservice1;
-          goto _L56
+          goto _L57
         throwable16;
         wifip2pservice = wifip2pservice1;
-          goto _L57
-        throwable15;
           goto _L58
+        throwable15;
+          goto _L59
         throwable14;
         networkstatsservice = networkstatsservice1;
-          goto _L59
+          goto _L60
         throwable13;
         textservicesmanagerservice = textservicesmanagerservice1;
-          goto _L60
+          goto _L61
         throwable10;
         statusbarmanagerservice = statusbarmanagerservice1;
-          goto _L61
+          goto _L62
         throwable9;
         devicepolicymanagerservice = devicepolicymanagerservice1;
-          goto _L62
+          goto _L63
         throwable8;
         locksettingsservice = locksettingsservice1;
-          goto _L63
-        throwable44;
-        mountservice = mountservice1;
           goto _L64
-        throwable45;
-        inputmethodmanagerservice = inputmethodmanagerservice1;
+        throwable46;
+        mountservice = mountservice1;
           goto _L65
+        throwable47;
+        inputmethodmanagerservice = inputmethodmanagerservice1;
+          goto _L66
         runtimeexception;
         alarmmanagerservice = null;
         batteryservice = null;
         powermanagerservice = null;
-          goto _L66
+          goto _L67
+        runtimeexception;
+        alarmmanagerservice = null;
+        batteryservice = null;
+        accountmanagerservice = accountmanagerservice1;
+          goto _L67
         runtimeexception;
         alarmmanagerservice = null;
         batteryservice = null;
         miuilightsservice = miuilightsservice1;
-          goto _L66
+          goto _L67
         runtimeexception;
         alarmmanagerservice = null;
         miuilightsservice = miuilightsservice1;
-          goto _L66
+          goto _L67
         runtimeexception;
         alarmmanagerservice = null;
         vibratorservice = vibratorservice1;
         miuilightsservice = miuilightsservice1;
-          goto _L66
+          goto _L67
         runtimeexception;
         bluetoothservice = bluetoothservice1;
         vibratorservice = vibratorservice1;
         miuilightsservice = miuilightsservice1;
-          goto _L66
+          goto _L67
         runtimeexception;
         bluetoothservice = bluetoothservice1;
         vibratorservice = vibratorservice1;
         miuilightsservice = miuilightsservice1;
-          goto _L66
+          goto _L67
+        throwable49;
+        accountmanagerservice = accountmanagerservice1;
+          goto _L68
 _L14:
         miuinetworkpolicymanagerservice = null;
-          goto _L43
+          goto _L44
 _L3:
         if(i != 0)
             flag1 = true;
         else
             flag1 = false;
-          goto _L67
+          goto _L69
 _L8:
-        if(flag2) goto _L69; else goto _L68
-_L68:
+        if(flag2) goto _L71; else goto _L70
+_L70:
         flag5 = true;
-          goto _L17
+          goto _L18
+        throwable49;
+          goto _L68
         runtimeexception;
         vibratorservice = vibratorservice1;
         miuilightsservice = miuilightsservice1;
-          goto _L66
+          goto _L67
     }
 
     private static final String ENCRYPTED_STATE = "1";

@@ -8,6 +8,7 @@ import android.app.PendingIntent;
 import android.content.*;
 import android.content.pm.*;
 import android.content.res.Resources;
+import android.database.ContentObserver;
 import android.location.*;
 import android.net.ConnectivityManager;
 import android.os.*;
@@ -25,6 +26,20 @@ import java.util.*;
 
 public class LocationManagerService extends android.location.ILocationManager.Stub
     implements Runnable {
+    public class BlacklistObserver extends ContentObserver {
+
+        public void onChange(boolean flag) {
+            reloadBlacklist();
+        }
+
+        final LocationManagerService this$0;
+
+        public BlacklistObserver(Handler handler) {
+            this$0 = LocationManagerService.this;
+            super(handler);
+        }
+    }
+
     private class LocationWorkerHandler extends Handler {
 
         public void handleMessage(Message message) {
@@ -130,12 +145,14 @@ _L4:
             proximityalert1 = (ProximityAlert)iterator.next();
             pendingintent1 = proximityalert1.getIntent();
             long l1 = proximityalert1.getExpiration();
+            if(inBlacklist(proximityalert1.mPackageName))
+                continue; /* Loop/switch isn't completed */
             if(l1 != -1L && l > l1)
-                break MISSING_BLOCK_LABEL_386;
+                break MISSING_BLOCK_LABEL_401;
             flag = mProximitiesEntered.contains(proximityalert1);
             flag1 = proximityalert1.isInProximity(d, d1, f);
             if(flag || !flag1)
-                break MISSING_BLOCK_LABEL_272;
+                break MISSING_BLOCK_LABEL_287;
             mProximitiesEntered.add(proximityalert1);
             intent1 = new Intent();
             intent1.putExtra("entering", true);
@@ -256,12 +273,13 @@ _L5:
         final double mLatitude;
         final Location mLocation = new Location("");
         final double mLongitude;
+        final String mPackageName;
         final float mRadius;
         final int mUid;
         final LocationManagerService this$0;
 
         public ProximityAlert(int i, double d, double d1, float f, 
-                long l, PendingIntent pendingintent) {
+                long l, PendingIntent pendingintent, String s) {
             this$0 = LocationManagerService.this;
             super();
             mUid = i;
@@ -270,6 +288,7 @@ _L5:
             mRadius = f;
             mExpiration = l;
             mIntent = pendingintent;
+            mPackageName = s;
             mLocation.setLatitude(d);
             mLocation.setLongitude(d1);
         }
@@ -656,6 +675,7 @@ _L5:
 
         final Object mKey;
         final ILocationListener mListener;
+        final String mPackageName;
         int mPendingBroadcasts;
         final PendingIntent mPendingIntent;
         String mRequiredPermissions;
@@ -663,22 +683,24 @@ _L5:
         final LocationManagerService this$0;
 
 
-        Receiver(PendingIntent pendingintent) {
+        Receiver(PendingIntent pendingintent, String s) {
             this$0 = LocationManagerService.this;
             super();
             mUpdateRecords = new HashMap();
             mPendingIntent = pendingintent;
             mListener = null;
             mKey = pendingintent;
+            mPackageName = s;
         }
 
-        Receiver(ILocationListener ilocationlistener) {
+        Receiver(ILocationListener ilocationlistener, String s) {
             this$0 = LocationManagerService.this;
             super();
             mUpdateRecords = new HashMap();
             mListener = ilocationlistener;
             mPendingIntent = null;
             mKey = ilocationlistener.asBinder();
+            mPackageName = s;
         }
     }
 
@@ -692,6 +714,8 @@ _L5:
         mProximitiesEntered = new HashSet();
         mLastKnownLocation = new HashMap();
         mNetworkState = 1;
+        mWhitelist = new String[0];
+        mBlacklist = new String[0];
         mContext = context;
         Resources resources = context.getResources();
         mNetworkLocationProviderPackageName = resources.getString(0x104001c);
@@ -707,12 +731,13 @@ _L5:
         return arraylist;
     }
 
-    private Location _getLastKnownLocationLocked(String s) {
+    private Location _getLastKnownLocationLocked(String s, String s1) {
         Location location;
         location = null;
         checkPermissionsSafe(s, null);
-        break MISSING_BLOCK_LABEL_9;
-        if((LocationProviderInterface)mProvidersByName.get(s) != null && isAllowedBySettingsLocked(s))
+        checkPackageName(Binder.getCallingUid(), s1);
+        break MISSING_BLOCK_LABEL_17;
+        if((LocationProviderInterface)mProvidersByName.get(s) != null && isAllowedBySettingsLocked(s) && !inBlacklist(s1))
             location = (Location)mLastKnownLocation.get(s);
         return location;
     }
@@ -796,20 +821,38 @@ _L5:
     }
 
     private void addProximityAlertLocked(double d, double d1, float f, long l, 
-            PendingIntent pendingintent) {
+            PendingIntent pendingintent, String s) {
+        checkPackageName(Binder.getCallingUid(), s);
         if(!isAllowedProviderSafe("gps") || !isAllowedProviderSafe("network"))
             throw new SecurityException("Requires ACCESS_FINE_LOCATION permission");
         if(l != -1L)
             l += System.currentTimeMillis();
-        ProximityAlert proximityalert = new ProximityAlert(Binder.getCallingUid(), d, d1, f, l, pendingintent);
+        ProximityAlert proximityalert = new ProximityAlert(Binder.getCallingUid(), d, d1, f, l, pendingintent, s);
         mProximityAlerts.put(pendingintent, proximityalert);
         if(mProximityReceiver == null) {
             mProximityListener = new ProximityListener();
-            mProximityReceiver = new Receiver(mProximityListener);
+            mProximityReceiver = new Receiver(mProximityListener, s);
             for(int i = -1 + mProviders.size(); i >= 0; i--)
                 requestLocationUpdatesLocked(((LocationProviderInterface)mProviders.get(i)).getName(), 1000L, 1.0F, false, mProximityReceiver);
 
         }
+    }
+
+    private static String arrayToString(String as[]) {
+        StringBuilder stringbuilder = new StringBuilder();
+        stringbuilder.append('[');
+        boolean flag = true;
+        int i = as.length;
+        for(int j = 0; j < i; j++) {
+            String s = as[j];
+            if(!flag)
+                stringbuilder.append(',');
+            flag = false;
+            stringbuilder.append(s);
+        }
+
+        stringbuilder.append(']');
+        return stringbuilder.toString();
     }
 
     private LocationProviderInterface best(List list) {
@@ -870,6 +913,20 @@ _L5:
             throw new SecurityException("Requires ACCESS_MOCK_LOCATION permission");
         else
             return;
+    }
+
+    private void checkPackageName(int i, String s) {
+        if(s == null)
+            throw new SecurityException("packageName cannot be null");
+        String as[] = mPackageManager.getPackagesForUid(i);
+        if(as == null)
+            throw new SecurityException((new StringBuilder()).append("invalid UID ").append(i).toString());
+        int j = as.length;
+        for(int k = 0; k < j; k++)
+            if(s.equals(as[k]))
+                return;
+
+        throw new SecurityException("invalid package name");
     }
 
     private String checkPermissionsSafe(String s, String s1) {
@@ -949,22 +1006,22 @@ _L5:
         return l;
     }
 
-    private Receiver getReceiver(PendingIntent pendingintent) {
+    private Receiver getReceiver(PendingIntent pendingintent, String s) {
         Receiver receiver = (Receiver)mReceivers.get(pendingintent);
         if(receiver == null) {
-            receiver = new Receiver(pendingintent);
+            receiver = new Receiver(pendingintent, s);
             mReceivers.put(pendingintent, receiver);
         }
         return receiver;
     }
 
-    private Receiver getReceiver(ILocationListener ilocationlistener) {
+    private Receiver getReceiver(ILocationListener ilocationlistener, String s) {
         Receiver receiver;
         IBinder ibinder = ilocationlistener.asBinder();
         receiver = (Receiver)mReceivers.get(ibinder);
         if(receiver != null)
-            break MISSING_BLOCK_LABEL_66;
-        receiver = new Receiver(ilocationlistener);
+            break MISSING_BLOCK_LABEL_74;
+        receiver = new Receiver(ilocationlistener, s);
         mReceivers.put(ibinder, receiver);
         if(receiver.isListener())
             receiver.getListener().asBinder().linkToDeath(receiver, 0);
@@ -977,6 +1034,27 @@ _L2:
         receiver1 = null;
         if(true) goto _L2; else goto _L1
 _L1:
+    }
+
+    private String[] getStringArray(String s) {
+        String s1 = android.provider.Settings.Secure.getString(mContext.getContentResolver(), s);
+        String as1[];
+        if(s1 == null) {
+            as1 = new String[0];
+        } else {
+            String as[] = s1.split(",");
+            ArrayList arraylist = new ArrayList();
+            int i = as.length;
+            int j = 0;
+            while(j < i)  {
+                String s2 = as[j].trim();
+                if(!s2.isEmpty())
+                    arraylist.add(s2);
+                j++;
+            }
+            as1 = (String[])arraylist.toArray(new String[arraylist.size()]);
+        }
+        return as1;
     }
 
     private void handleLocationChangedLocked(Location location, boolean flag) {
@@ -992,69 +1070,131 @@ _L1:
         LocationProviderInterface locationproviderinterface;
         return;
 _L2:
-        if((locationproviderinterface = (LocationProviderInterface)mProvidersByName.get(s)) != null) {
-            Location location1 = (Location)mLastKnownLocation.get(s);
-            long l;
-            Bundle bundle;
-            int i;
-            ArrayList arraylist1;
-            int j;
-            int k;
-            if(location1 == null) {
-                HashMap hashmap = mLastKnownLocation;
-                Location location3 = new Location(location);
-                hashmap.put(s, location3);
-            } else {
-                location1.set(location);
-            }
-            l = locationproviderinterface.getStatusUpdateTime();
-            bundle = new Bundle();
-            i = locationproviderinterface.getStatus(bundle);
-            arraylist1 = null;
-            j = arraylist.size();
-            k = 0;
-            while(k < j)  {
-                UpdateRecord updaterecord = (UpdateRecord)arraylist.get(k);
-                Receiver receiver = updaterecord.mReceiver;
-                boolean flag1 = false;
-                Location location2 = updaterecord.mLastFixBroadcast;
-                if(location2 == null || shouldBroadcastSafe(location, location2, updaterecord)) {
-                    long l1;
-                    if(location2 == null)
-                        updaterecord.mLastFixBroadcast = new Location(location);
-                    else
-                        location2.set(location);
-                    if(!receiver.callLocationChangedLocked(location)) {
-                        Slog.w("LocationManagerService", (new StringBuilder()).append("RemoteException calling onLocationChanged on ").append(receiver).toString());
-                        flag1 = true;
-                    }
-                }
-                l1 = updaterecord.mLastStatusBroadcast;
-                if(l > l1 && (l1 != 0L || i != 2)) {
-                    updaterecord.mLastStatusBroadcast = l;
-                    if(!receiver.callStatusChangedLocked(s, i, bundle)) {
-                        flag1 = true;
-                        Slog.w("LocationManagerService", (new StringBuilder()).append("RemoteException calling onStatusChanged on ").append(receiver).toString());
-                    }
-                }
-                if(!flag1 && !updaterecord.mSingleShot)
-                    continue;
-                if(arraylist1 == null)
-                    arraylist1 = new ArrayList();
-                if(!arraylist1.contains(receiver))
-                    arraylist1.add(receiver);
-                k++;
-            }
-            if(arraylist1 != null) {
-                int i1 = -1 + arraylist1.size();
-                while(i1 >= 0)  {
-                    removeUpdatesLocked((Receiver)arraylist1.get(i1));
-                    i1--;
-                }
+        long l;
+        Bundle bundle;
+        int i;
+        ArrayList arraylist1;
+        UpdateRecord updaterecord;
+        Receiver receiver;
+        boolean flag1;
+        if((locationproviderinterface = (LocationProviderInterface)mProvidersByName.get(s)) == null)
+            continue; /* Loop/switch isn't completed */
+        Location location1 = (Location)mLastKnownLocation.get(s);
+        int j;
+        int k;
+        if(location1 == null) {
+            HashMap hashmap = mLastKnownLocation;
+            Location location3 = new Location(location);
+            hashmap.put(s, location3);
+        } else {
+            location1.set(location);
+        }
+        l = locationproviderinterface.getStatusUpdateTime();
+        bundle = new Bundle();
+        i = locationproviderinterface.getStatus(bundle);
+        arraylist1 = null;
+        j = arraylist.size();
+        k = 0;
+_L8:
+        if(k >= j)
+            continue; /* Loop/switch isn't completed */
+        updaterecord = (UpdateRecord)arraylist.get(k);
+        receiver = updaterecord.mReceiver;
+        flag1 = false;
+        if(!inBlacklist(receiver.mPackageName))
+            break; /* Loop/switch isn't completed */
+_L6:
+        k++;
+        if(true) goto _L4; else goto _L3
+_L4:
+        break MISSING_BLOCK_LABEL_146;
+_L3:
+        Location location2 = updaterecord.mLastFixBroadcast;
+        if(location2 == null || shouldBroadcastSafe(location, location2, updaterecord)) {
+            long l1;
+            if(location2 == null)
+                updaterecord.mLastFixBroadcast = new Location(location);
+            else
+                location2.set(location);
+            if(!receiver.callLocationChangedLocked(location)) {
+                Slog.w("LocationManagerService", (new StringBuilder()).append("RemoteException calling onLocationChanged on ").append(receiver).toString());
+                flag1 = true;
             }
         }
-        if(true) goto _L1; else goto _L3
-_L3:
+        l1 = updaterecord.mLastStatusBroadcast;
+        if(l > l1 && (l1 != 0L || i != 2)) {
+            updaterecord.mLastStatusBroadcast = l;
+            if(!receiver.callStatusChangedLocked(s, i, bundle)) {
+                flag1 = true;
+                Slog.w("LocationManagerService", (new StringBuilder()).append("RemoteException calling onStatusChanged on ").append(receiver).toString());
+            }
+        }
+        if(flag1 || updaterecord.mSingleShot) {
+            if(arraylist1 == null)
+                arraylist1 = new ArrayList();
+            if(!arraylist1.contains(receiver))
+                arraylist1.add(receiver);
+        }
+        if(true) goto _L6; else goto _L5
+_L5:
+        if(true) goto _L8; else goto _L7
+_L7:
+        if(arraylist1 == null) goto _L1; else goto _L9
+_L9:
+        int i1 = -1 + arraylist1.size();
+        while(i1 >= 0)  {
+            removeUpdatesLocked((Receiver)arraylist1.get(i1));
+            i1--;
+        }
+        if(true) goto _L1; else goto _L10
+_L10:
+    }
+
+    private boolean inBlacklist(String s) {
+        Object obj = mLock;
+        obj;
+        JVM INSTR monitorenter ;
+        String as[] = mBlacklist;
+        int i = as.length;
+        int j = 0;
+        boolean flag;
+        do {
+            if(j < i) {
+                if(s.startsWith(as[j]) && !inWhitelist(s)) {
+                    flag = true;
+                    break;
+                }
+            } else {
+                flag = false;
+                break;
+            }
+            j++;
+        } while(true);
+        return flag;
+    }
+
+    private boolean inWhitelist(String s) {
+        Object obj = mLock;
+        obj;
+        JVM INSTR monitorenter ;
+        String as[] = mWhitelist;
+        int i = as.length;
+        int j = 0;
+        do {
+label0:
+            {
+                boolean flag;
+                if(j < i) {
+                    if(!s.startsWith(as[j]))
+                        break label0;
+                    flag = true;
+                } else {
+                    flag = false;
+                }
+                return flag;
+            }
+            j++;
+        } while(true);
     }
 
     private void incrementPendingBroadcasts() {
@@ -1086,6 +1226,7 @@ _L3:
         mWakeLock = ((PowerManager)mContext.getSystemService("power")).newWakeLock(1, "LocationManagerService");
         mPackageManager = mContext.getPackageManager();
         loadProviders();
+        loadBlacklist();
         IntentFilter intentfilter = new IntentFilter();
         intentfilter.addAction("android.net.conn.CONNECTIVITY_CHANGE");
         intentfilter.addAction("android.intent.action.PACKAGE_REMOVED");
@@ -1122,6 +1263,13 @@ _L3:
         if((!"gps".equals(s) && !"passive".equals(s) || mContext.checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == 0) && (!"network".equals(s) || mContext.checkCallingOrSelfPermission("android.permission.ACCESS_FINE_LOCATION") == 0 || mContext.checkCallingOrSelfPermission("android.permission.ACCESS_COARSE_LOCATION") == 0))
             flag = true;
         return flag;
+    }
+
+    private void loadBlacklist() {
+        BlacklistObserver blacklistobserver = new BlacklistObserver(mLocationHandler);
+        mContext.getContentResolver().registerContentObserver(android.provider.Settings.Secure.getUriFor("locationPackagePrefixBlacklist"), false, blacklistobserver);
+        mContext.getContentResolver().registerContentObserver(android.provider.Settings.Secure.getUriFor("locationPackagePrefixWhitelist"), false, blacklistobserver);
+        reloadBlacklist();
     }
 
     private void loadProviders() {
@@ -1205,6 +1353,21 @@ _L7:
 _L8:
         flag = false;
           goto _L4
+    }
+
+    private void reloadBlacklist() {
+        String as[];
+        String as1[];
+        as = getStringArray("locationPackagePrefixBlacklist");
+        as1 = getStringArray("locationPackagePrefixWhitelist");
+        Object obj = mLock;
+        obj;
+        JVM INSTR monitorenter ;
+        mWhitelist = as1;
+        Slog.i("LocationManagerService", (new StringBuilder()).append("whitelist: ").append(arrayToString(mWhitelist)).toString());
+        mBlacklist = as;
+        Slog.i("LocationManagerService", (new StringBuilder()).append("blacklist: ").append(arrayToString(mBlacklist)).toString());
+        return;
     }
 
     private void removeProvider(LocationProviderInterface locationproviderinterface) {
@@ -1449,13 +1612,13 @@ _L3:
     }
 
     public void addProximityAlert(double d, double d1, float f, long l, 
-            PendingIntent pendingintent) {
+            PendingIntent pendingintent, String s) {
         validatePendingIntent(pendingintent);
         Object obj = mLock;
         obj;
         JVM INSTR monitorenter ;
-        addProximityAlertLocked(d, d1, f, l, pendingintent);
-        break MISSING_BLOCK_LABEL_64;
+        addProximityAlertLocked(d, d1, f, l, pendingintent, s);
+        break MISSING_BLOCK_LABEL_66;
         SecurityException securityexception;
         securityexception;
         throw securityexception;
@@ -1591,6 +1754,8 @@ _L2:
         Exception exception;
         exception;
         throw exception;
+        printwriter.println((new StringBuilder()).append("  Package blacklist:").append(arrayToString(mBlacklist)).toString());
+        printwriter.println((new StringBuilder()).append("  Package whitelist:").append(arrayToString(mWhitelist)).toString());
         printwriter.println("  Records by Provider:");
         for(Iterator iterator1 = mRecordsByProvider.entrySet().iterator(); iterator1.hasNext();) {
             java.util.Map.Entry entry2 = (java.util.Map.Entry)iterator1.next();
@@ -1785,13 +1950,13 @@ _L2:
         return s1;
     }
 
-    public Location getLastKnownLocation(String s) {
+    public Location getLastKnownLocation(String s, String s1) {
         Object obj = mLock;
         obj;
         JVM INSTR monitorenter ;
         Location location;
-        location = _getLastKnownLocationLocked(s);
-        break MISSING_BLOCK_LABEL_49;
+        location = _getLastKnownLocationLocked(s, s1);
+        break MISSING_BLOCK_LABEL_50;
         SecurityException securityexception;
         securityexception;
         throw securityexception;
@@ -1946,12 +2111,12 @@ _L2:
 _L3:
     }
 
-    public void removeUpdates(ILocationListener ilocationlistener) {
+    public void removeUpdates(ILocationListener ilocationlistener, String s) {
         Object obj = mLock;
         obj;
         JVM INSTR monitorenter ;
-        removeUpdatesLocked(getReceiver(ilocationlistener));
-        break MISSING_BLOCK_LABEL_53;
+        removeUpdatesLocked(getReceiver(ilocationlistener, s));
+        break MISSING_BLOCK_LABEL_54;
         SecurityException securityexception;
         securityexception;
         throw securityexception;
@@ -1963,12 +2128,12 @@ _L3:
         Slog.e("LocationManagerService", "removeUpdates got exception:", exception);
     }
 
-    public void removeUpdatesPI(PendingIntent pendingintent) {
+    public void removeUpdatesPI(PendingIntent pendingintent, String s) {
         Object obj = mLock;
         obj;
         JVM INSTR monitorenter ;
-        removeUpdatesLocked(getReceiver(pendingintent));
-        break MISSING_BLOCK_LABEL_53;
+        removeUpdatesLocked(getReceiver(pendingintent, s));
+        break MISSING_BLOCK_LABEL_54;
         SecurityException securityexception;
         securityexception;
         throw securityexception;
@@ -1992,7 +2157,9 @@ _L3:
         mLocationHandler.sendMessageAtFrontOfQueue(message);
     }
 
-    public void requestLocationUpdates(String s, Criteria criteria, long l, float f, boolean flag, ILocationListener ilocationlistener) {
+    public void requestLocationUpdates(String s, Criteria criteria, long l, float f, boolean flag, ILocationListener ilocationlistener, 
+            String s1) {
+        checkPackageName(Binder.getCallingUid(), s1);
         if(criteria != null) {
             s = getBestProvider(criteria, true);
             if(s == null)
@@ -2001,9 +2168,9 @@ _L3:
         Object obj = mLock;
         obj;
         JVM INSTR monitorenter ;
-        Receiver receiver = getReceiver(ilocationlistener);
+        Receiver receiver = getReceiver(ilocationlistener, s1);
         requestLocationUpdatesLocked(s, l, f, flag, receiver);
-        break MISSING_BLOCK_LABEL_92;
+        break MISSING_BLOCK_LABEL_103;
         SecurityException securityexception;
         securityexception;
         throw securityexception;
@@ -2015,7 +2182,9 @@ _L3:
         Slog.e("LocationManagerService", "requestUpdates got exception:", exception);
     }
 
-    public void requestLocationUpdatesPI(String s, Criteria criteria, long l, float f, boolean flag, PendingIntent pendingintent) {
+    public void requestLocationUpdatesPI(String s, Criteria criteria, long l, float f, boolean flag, PendingIntent pendingintent, 
+            String s1) {
+        checkPackageName(Binder.getCallingUid(), s1);
         validatePendingIntent(pendingintent);
         if(criteria != null) {
             s = getBestProvider(criteria, true);
@@ -2025,9 +2194,9 @@ _L3:
         Object obj = mLock;
         obj;
         JVM INSTR monitorenter ;
-        Receiver receiver = getReceiver(pendingintent);
+        Receiver receiver = getReceiver(pendingintent, s1);
         requestLocationUpdatesLocked(s, l, f, flag, receiver);
-        break MISSING_BLOCK_LABEL_98;
+        break MISSING_BLOCK_LABEL_109;
         SecurityException securityexception;
         securityexception;
         throw securityexception;
@@ -2160,6 +2329,7 @@ _L1:
     private static final String ACCESS_FINE_LOCATION = "android.permission.ACCESS_FINE_LOCATION";
     private static final String ACCESS_LOCATION_EXTRA_COMMANDS = "android.permission.ACCESS_LOCATION_EXTRA_COMMANDS";
     private static final String ACCESS_MOCK_LOCATION = "android.permission.ACCESS_MOCK_LOCATION";
+    private static final String BLACKLIST_CONFIG_NAME = "locationPackagePrefixBlacklist";
     private static final String INSTALL_LOCATION_PROVIDER = "android.permission.INSTALL_LOCATION_PROVIDER";
     private static final boolean LOCAL_LOGV = false;
     private static final int MAX_PROVIDER_SCHEDULING_JITTER = 100;
@@ -2167,7 +2337,9 @@ _L1:
     private static final int MESSAGE_PACKAGE_UPDATED = 2;
     private static final String TAG = "LocationManagerService";
     private static final String WAKELOCK_KEY = "LocationManagerService";
+    private static final String WHITELIST_CONFIG_NAME = "locationPackagePrefixWhitelist";
     private static boolean sProvidersLoaded = false;
+    private String mBlacklist[];
     private final BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
 
         public void onReceive(Context context1, Intent intent) {
@@ -2366,6 +2538,8 @@ _L23:
     private ContentQueryMap mSettings;
     private final WorkSource mTmpWorkSource = new WorkSource();
     private android.os.PowerManager.WakeLock mWakeLock;
+    private String mWhitelist[];
+
 
 
 
@@ -2381,7 +2555,7 @@ _L23:
 
 
 /*
-    static String access$2102(LocationManagerService locationmanagerservice, String s) {
+    static String access$2202(LocationManagerService locationmanagerservice, String s) {
         locationmanagerservice.mNetworkLocationProviderPackageName = s;
         return s;
     }
@@ -2392,7 +2566,7 @@ _L23:
 
 
 /*
-    static String access$2302(LocationManagerService locationmanagerservice, String s) {
+    static String access$2402(LocationManagerService locationmanagerservice, String s) {
         locationmanagerservice.mGeocodeProviderPackageName = s;
         return s;
     }
@@ -2403,12 +2577,13 @@ _L23:
 
 
 /*
-    static int access$2502(LocationManagerService locationmanagerservice, int i) {
+    static int access$2602(LocationManagerService locationmanagerservice, int i) {
         locationmanagerservice.mNetworkState = i;
         return i;
     }
 
 */
+
 
 
 

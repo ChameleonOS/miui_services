@@ -48,7 +48,7 @@
 
 # virtual methods
 .method public run()V
-    .registers 4
+    .registers 5
 
     .prologue
     .line 8908
@@ -58,8 +58,10 @@
 
     iget-boolean v2, p0, Lcom/android/server/pm/PackageManagerService$10;->val$reportStatus:Z
 
-    #calls: Lcom/android/server/pm/PackageManagerService;->updateExternalMediaStatusInner(ZZ)V
-    invoke-static {v0, v1, v2}, Lcom/android/server/pm/PackageManagerService;->access$3800(Lcom/android/server/pm/PackageManagerService;ZZ)V
+    const/4 v3, 0x1
+
+    #calls: Lcom/android/server/pm/PackageManagerService;->updateExternalMediaStatusInner(ZZZ)V
+    invoke-static {v0, v1, v2, v3}, Lcom/android/server/pm/PackageManagerService;->access$3800(Lcom/android/server/pm/PackageManagerService;ZZZ)V
 
     .line 8909
     return-void
