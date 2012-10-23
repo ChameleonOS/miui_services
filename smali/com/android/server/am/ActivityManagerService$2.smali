@@ -1861,7 +1861,7 @@
 
     .line 1144
     .local v32, notification:Landroid/app/Notification;
-    const v3, 0x1080517
+    const v3, 0x1080518
 
     move-object/from16 v0, v32
 

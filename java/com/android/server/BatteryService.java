@@ -115,19 +115,19 @@ class BatteryService extends Binder {
     }
 
     private final int getIcon(int i) {
-        int j = 0x1080526;
+        int j = 0x1080527;
         if(mBatteryStatus != 2) goto _L2; else goto _L1
 _L1:
         return j;
 _L2:
         if(mBatteryStatus == 3)
-            j = 0x1080518;
+            j = 0x1080519;
         else
         if(mBatteryStatus == 4 || mBatteryStatus == 5) {
             if(!isPowered() || mBatteryLevel < 100)
-                j = 0x1080518;
+                j = 0x1080519;
         } else {
-            j = 0x1080534;
+            j = 0x1080535;
         }
         if(true) goto _L1; else goto _L3
 _L3:

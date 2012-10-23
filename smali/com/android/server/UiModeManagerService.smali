@@ -740,7 +740,7 @@
 
     .line 667
     .local v1, n:Landroid/app/Notification;
-    const v2, 0x108050e
+    const v2, 0x108050f
 
     iput v2, v1, Landroid/app/Notification;->icon:I
 

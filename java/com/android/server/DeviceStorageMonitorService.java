@@ -273,7 +273,7 @@ _L5:
         charsequence1 = mContext.getText(0x10403c5);
         pendingintent = PendingIntent.getActivity(mContext, 0, intent, 0);
         notification = new Notification();
-        notification.icon = 0x1080510;
+        notification.icon = 0x1080511;
         notification.tickerText = charsequence;
         notification.flags = 0x20 | notification.flags;
         notification.setLatestEventInfo(mContext, charsequence, charsequence1, pendingintent);

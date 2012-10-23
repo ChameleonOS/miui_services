@@ -413,7 +413,7 @@
     .line 582
     iget-object v6, p0, Lcom/android/server/InputMethodManagerService;->mImeSwitcherNotification:Landroid/app/Notification;
 
-    const v7, 0x108034e
+    const v7, 0x108034f
 
     iput v7, v6, Landroid/app/Notification;->icon:I
 

@@ -86,7 +86,7 @@ class UiModeManagerService extends android.app.IUiModeManager.Stub {
             if(mCarModeEnabled) {
                 intent = new Intent(mContext, com/android/internal/app/DisableCarModeActivity);
                 notification = new Notification();
-                notification.icon = 0x108050e;
+                notification.icon = 0x108050f;
                 notification.defaults = 4;
                 notification.flags = 2;
                 notification.when = 0L;

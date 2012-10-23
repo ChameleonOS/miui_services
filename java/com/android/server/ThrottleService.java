@@ -520,8 +520,8 @@ _L2:
                     catch(Exception exception) {
                         Slog.e("ThrottleService", (new StringBuilder()).append("error setting Throttle: ").append(exception).toString());
                     }
-                    mNotificationManager.cancel(0x1080559);
-                    postNotification(0x104048c, 0x104048d, 0x1080559, 2);
+                    mNotificationManager.cancel(0x108055a);
+                    postNotification(0x104048c, 0x104048d, 0x108055a, 2);
                     intent = new Intent("android.net.thrott.THROTTLE_ACTION");
                     intent.putExtra("level", mPolicyThrottleValue.get());
                     mContext.sendStickyBroadcast(intent);
@@ -535,12 +535,12 @@ _L2:
                     if(l > (l4 * (2L * l1)) / (l4 + l3) && l > l1 / 4L) {
                         if(!mWarningNotificationSent) {
                             mWarningNotificationSent = true;
-                            mNotificationManager.cancel(0x1080559);
-                            postNotification(0x104048a, 0x104048b, 0x1080559, 0);
+                            mNotificationManager.cancel(0x108055a);
+                            postNotification(0x104048a, 0x104048b, 0x108055a, 0);
                         }
                     } else
                     if(mWarningNotificationSent) {
-                        mNotificationManager.cancel(0x1080559);
+                        mNotificationManager.cancel(0x108055a);
                         mWarningNotificationSent = false;
                     }
                 }
@@ -562,7 +562,7 @@ _L3:
                 intent = new Intent("android.net.thrott.THROTTLE_ACTION");
                 intent.putExtra("level", -1);
                 mContext.sendStickyBroadcast(intent);
-                mNotificationManager.cancel(0x1080559);
+                mNotificationManager.cancel(0x108055a);
                 mWarningNotificationSent = false;
             }
         }

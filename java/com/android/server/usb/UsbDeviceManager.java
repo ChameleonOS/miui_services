@@ -96,7 +96,7 @@ _L2:
                     CharSequence charsequence = resources.getText(0x1040444);
                     CharSequence charsequence1 = resources.getText(0x1040445);
                     Notification notification = new Notification();
-                    notification.icon = 0x1080517;
+                    notification.icon = 0x1080518;
                     notification.when = 0L;
                     notification.flags = 2;
                     notification.tickerText = charsequence;
@@ -200,7 +200,7 @@ _L4:
                     CharSequence charsequence = resources.getText(0x1040440);
                     CharSequence charsequence1 = resources.getText(i);
                     Notification notification = new Notification();
-                    notification.icon = 0x1080535;
+                    notification.icon = 0x1080536;
                     notification.when = 0L;
                     notification.flags = 2;
                     notification.tickerText = charsequence1;

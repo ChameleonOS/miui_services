@@ -767,7 +767,7 @@ _L1:
                 mKeyboardLayoutIntent = PendingIntent.getActivity(mContext, 0, intent, 0);
             }
             Resources resources = mContext.getResources();
-            android.app.Notification notification = (new android.app.Notification.Builder(mContext)).setContentTitle(resources.getString(0x104044b)).setContentText(resources.getString(0x104044c)).setContentIntent(mKeyboardLayoutIntent).setSmallIcon(0x1080357).setPriority(-1).build();
+            android.app.Notification notification = (new android.app.Notification.Builder(mContext)).setContentTitle(resources.getString(0x104044b)).setContentText(resources.getString(0x104044c)).setContentIntent(mKeyboardLayoutIntent).setSmallIcon(0x1080358).setPriority(-1).build();
             mNotificationManager.notify(0x104044b, notification);
             mKeyboardLayoutNotificationShown = true;
         }

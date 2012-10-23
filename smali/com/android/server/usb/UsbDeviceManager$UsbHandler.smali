@@ -742,7 +742,7 @@
 
     .line 679
     .local v3, notification:Landroid/app/Notification;
-    const v7, 0x1080517
+    const v7, 0x1080518
 
     iput v7, v3, Landroid/app/Notification;->icon:I
 
@@ -1296,7 +1296,7 @@
 
     .line 645
     .local v3, notification:Landroid/app/Notification;
-    const v7, 0x1080535
+    const v7, 0x1080536
 
     iput v7, v3, Landroid/app/Notification;->icon:I
 

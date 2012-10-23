@@ -1213,18 +1213,18 @@ _L3:
         Log.d("Tethering", (new StringBuilder()).append("sendTetherStateChangedBroadcast ").append(arraylist.size()).append(", ").append(arraylist1.size()).append(", ").append(arraylist2.size()).toString());
         if(flag2) {
             if(flag1 || flag3)
-                showTetheredNotification(0x1080556);
-            else
                 showTetheredNotification(0x1080557);
-        } else
-        if(flag1) {
-            if(flag3)
-                showTetheredNotification(0x1080556);
             else
                 showTetheredNotification(0x1080558);
         } else
+        if(flag1) {
+            if(flag3)
+                showTetheredNotification(0x1080557);
+            else
+                showTetheredNotification(0x1080559);
+        } else
         if(flag3)
-            showTetheredNotification(0x1080555);
+            showTetheredNotification(0x1080556);
         else
             clearTetheredNotification();
         if(true) goto _L1; else goto _L5

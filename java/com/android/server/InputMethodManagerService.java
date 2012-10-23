@@ -1280,7 +1280,7 @@ _L1:
         mWindowManagerService = windowmanagerservice;
         mHardKeyboardListener = new HardKeyboardListener();
         mImeSwitcherNotification = new Notification();
-        mImeSwitcherNotification.icon = 0x108034e;
+        mImeSwitcherNotification.icon = 0x108034f;
         mImeSwitcherNotification.when = 0L;
         mImeSwitcherNotification.flags = 2;
         mImeSwitcherNotification.tickerText = null;

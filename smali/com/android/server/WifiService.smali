@@ -25,7 +25,7 @@
 
 .field private static final DEFAULT_IDLE_MS:J = 0xdbba0L
 
-.field private static final ICON_NETWORKS_AVAILABLE:I = 0x1080516
+.field private static final ICON_NETWORKS_AVAILABLE:I = 0x1080517
 
 .field private static final IDLE_REQUEST:I = 0x0
 
@@ -2119,7 +2119,7 @@
     .prologue
     const/4 v8, 0x0
 
-    const v7, 0x1080516
+    const v7, 0x1080517
 
     .line 1706
     if-nez p1, :cond_d

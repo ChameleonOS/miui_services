@@ -1147,7 +1147,7 @@ _L5:
         CharSequence charsequence2 = null;
 _L10:
         builder.setOngoing(true);
-        builder.setSmallIcon(0x108050f);
+        builder.setSmallIcon(0x1080510);
         builder.setTicker(charsequence2);
         builder.setContentTitle(charsequence2);
         builder.setContentText(charsequence1);

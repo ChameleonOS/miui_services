@@ -1086,7 +1086,7 @@ _L16:
                 aobj[0] = context.getApplicationInfo().loadLabel(context.getPackageManager());
                 String s = context1.getString(0x10403e7, aobj);
                 notification = new Notification();
-                notification.icon = 0x1080517;
+                notification.icon = 0x1080518;
                 notification.when = 0L;
                 notification.flags = 2;
                 notification.tickerText = s;

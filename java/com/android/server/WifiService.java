@@ -735,7 +735,7 @@ _L2:
         if(mNotification == null) {
             mNotification = new Notification();
             mNotification.when = 0L;
-            mNotification.icon = 0x1080516;
+            mNotification.icon = 0x1080517;
             mNotification.flags = 16;
             mNotification.contentIntent = PendingIntent.getActivity(mContext, 0, new Intent("android.net.wifi.PICK_WIFI_NETWORK"), 0);
         }
@@ -744,12 +744,12 @@ _L2:
         mNotification.tickerText = charsequence;
         mNotification.setLatestEventInfo(mContext, charsequence, charsequence1, mNotification.contentIntent);
         mNotificationRepeatTime = System.currentTimeMillis() + NOTIFICATION_REPEAT_DELAY_MS;
-        notificationmanager.notify(0x1080516, mNotification);
+        notificationmanager.notify(0x1080517, mNotification);
 _L4:
         mNotificationShown = flag;
         if(true) goto _L1; else goto _L3
 _L3:
-        notificationmanager.cancel(0x1080516);
+        notificationmanager.cancel(0x1080517);
           goto _L4
         if(true) goto _L1; else goto _L5
 _L5:
@@ -1331,7 +1331,7 @@ _L3:
     private static final String ACTION_DEVICE_IDLE = "com.android.server.WifiManager.action.DEVICE_IDLE";
     private static final boolean DBG = false;
     private static final long DEFAULT_IDLE_MS = 0xdbba0L;
-    private static final int ICON_NETWORKS_AVAILABLE = 0x1080516;
+    private static final int ICON_NETWORKS_AVAILABLE = 0x1080517;
     private static final int IDLE_REQUEST = 0;
     private static final int NUM_SCANS_BEFORE_ACTUALLY_SCANNING = 3;
     private static final int POLL_TRAFFIC_STATS_INTERVAL_MSECS = 1000;

@@ -389,7 +389,7 @@ _L4:
     private void hideNotification() {
         NotificationManager notificationmanager = (NotificationManager)mContext.getSystemService("notification");
         if(notificationmanager != null)
-            notificationmanager.cancel(0x10805fc);
+            notificationmanager.cancel(0x10805fd);
     }
 
     private native int jniCheck(String s);
@@ -428,7 +428,7 @@ _L4:
                 s2 = context1.getString(0x104047e, aobj1);
             }
             vpnconfig.startTime = SystemClock.elapsedRealtime();
-            notificationmanager.notify(0x10805fc, (new android.app.Notification.Builder(mContext)).setSmallIcon(0x10805fc).setLargeIcon(bitmap).setContentTitle(s1).setContentText(s2).setContentIntent(VpnConfig.getIntentForStatusPanel(mContext, vpnconfig)).setDefaults(0).setOngoing(true).getNotification());
+            notificationmanager.notify(0x10805fd, (new android.app.Notification.Builder(mContext)).setSmallIcon(0x10805fd).setLargeIcon(bitmap).setContentTitle(s1).setContentText(s2).setContentIntent(VpnConfig.getIntentForStatusPanel(mContext, vpnconfig)).setDefaults(0).setOngoing(true).getNotification());
         }
     }
 

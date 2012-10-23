@@ -344,9 +344,9 @@
     .parameter "level"
 
     .prologue
-    const v0, 0x1080526
+    const v0, 0x1080527
 
-    const v1, 0x1080518
+    const v1, 0x1080519
 
     .line 474
     iget v2, p0, Lcom/android/server/BatteryService;->mBatteryStatus:I
@@ -409,7 +409,7 @@
 
     .line 486
     :cond_2b
-    const v0, 0x1080534
+    const v0, 0x1080535
 
     goto :goto_b
 .end method
