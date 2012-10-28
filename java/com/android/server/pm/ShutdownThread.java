@@ -25,14 +25,7 @@ public final class ShutdownThread extends Thread {
 
         public void onDismiss(DialogInterface dialoginterface) {
             mContext.unregisterReceiver(this);
-            Object obj = ShutdownThread.sIsStartedGuard;
-            obj;
-            JVM INSTR monitorenter ;
-            if(!ShutdownThread.sIsStarted) {
-                ShutdownThread.mReboot = false;
-                ShutdownThread.mRebootReason = null;
-            }
-            return;
+            Injector.onDismiss(dialoginterface);
         }
 
         public void onReceive(Context context, Intent intent) {
@@ -45,6 +38,55 @@ public final class ShutdownThread extends Thread {
         CloseDialogReceiver(Context context) {
             mContext = context;
             context.registerReceiver(this, new IntentFilter("android.intent.action.CLOSE_SYSTEM_DIALOGS"));
+        }
+    }
+
+    static class Injector {
+
+        static void createShutDownDialog(Context context) {
+            Dialog dialog = new Dialog(context, 0x10300f1);
+            View view = LayoutInflater.from(dialog.getContext()).inflate(0x603002e, null);
+            TextView textview = (TextView)view.findViewById(0x60b0021);
+            ImageView imageview = (ImageView)view.findViewById(0x60b0022);
+            if(ShutdownThread.getReboot())
+                textview.setText(0x60c0001);
+            else
+                textview.setText(0x60c01aa);
+            dialog.setContentView(view);
+            dialog.setCancelable(false);
+            dialog.getWindow().setType(2021);
+            dialog.getWindow().setBackgroundDrawableResource(0x6020034);
+            dialog.show();
+            ((AnimationDrawable)imageview.getDrawable()).start();
+        }
+
+        static int getResourceId(int i) {
+            if(ShutdownThread.getReboot())
+                i = 0x60c0000;
+            return i;
+        }
+
+        static void onDismiss(DialogInterface dialoginterface) {
+            Object obj = ShutdownThread.getIsStartedGuard();
+            obj;
+            JVM INSTR monitorenter ;
+            if(!ShutdownThread.getIsStarted()) {
+                ShutdownThread.setReboot(false);
+                ShutdownThread.setRebootReason(null);
+            }
+            return;
+        }
+
+        static void setDialogTitle(Dialog dialog) {
+            int i;
+            if(ShutdownThread.getReboot())
+                i = 0x60c018c;
+            else
+                i = 0x60c0191;
+            dialog.setTitle(i);
+        }
+
+        Injector() {
         }
     }
 
@@ -66,7 +108,7 @@ public final class ShutdownThread extends Thread {
         progressdialog.setIndeterminate(true);
         progressdialog.setCancelable(false);
         progressdialog.getWindow().setType(2009);
-        createShutDownDialog(context);
+        Injector.createShutDownDialog(context);
         sInstance.mContext = context;
         sInstance.mPowerManager = (PowerManager)context.getSystemService("power");
         sInstance.mCpuWakeLock = null;
@@ -102,36 +144,16 @@ public final class ShutdownThread extends Thread {
 _L1:
     }
 
-    private static void createShutDownDialog(Context context) {
-        Dialog dialog = new Dialog(context, 0x10300f1);
-        View view = LayoutInflater.from(dialog.getContext()).inflate(0x603002e, null);
-        TextView textview = (TextView)view.findViewById(0x60b0021);
-        ImageView imageview = (ImageView)view.findViewById(0x60b0022);
-        if(mReboot)
-            textview.setText(0x60c0001);
-        else
-            textview.setText(0x60c01aa);
-        dialog.setContentView(view);
-        dialog.setCancelable(false);
-        dialog.getWindow().setType(2021);
-        dialog.getWindow().setBackgroundDrawableResource(0x6020034);
-        dialog.show();
-        ((AnimationDrawable)imageview.getDrawable()).start();
+    static boolean getIsStarted() {
+        return sIsStarted;
     }
 
-    private static int getResourceId(int i) {
-        if(mReboot)
-            i = 0x60c0000;
-        return i;
+    static Object getIsStartedGuard() {
+        return sIsStartedGuard;
     }
 
-    private static int getTitleResourceId() {
-        int i;
-        if(mReboot)
-            i = 0x60c018c;
-        else
-            i = 0x60c0191;
-        return i;
+    static boolean getReboot() {
+        return mReboot;
     }
 
     public static void reboot(Context context, String s, boolean flag) {
@@ -174,6 +196,14 @@ _L1:
         shutdownInner(context, flag);
     }
 
+    static void setReboot(boolean flag) {
+        mReboot = flag;
+    }
+
+    static void setRebootReason(String s) {
+        mRebootReason = s;
+    }
+
     public static void shutdown(Context context, boolean flag) {
         mReboot = false;
         mRebootSafeMode = false;
@@ -184,7 +214,7 @@ _L1:
         synchronized(sIsStartedGuard) {
             if(sIsStarted) {
                 Log.d("ShutdownThread", "Request to shutdown already running, returning.");
-                break MISSING_BLOCK_LABEL_208;
+                break MISSING_BLOCK_LABEL_235;
             }
         }
         int i = context.getResources().getInteger(0x10e0016);
@@ -197,13 +227,20 @@ _L1:
             j = 0x1040130;
         else
             j = 0x104012f;
-        k = getResourceId(j);
+        k = Injector.getResourceId(j);
         Log.d("ShutdownThread", (new StringBuilder()).append("Notifying thread to start shutdown longPressBehavior=").append(i).toString());
         if(flag) {
             CloseDialogReceiver closedialogreceiver = new CloseDialogReceiver(context);
-            AlertDialog alertdialog = (new android.app.AlertDialog.Builder(context)).setTitle(getTitleResourceId()).setMessage(k).setPositiveButton(0x1040013, new android.content.DialogInterface.OnClickListener() {
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(context);
+            int l;
+            AlertDialog alertdialog;
+            if(mRebootSafeMode)
+                l = 0x1040131;
+            else
+                l = 0x104012a;
+            alertdialog = builder.setTitle(l).setMessage(k).setPositiveButton(0x1040013, new android.content.DialogInterface.OnClickListener() {
 
-                public void onClick(DialogInterface dialoginterface, int l) {
+                public void onClick(DialogInterface dialoginterface, int i1) {
                     ShutdownThread.beginShutdownSequence(context);
                 }
 
@@ -214,6 +251,7 @@ _L1:
                 super();
             }
             }).setNegativeButton(0x1040009, null).create();
+            Injector.setDialogTitle(alertdialog);
             closedialogreceiver.dialog = alertdialog;
             alertdialog.setOnDismissListener(closedialogreceiver);
             alertdialog.getWindow().setType(2009);
@@ -310,34 +348,4 @@ _L14:
                 j = infcadapter.getState();
                 RemoteException remoteexception4;
                 if(j == 1)
-                    flag = true;
-                else
-                    flag = false;
-_L26:
-                if(flag2)
-                    Log.i("ShutdownThread", "NFC turned off.");
-_L15:
-                if(!flag2 || !flag1 || !flag) goto _L17; else goto _L16
-_L16:
-                Log.i("ShutdownThread", "NFC, Radio and Bluetooth shutdown complete.");
-                done[0] = true;
-_L9:
-                return;
-_L3:
-                flag = false;
-                  goto _L18
-                remoteexception;
-                Log.e("ShutdownThread", "RemoteException during NFC shutdown", remoteexception);
-                flag = true;
-                  goto _L19
-_L6:
-                flag1 = false;
-                  goto _L20
-                remoteexception1;
-                Log.e("ShutdownThread", "RemoteException during bluetooth shutdown", remoteexception1);
-                flag1 = true;
-                  goto _L21
-_L7:
-                flag2 = false;
-                  goto _L22
-                
+      

@@ -97,6 +97,27 @@ _L1:
         }
     }
 
+    static class Injector {
+
+        static boolean handleAction(AppWidgetService appwidgetservice, String s) {
+            boolean flag;
+            if("android.intent.action.RESTORE_FINISH".equals(s)) {
+                appwidgetservice.getImplForUser().reload();
+                flag = true;
+            } else {
+                flag = false;
+            }
+            return flag;
+        }
+
+        static void receiveRestoreFinish(AppWidgetService appwidgetservice) {
+            appwidgetservice.mContext.registerReceiver(appwidgetservice.mBroadcastReceiver, new IntentFilter("android.intent.action.RESTORE_FINISH"), null, null);
+        }
+
+        Injector() {
+        }
+    }
+
 
     AppWidgetService(Context context) {
         mInstalledProviders = new ArrayList();
@@ -106,16 +127,14 @@ _L1:
 
             public void onReceive(Context context1, Intent intent) {
                 String s = intent.getAction();
-                if(!"android.intent.action.BOOT_COMPLETED".equals(s)) goto _L2; else goto _L1
+                if(!Injector.handleAction(AppWidgetService.this, s)) goto _L2; else goto _L1
 _L1:
-                getImplForUser().sendInitialBroadcasts();
-_L4:
                 return;
 _L2:
-                if(!"android.intent.action.RESTORE_FINISH".equals(s))
+                if(!"android.intent.action.BOOT_COMPLETED".equals(s))
                     break; /* Loop/switch isn't completed */
-                getImplForUser().reload();
-                if(true) goto _L4; else goto _L3
+                getImplForUser().sendInitialBroadcasts();
+                if(true) goto _L1; else goto _L3
 _L3:
                 if(!"android.intent.action.CONFIGURATION_CHANGED".equals(s))
                     break; /* Loop/switch isn't completed */
@@ -124,15 +143,15 @@ _L3:
                     ((AppWidgetServiceImpl)mAppWidgetServices.valueAt(j)).onConfigurationChanged();
                     j++;
                 }
-                if(true) goto _L4; else goto _L5
-_L5:
+                if(true) goto _L1; else goto _L4
+_L4:
                 int i = 0;
                 while(i < mAppWidgetServices.size())  {
                     ((AppWidgetServiceImpl)mAppWidgetServices.valueAt(i)).onBroadcastReceived(intent);
                     i++;
                 }
-                if(true) goto _L4; else goto _L6
-_L6:
+                if(true) goto _L1; else goto _L5
+_L5:
             }
 
             final AppWidgetService this$0;
@@ -259,7 +278,7 @@ _L6:
     public void systemReady(boolean flag) {
         mSafeMode = flag;
         ((AppWidgetServiceImpl)mAppWidgetServices.get(0)).systemReady(flag);
-        mContext.registerReceiver(mBroadcastReceiver, new IntentFilter("android.intent.action.RESTORE_FINISH"), null, null);
+        Injector.receiveRestoreFinish(this);
         mContext.registerReceiver(mBroadcastReceiver, new IntentFilter("android.intent.action.BOOT_COMPLETED"), null, null);
         mContext.registerReceiver(mBroadcastReceiver, new IntentFilter("android.intent.action.CONFIGURATION_CHANGED"), null, null);
         IntentFilter intentfilter = new IntentFilter();

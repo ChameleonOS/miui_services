@@ -20,15 +20,15 @@
 
 # direct methods
 .method constructor <init>(Landroid/content/Context;)V
-    .registers 7
+    .registers 6
     .parameter "context"
 
     .prologue
-    const/4 v4, 0x0
+    const/4 v3, 0x0
 
-    const/4 v3, 0x4
+    const/4 v2, 0x4
 
-    const/4 v2, 0x2
+    const/4 v1, 0x2
 
     .line 16
     invoke-direct {p0, p1}, Lcom/android/server/LightsService;-><init>(Landroid/content/Context;)V
@@ -44,22 +44,18 @@
     iput-object v0, p0, Lcom/android/server/MiuiLightsService;->mResolver:Landroid/content/ContentResolver;
 
     .line 19
-    iget-object v0, p0, Lcom/android/server/LightsService;->mLights:[Lcom/android/server/LightsService$Light;
+    new-instance v0, Lcom/android/server/MiuiLightsService$Light;
 
-    new-instance v1, Lcom/android/server/MiuiLightsService$Light;
+    invoke-direct {v0, p0, v1, v3}, Lcom/android/server/MiuiLightsService$Light;-><init>(Lcom/android/server/MiuiLightsService;ILcom/android/server/MiuiLightsService$1;)V
 
-    invoke-direct {v1, p0, v2, v4}, Lcom/android/server/MiuiLightsService$Light;-><init>(Lcom/android/server/MiuiLightsService;ILcom/android/server/MiuiLightsService$1;)V
-
-    aput-object v1, v0, v2
+    invoke-virtual {p0, v1, v0}, Lcom/android/server/MiuiLightsService;->setLight(ILcom/android/server/LightsService$Light;)V
 
     .line 20
-    iget-object v0, p0, Lcom/android/server/LightsService;->mLights:[Lcom/android/server/LightsService$Light;
+    new-instance v0, Lcom/android/server/MiuiLightsService$Light;
 
-    new-instance v1, Lcom/android/server/MiuiLightsService$Light;
+    invoke-direct {v0, p0, v2, v3}, Lcom/android/server/MiuiLightsService$Light;-><init>(Lcom/android/server/MiuiLightsService;ILcom/android/server/MiuiLightsService$1;)V
 
-    invoke-direct {v1, p0, v3, v4}, Lcom/android/server/MiuiLightsService$Light;-><init>(Lcom/android/server/MiuiLightsService;ILcom/android/server/MiuiLightsService$1;)V
-
-    aput-object v1, v0, v3
+    invoke-virtual {p0, v2, v0}, Lcom/android/server/MiuiLightsService;->setLight(ILcom/android/server/LightsService$Light;)V
 
     .line 21
     return-void

@@ -86,11 +86,16 @@ public class LightsService {
         final LightsService this$0;
 
 
-        Light(int i) {
+        private Light(int i) {
             this$0 = LightsService.this;
             super();
             mId = i;
         }
+
+        Light(int i, int j) {
+            this(i);
+        }
+
     }
 
 
@@ -129,6 +134,10 @@ public class LightsService {
 
     public Light getLight(int i) {
         return mLights[i];
+    }
+
+    void setLight(int i, Light light) {
+        mLights[i] = light;
     }
 
     static final int BRIGHTNESS_MODE_SENSOR = 1;
@@ -200,7 +209,7 @@ _L2:
                 super();
             }
     };
-    final Light mLights[] = new Light[8];
+    private final Light mLights[] = new Light[8];
     private int mNativePointer;
 
 

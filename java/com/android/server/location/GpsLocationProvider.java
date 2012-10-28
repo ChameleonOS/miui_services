@@ -73,6 +73,17 @@ public class GpsLocationProvider
         }
     }
 
+    static class Injector {
+
+        static void appendUidExtra(GpsLocationProvider gpslocationprovider, Intent intent) {
+            if(gpslocationprovider.getNavigating() && gpslocationprovider.getClientUids().size() > 0)
+                intent.putExtra("android.intent.extra.UID", gpslocationprovider.getClientUids().keyAt(0));
+        }
+
+        Injector() {
+        }
+    }
+
 
     public GpsLocationProvider(Context context, ILocationManager ilocationmanager) {
         String s;
@@ -274,11 +285,6 @@ _L2:
             Log.w("GpsLocationProvider", "Could not open GPS configuration file /etc/gps.conf");
         }
           goto _L2
-    }
-
-    private void appendUidExtra(Intent intent) {
-        if(mNavigating && mClientUids.size() > 0)
-            intent.putExtra("android.intent.extra.UID", mClientUids.keyAt(0));
     }
 
     private void checkSmsSuplInit(Intent intent) {
@@ -893,7 +899,7 @@ _L14:
 _L15:
         Intent intent = new Intent("android.location.GPS_ENABLED_CHANGE");
         intent.putExtra("enabled", mNavigating);
-        appendUidExtra(intent);
+        Injector.appendUidExtra(this, intent);
         mContext.sendBroadcast(intent);
 _L7:
         arraylist;
@@ -1124,6 +1130,10 @@ _L3:
         return 1;
     }
 
+    SparseIntArray getClientUids() {
+        return mClientUids;
+    }
+
     public IGpsStatusProvider getGpsStatusProvider() {
         return mGpsStatusProvider;
     }
@@ -1149,6 +1159,10 @@ _L3:
 
     public String getName() {
         return "gps";
+    }
+
+    boolean getNavigating() {
+        return mNavigating;
     }
 
     public INetInitiatedListener getNetInitiatedListener() {

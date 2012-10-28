@@ -24,7 +24,7 @@
     .parameter
 
     .prologue
-    .line 4236
+    .line 4269
     iput-object p1, p0, Lcom/android/server/am/ActivityManagerService$6;->this$0:Lcom/android/server/am/ActivityManagerService;
 
     invoke-direct {p0}, Landroid/content/BroadcastReceiver;-><init>()V
@@ -40,18 +40,18 @@
     .parameter "intent"
 
     .prologue
-    .line 4239
+    .line 4272
     const-string v0, "android.intent.extra.PACKAGES"
 
     invoke-virtual {p2, v0}, Landroid/content/Intent;->getStringArrayExtra(Ljava/lang/String;)[Ljava/lang/String;
 
     move-result-object v11
 
-    .line 4240
+    .line 4273
     .local v11, pkgs:[Ljava/lang/String;
     if-eqz v11, :cond_25
 
-    .line 4241
+    .line 4274
     move-object v8, v11
 
     .local v8, arr$:[Ljava/lang/String;
@@ -66,13 +66,13 @@
 
     aget-object v1, v8, v9
 
-    .line 4242
+    .line 4275
     .local v1, pkg:Ljava/lang/String;
     iget-object v12, p0, Lcom/android/server/am/ActivityManagerService$6;->this$0:Lcom/android/server/am/ActivityManagerService;
 
     monitor-enter v12
 
-    .line 4243
+    .line 4276
     :try_start_12
     iget-object v0, p0, Lcom/android/server/am/ActivityManagerService$6;->this$0:Lcom/android/server/am/ActivityManagerService;
 
@@ -89,21 +89,21 @@
     const/4 v7, 0x0
 
     #calls: Lcom/android/server/am/ActivityManagerService;->forceStopPackageLocked(Ljava/lang/String;IZZZZI)Z
-    invoke-static/range {v0 .. v7}, Lcom/android/server/am/ActivityManagerService;->access$400(Lcom/android/server/am/ActivityManagerService;Ljava/lang/String;IZZZZI)Z
+    invoke-static/range {v0 .. v7}, Lcom/android/server/am/ActivityManagerService;->access$300(Lcom/android/server/am/ActivityManagerService;Ljava/lang/String;IZZZZI)Z
 
     move-result v0
 
     if-eqz v0, :cond_26
 
-    .line 4244
+    .line 4277
     const/4 v0, -0x1
 
     invoke-virtual {p0, v0}, Lcom/android/server/am/ActivityManagerService$6;->setResultCode(I)V
 
-    .line 4245
+    .line 4278
     monitor-exit v12
 
-    .line 4250
+    .line 4283
     .end local v1           #pkg:Ljava/lang/String;
     .end local v8           #arr$:[Ljava/lang/String;
     .end local v9           #i$:I
@@ -111,7 +111,7 @@
     :cond_25
     return-void
 
-    .line 4247
+    .line 4280
     .restart local v1       #pkg:Ljava/lang/String;
     .restart local v8       #arr$:[Ljava/lang/String;
     .restart local v9       #i$:I
@@ -119,12 +119,12 @@
     :cond_26
     monitor-exit v12
 
-    .line 4241
+    .line 4274
     add-int/lit8 v9, v9, 0x1
 
     goto :goto_b
 
-    .line 4247
+    .line 4280
     :catchall_2a
     move-exception v0
 

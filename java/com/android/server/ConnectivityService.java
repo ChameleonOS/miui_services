@@ -330,6 +330,20 @@ _L1:
         }
     }
 
+    static class Injector {
+
+        static void startUsingNetworkFeature(int i) {
+            FirewallManager.getInstance().onStartUsingNetworkFeature(Binder.getCallingUid(), Binder.getCallingPid(), i);
+        }
+
+        public static void stopUsingNetworkFeature(FeatureUser featureuser, int i) {
+            FirewallManager.getInstance().onStopUsingNetworkFeature(featureuser.mUid, featureuser.mPid, i);
+        }
+
+        Injector() {
+        }
+    }
+
 
     public ConnectivityService(Context context, INetworkManagementService inetworkmanagementservice, INetworkStatsService inetworkstatsservice, INetworkPolicyManager inetworkpolicymanager) {
         String as1[];
@@ -589,7 +603,7 @@ _L1:
         loge((new StringBuilder()).append("Trying to create a DataStateTracker for an unknown radio type ").append(mNetConfigs[j3].radio).toString());
 _L8:
         i3++;
-        break MISSING_BLOCK_LABEL_1273;
+        break MISSING_BLOCK_LABEL_1275;
 _L3:
         mNetTrackers[j3] = new WifiStateTracker(j3, mNetConfigs[j3].name);
         mNetTrackers[j3].startMonitoring(context, mHandler);
@@ -1542,12 +1556,11 @@ label0:
         int i;
         String s;
         int j;
-        int k;
         boolean flag1;
         i = featureuser.mNetworkType;
         s = featureuser.mFeature;
         j = featureuser.mPid;
-        k = featureuser.mUid;
+        featureuser.mUid;
         flag1 = false;
         if(ConnectivityManager.isNetworkTypeValid(i)) goto _L2; else goto _L1
 _L1:
@@ -1560,7 +1573,7 @@ _L2:
         this;
         JVM INSTR monitorenter ;
         if(mFeatureUsers.contains(featureuser))
-            break MISSING_BLOCK_LABEL_111;
+            break MISSING_BLOCK_LABEL_110;
         byte0 = 1;
           goto _L3
         Exception exception;
@@ -1581,26 +1594,26 @@ _L7:
         JVM INSTR monitorexit ;
           goto _L3
 _L5:
-        int l;
+        int k;
         NetworkStateTracker networkstatetracker;
-        l = convertFeatureToNetworkType(i, s);
-        FirewallManager.getInstance().onStopUsingNetworkFeature(k, j, l);
-        networkstatetracker = mNetTrackers[l];
+        k = convertFeatureToNetworkType(i, s);
+        Injector.stopUsingNetworkFeature(featureuser, k);
+        networkstatetracker = mNetTrackers[k];
         if(networkstatetracker != null) goto _L10; else goto _L9
 _L9:
-        log((new StringBuilder()).append("stopUsingNetworkFeature: net ").append(i).append(": ").append(s).append(" no known tracker for used net type ").append(l).toString());
+        log((new StringBuilder()).append("stopUsingNetworkFeature: net ").append(i).append(": ").append(s).append(" no known tracker for used net type ").append(k).toString());
         byte0 = -1;
         this;
         JVM INSTR monitorexit ;
           goto _L3
 _L10:
-        if(l == i) goto _L12; else goto _L11
+        if(k == i) goto _L12; else goto _L11
 _L11:
         Integer integer = new Integer(j);
-        mNetRequestersPids[l].remove(integer);
+        mNetRequestersPids[k].remove(integer);
         reassessPidDns(j, true);
-        if(mNetRequestersPids[l].size() == 0)
-            break MISSING_BLOCK_LABEL_444;
+        if(mNetRequestersPids[k].size() == 0)
+            break MISSING_BLOCK_LABEL_437;
         byte0 = 1;
         this;
         JVM INSTR monitorexit ;
@@ -2463,10 +2476,10 @@ _L6:
         NetworkInfo networkinfo;
         networkstatetracker = mNetTrackers[j];
         if(networkstatetracker == null)
-            break MISSING_BLOCK_LABEL_973;
+            break MISSING_BLOCK_LABEL_964;
         integer = new Integer(getCallingPid());
         if(j == i)
-            break MISSING_BLOCK_LABEL_865;
+            break MISSING_BLOCK_LABEL_856;
         networkinfo = networkstatetracker.getNetworkInfo();
         if(networkinfo.isAvailable())
             break MISSING_BLOCK_LABEL_454;
@@ -2501,13 +2514,13 @@ _L7:
         this;
         JVM INSTR monitorexit ;
         long l6;
-        FirewallManager.getInstance().onStartUsingNetworkFeature(getCallingUid(), getCallingPid(), j);
+        Injector.startUsingNetworkFeature(j);
         if(i1 >= 0)
             mHandler.sendMessageDelayed(mHandler.obtainMessage(101, featureuser), i1);
         if(!networkinfo.isConnectedOrConnecting() || networkstatetracker.isTeardownRequested())
-            break MISSING_BLOCK_LABEL_771;
+            break MISSING_BLOCK_LABEL_762;
         if(!networkinfo.isConnected())
-            break MISSING_BLOCK_LABEL_719;
+            break MISSING_BLOCK_LABEL_710;
         l6 = Binder.clearCallingIdentity();
         handleDnsConfigurationChange(j);
         Binder.restoreCallingIdentity(l6);

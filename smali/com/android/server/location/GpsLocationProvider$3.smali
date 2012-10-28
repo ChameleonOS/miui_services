@@ -24,7 +24,7 @@
     .parameter
 
     .prologue
-    .line 1397
+    .line 1404
     iput-object p1, p0, Lcom/android/server/location/GpsLocationProvider$3;->this$0:Lcom/android/server/location/GpsLocationProvider;
 
     invoke-direct {p0}, Landroid/location/INetInitiatedListener$Stub;-><init>()V
@@ -40,19 +40,19 @@
     .parameter "userResponse"
 
     .prologue
-    .line 1403
+    .line 1410
     new-instance v0, Ljava/lang/StringBuilder;
 
     invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 1407
+    .line 1414
     .local v0, extrasBuf:Ljava/lang/StringBuilder;
     iget-object v1, p0, Lcom/android/server/location/GpsLocationProvider$3;->this$0:Lcom/android/server/location/GpsLocationProvider;
 
     #calls: Lcom/android/server/location/GpsLocationProvider;->native_send_ni_response(II)V
     invoke-static {v1, p1, p2}, Lcom/android/server/location/GpsLocationProvider;->access$500(Lcom/android/server/location/GpsLocationProvider;II)V
 
-    .line 1408
+    .line 1415
     const/4 v1, 0x1
 
     return v1

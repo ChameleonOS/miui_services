@@ -75,6 +75,71 @@ public class NetworkPolicyManagerService extends android.net.INetworkPolicyManag
         }
     }
 
+    static class Injector {
+
+        static long adjustMobileDataUsage(NetworkPolicyManagerService networkpolicymanagerservice, NetworkTemplate networktemplate, long l, long l1) {
+            long l2 = 0L;
+            Context context = networkpolicymanagerservice.getContext();
+            if(networktemplate.getMatchRule() == 1) {
+                long l3 = android.provider.Settings.Secure.getLong(context.getContentResolver(), "data_usage_adjusting_time", l2);
+                if(l3 >= l && l3 <= l1)
+                    l2 = Math.max(l2, android.provider.Settings.Secure.getLong(context.getContentResolver(), "data_usage_adjustment", l2));
+            }
+            return l2;
+        }
+
+        static boolean isIntervalValid(int i) {
+            boolean flag;
+            if(System.currentTimeMillis() - sLastNotificationTimeArr[i] > 0x5265c00L)
+                flag = true;
+            else
+                flag = false;
+            return flag;
+        }
+
+        static void setInterval(int i) {
+            sLastNotificationTimeArr[i] = System.currentTimeMillis();
+        }
+
+        static void setNetworkTemplateEnabled(NetworkPolicyManagerService networkpolicymanagerservice, NetworkTemplate networktemplate, boolean flag) {
+            TelephonyManager telephonymanager = (TelephonyManager)networkpolicymanagerservice.getContext().getSystemService("phone");
+            networktemplate.getMatchRule();
+            JVM INSTR tableswitch 1 3: default 44
+        //                       1 45
+        //                       2 45
+        //                       3 45;
+               goto _L1 _L2 _L2 _L2
+_L1:
+            return;
+_L2:
+            if((flag || isIntervalValid(2)) && Objects.equal(telephonymanager.getSubscriberId(), networktemplate.getSubscriberId())) {
+                android.content.ContentResolver contentresolver = networkpolicymanagerservice.getContext().getContentResolver();
+                int i;
+                if(flag)
+                    i = 1;
+                else
+                    i = 0;
+                android.provider.Settings.Secure.putInt(contentresolver, "mobile_policy", i);
+            }
+            if(true) goto _L1; else goto _L3
+_L3:
+        }
+
+        private static long sLastNotificationTimeArr[];
+
+        static  {
+            long al[] = new long[4];
+            al[0] = 0L;
+            al[1] = 0L;
+            al[2] = 0L;
+            al[3] = 0L;
+            sLastNotificationTimeArr = al;
+        }
+
+        Injector() {
+        }
+    }
+
 
     public NetworkPolicyManagerService(Context context, IActivityManager iactivitymanager, IPowerManager ipowermanager, INetworkStatsService inetworkstatsservice, INetworkManagementService inetworkmanagementservice) {
         this(context, iactivitymanager, ipowermanager, inetworkstatsservice, inetworkmanagementservice, ((TrustedTime) (NtpTrustedTime.getInstance(context))), getSystemDir(), false);
@@ -213,6 +278,113 @@ label0:
         printwriter.print("]");
     }
 
+    private void enqueueNotification(NetworkPolicy networkpolicy, int i, long l) {
+        String s;
+        android.app.Notification.Builder builder;
+        Resources resources;
+        s = buildNotificationTag(networkpolicy, i);
+        builder = new android.app.Notification.Builder(mContext);
+        builder.setOnlyAlertOnce(true);
+        builder.setWhen(0L);
+        resources = mContext.getResources();
+        i;
+        JVM INSTR tableswitch 1 3: default 72
+    //                   1 118
+    //                   2 230
+    //                   3 402;
+           goto _L1 _L2 _L3 _L4
+_L1:
+        String s2 = mContext.getPackageName();
+        int ai[] = new int[1];
+        mNotifManager.enqueueNotificationWithTag(s2, s, 0, builder.getNotification(), ai);
+        mActiveNotifs.add(s);
+_L17:
+        return;
+_L2:
+        CharSequence charsequence3 = resources.getText(0x10404d7);
+        String s3 = resources.getString(0x10404d8);
+        builder.setSmallIcon(0x1080078);
+        builder.setTicker(charsequence3);
+        builder.setContentTitle(charsequence3);
+        builder.setContentText(s3);
+        Intent intent2 = buildSnoozeWarningIntent(networkpolicy.template);
+        builder.setDeleteIntent(PendingIntent.getBroadcast(mContext, 0, intent2, 0x8000000));
+        Intent intent3 = buildViewDataUsageIntent(networkpolicy.template);
+        builder.setContentIntent(PendingIntent.getActivity(mContext, 0, intent3, 0x8000000));
+          goto _L1
+_L3:
+        CharSequence charsequence1 = resources.getText(0x10404dd);
+        networkpolicy.template.getMatchRule();
+        JVM INSTR tableswitch 1 4: default 276
+    //                   1 376
+    //                   2 350
+    //                   3 363
+    //                   4 389;
+           goto _L5 _L6 _L7 _L8 _L9
+_L5:
+        CharSequence charsequence2 = null;
+_L10:
+        builder.setOngoing(true);
+        builder.setSmallIcon(0x1080510);
+        builder.setTicker(charsequence2);
+        builder.setContentTitle(charsequence2);
+        builder.setContentText(charsequence1);
+        Intent intent1 = buildNetworkOverLimitIntent(networkpolicy.template);
+        builder.setContentIntent(PendingIntent.getActivity(mContext, 0, intent1, 0x8000000));
+          goto _L1
+_L7:
+        charsequence2 = resources.getText(0x10404d9);
+          goto _L10
+_L8:
+        charsequence2 = resources.getText(0x10404da);
+          goto _L10
+_L6:
+        charsequence2 = resources.getText(0x10404db);
+          goto _L10
+_L9:
+        charsequence2 = resources.getText(0x10404dc);
+          goto _L10
+_L4:
+        String s1;
+        long l1 = l - networkpolicy.limitBytes;
+        Object aobj[] = new Object[1];
+        aobj[0] = Formatter.formatFileSize(mContext, l1);
+        s1 = resources.getString(0x10404e2, aobj);
+        networkpolicy.template.getMatchRule();
+        JVM INSTR tableswitch 1 4: default 480
+    //                   1 580
+    //                   2 554
+    //                   3 567
+    //                   4 593;
+           goto _L11 _L12 _L13 _L14 _L15
+_L11:
+        CharSequence charsequence = null;
+_L16:
+        builder.setOngoing(true);
+        builder.setSmallIcon(0x1080078);
+        builder.setTicker(charsequence);
+        builder.setContentTitle(charsequence);
+        builder.setContentText(s1);
+        Intent intent = buildViewDataUsageIntent(networkpolicy.template);
+        builder.setContentIntent(PendingIntent.getActivity(mContext, 0, intent, 0x8000000));
+          goto _L1
+_L13:
+        charsequence = resources.getText(0x10404de);
+          goto _L16
+_L14:
+        charsequence = resources.getText(0x10404df);
+          goto _L16
+_L12:
+        charsequence = resources.getText(0x10404e0);
+          goto _L16
+_L15:
+        charsequence = resources.getText(0x10404e1);
+          goto _L16
+        RemoteException remoteexception;
+        remoteexception;
+          goto _L17
+    }
+
     private void enqueueRestrictedNotification(String s) {
         android.app.Notification.Builder builder;
         Resources resources = mContext.getResources();
@@ -237,6 +409,13 @@ _L2:
         remoteexception;
         if(true) goto _L2; else goto _L1
 _L1:
+    }
+
+    private void enqueueValidNotification(NetworkPolicy networkpolicy, int i, long l) {
+        if(Injector.isIntervalValid(i)) {
+            Injector.setInterval(i);
+            enqueueNotification(networkpolicy, i, l);
+        }
     }
 
     private void ensureActiveMobilePolicyLocked() {
@@ -322,22 +501,21 @@ _L5:
     }
 
     private long getTotalBytes(NetworkTemplate networktemplate, long l, long l1) {
-        long l2 = 0L;
-        long l4 = mNetworkStats.getNetworkTotalBytes(networktemplate, l, l1);
-        l2 = l4;
+        long l3;
+        long l4;
+        l3 = mNetworkStats.getNetworkTotalBytes(networktemplate, l, l1);
+        l4 = Injector.adjustMobileDataUsage(this, networktemplate, l, l1);
+        long l2 = l3 + l4;
 _L2:
-        if(networktemplate.getMatchRule() == 1) {
-            long l3 = android.provider.Settings.Secure.getLong(mContext.getContentResolver(), "data_usage_adjusting_time", 0L);
-            if(l3 >= l && l3 <= l1)
-                l2 = Math.max(0L, l2 + android.provider.Settings.Secure.getLong(mContext.getContentResolver(), "data_usage_adjustment", 0L));
-        }
         return l2;
         RuntimeException runtimeexception;
         runtimeexception;
         Slog.w("NetworkPolicy", (new StringBuilder()).append("problem reading network stats: ").append(runtimeexception).toString());
+        l2 = 0L;
         continue; /* Loop/switch isn't completed */
         RemoteException remoteexception;
         remoteexception;
+        l2 = 0L;
         if(true) goto _L2; else goto _L1
 _L1:
     }
@@ -661,6 +839,36 @@ _L2:
 _L1:
     }
 
+    private void setNetworkTemplateEnabled(NetworkTemplate networktemplate, boolean flag) {
+        TelephonyManager telephonymanager;
+        Injector.setNetworkTemplateEnabled(this, networktemplate, flag);
+        telephonymanager = TelephonyManager.from(mContext);
+        networktemplate.getMatchRule();
+        JVM INSTR tableswitch 1 5: default 52
+    //                   1 63
+    //                   2 63
+    //                   3 63
+    //                   4 99
+    //                   5 108;
+           goto _L1 _L2 _L2 _L2 _L3 _L4
+_L1:
+        throw new IllegalArgumentException("unexpected template");
+_L2:
+        if(telephonymanager.getSimState() == 5 && Objects.equal(telephonymanager.getSubscriberId(), networktemplate.getSubscriberId())) {
+            setPolicyDataEnable(0, flag);
+            setPolicyDataEnable(6, flag);
+        }
+_L6:
+        return;
+_L3:
+        setPolicyDataEnable(1, flag);
+        continue; /* Loop/switch isn't completed */
+_L4:
+        setPolicyDataEnable(9, flag);
+        if(true) goto _L6; else goto _L5
+_L5:
+    }
+
     private void setPolicyDataEnable(int i, boolean flag) {
         mConnManager.setPolicyDataEnable(i, flag);
 _L2:
@@ -838,15 +1046,15 @@ _L1:
                 long l2 = getTotalBytes(networkpolicy.template, l1, l);
                 if(networkpolicy.isOverLimit(l2)) {
                     if(networkpolicy.lastLimitSnooze >= l1) {
-                        enqueueNotification(networkpolicy, 3, l2);
+                        enqueueValidNotification(networkpolicy, 3, l2);
                     } else {
-                        enqueueNotification(networkpolicy, 2, l2);
+                        enqueueValidNotification(networkpolicy, 2, l2);
                         notifyOverLimitLocked(networkpolicy.template);
                     }
                 } else {
                     notifyUnderLimitLocked(networkpolicy.template);
                     if(networkpolicy.isOverWarning(l2) && networkpolicy.lastWarningSnooze < l1)
-                        enqueueNotification(networkpolicy, 1, l2);
+                        enqueueValidNotification(networkpolicy, 1, l2);
                 }
             }
         } while(true);
@@ -1100,113 +1308,6 @@ _L1:
 _L2:
     }
 
-    protected void enqueueNotification(NetworkPolicy networkpolicy, int i, long l) {
-        String s;
-        android.app.Notification.Builder builder;
-        Resources resources;
-        s = buildNotificationTag(networkpolicy, i);
-        builder = new android.app.Notification.Builder(mContext);
-        builder.setOnlyAlertOnce(true);
-        builder.setWhen(0L);
-        resources = mContext.getResources();
-        i;
-        JVM INSTR tableswitch 1 3: default 72
-    //                   1 118
-    //                   2 230
-    //                   3 402;
-           goto _L1 _L2 _L3 _L4
-_L1:
-        String s2 = mContext.getPackageName();
-        int ai[] = new int[1];
-        mNotifManager.enqueueNotificationWithTag(s2, s, 0, builder.getNotification(), ai);
-        mActiveNotifs.add(s);
-_L17:
-        return;
-_L2:
-        CharSequence charsequence3 = resources.getText(0x10404d7);
-        String s3 = resources.getString(0x10404d8);
-        builder.setSmallIcon(0x1080078);
-        builder.setTicker(charsequence3);
-        builder.setContentTitle(charsequence3);
-        builder.setContentText(s3);
-        Intent intent2 = buildSnoozeWarningIntent(networkpolicy.template);
-        builder.setDeleteIntent(PendingIntent.getBroadcast(mContext, 0, intent2, 0x8000000));
-        Intent intent3 = buildViewDataUsageIntent(networkpolicy.template);
-        builder.setContentIntent(PendingIntent.getActivity(mContext, 0, intent3, 0x8000000));
-          goto _L1
-_L3:
-        CharSequence charsequence1 = resources.getText(0x10404dd);
-        networkpolicy.template.getMatchRule();
-        JVM INSTR tableswitch 1 4: default 276
-    //                   1 376
-    //                   2 350
-    //                   3 363
-    //                   4 389;
-           goto _L5 _L6 _L7 _L8 _L9
-_L5:
-        CharSequence charsequence2 = null;
-_L10:
-        builder.setOngoing(true);
-        builder.setSmallIcon(0x1080510);
-        builder.setTicker(charsequence2);
-        builder.setContentTitle(charsequence2);
-        builder.setContentText(charsequence1);
-        Intent intent1 = buildNetworkOverLimitIntent(networkpolicy.template);
-        builder.setContentIntent(PendingIntent.getActivity(mContext, 0, intent1, 0x8000000));
-          goto _L1
-_L7:
-        charsequence2 = resources.getText(0x10404d9);
-          goto _L10
-_L8:
-        charsequence2 = resources.getText(0x10404da);
-          goto _L10
-_L6:
-        charsequence2 = resources.getText(0x10404db);
-          goto _L10
-_L9:
-        charsequence2 = resources.getText(0x10404dc);
-          goto _L10
-_L4:
-        String s1;
-        long l1 = l - networkpolicy.limitBytes;
-        Object aobj[] = new Object[1];
-        aobj[0] = Formatter.formatFileSize(mContext, l1);
-        s1 = resources.getString(0x10404e2, aobj);
-        networkpolicy.template.getMatchRule();
-        JVM INSTR tableswitch 1 4: default 480
-    //                   1 580
-    //                   2 554
-    //                   3 567
-    //                   4 593;
-           goto _L11 _L12 _L13 _L14 _L15
-_L11:
-        CharSequence charsequence = null;
-_L16:
-        builder.setOngoing(true);
-        builder.setSmallIcon(0x1080078);
-        builder.setTicker(charsequence);
-        builder.setContentTitle(charsequence);
-        builder.setContentText(s1);
-        Intent intent = buildViewDataUsageIntent(networkpolicy.template);
-        builder.setContentIntent(PendingIntent.getActivity(mContext, 0, intent, 0x8000000));
-          goto _L1
-_L13:
-        charsequence = resources.getText(0x10404de);
-          goto _L16
-_L14:
-        charsequence = resources.getText(0x10404df);
-          goto _L16
-_L12:
-        charsequence = resources.getText(0x10404e0);
-          goto _L16
-_L15:
-        charsequence = resources.getText(0x10404e1);
-          goto _L16
-        RemoteException remoteexception;
-        remoteexception;
-          goto _L17
-    }
-
     public int getAppPolicy(int i) {
         mContext.enforceCallingOrSelfPermission("android.permission.MANAGE_NETWORK_POLICY", "NetworkPolicy");
         Object obj = mRulesLock;
@@ -1234,6 +1335,10 @@ _L15:
             }
             j++;
         } while(true);
+    }
+
+    Context getContext() {
+        return mContext;
     }
 
     public NetworkPolicy[] getNetworkPolicies() {
@@ -1342,34 +1447,6 @@ _L3:
         updateNotificationsLocked();
         writePolicyLocked();
         return;
-    }
-
-    protected void setNetworkTemplateEnabled(NetworkTemplate networktemplate, boolean flag) {
-        TelephonyManager telephonymanager = TelephonyManager.from(mContext);
-        networktemplate.getMatchRule();
-        JVM INSTR tableswitch 1 5: default 48
-    //                   1 59
-    //                   2 59
-    //                   3 59
-    //                   4 95
-    //                   5 104;
-           goto _L1 _L2 _L2 _L2 _L3 _L4
-_L1:
-        throw new IllegalArgumentException("unexpected template");
-_L2:
-        if(telephonymanager.getSimState() == 5 && Objects.equal(telephonymanager.getSubscriberId(), networktemplate.getSubscriberId())) {
-            setPolicyDataEnable(0, flag);
-            setPolicyDataEnable(6, flag);
-        }
-_L6:
-        return;
-_L3:
-        setPolicyDataEnable(1, flag);
-        continue; /* Loop/switch isn't completed */
-_L4:
-        setPolicyDataEnable(9, flag);
-        if(true) goto _L6; else goto _L5
-_L5:
     }
 
     public void setRestrictBackground(boolean flag) {

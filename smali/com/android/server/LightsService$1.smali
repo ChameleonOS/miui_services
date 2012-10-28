@@ -28,7 +28,7 @@
     .parameter
 
     .prologue
-    .line 145
+    .line 151
     iput-object p1, p0, Lcom/android/server/LightsService$1;->this$0:Lcom/android/server/LightsService;
 
     invoke-direct {p0}, Landroid/os/IHardwareService$Stub;-><init>()V
@@ -44,7 +44,7 @@
     .prologue
     const/4 v3, 0x0
 
-    .line 151
+    .line 157
     :try_start_1
     new-instance v1, Ljava/io/FileInputStream;
 
@@ -52,37 +52,37 @@
 
     invoke-direct {v1, v4}, Ljava/io/FileInputStream;-><init>(Ljava/lang/String;)V
 
-    .line 152
+    .line 158
     .local v1, fis:Ljava/io/FileInputStream;
     invoke-virtual {v1}, Ljava/io/FileInputStream;->read()I
 
     move-result v2
 
-    .line 153
+    .line 159
     .local v2, result:I
     invoke-virtual {v1}, Ljava/io/FileInputStream;->close()V
     :try_end_f
     .catch Ljava/lang/Exception; {:try_start_1 .. :try_end_f} :catch_15
 
-    .line 154
+    .line 160
     const/16 v4, 0x30
 
     if-eq v2, v4, :cond_14
 
     const/4 v3, 0x1
 
-    .line 156
+    .line 162
     .end local v1           #fis:Ljava/io/FileInputStream;
     .end local v2           #result:I
     :cond_14
     :goto_14
     return v3
 
-    .line 155
+    .line 161
     :catch_15
     move-exception v0
 
-    .line 156
+    .line 162
     .local v0, e:Ljava/lang/Exception;
     goto :goto_14
 .end method
@@ -92,7 +92,7 @@
     .parameter "on"
 
     .prologue
-    .line 161
+    .line 167
     iget-object v2, p0, Lcom/android/server/LightsService$1;->this$0:Lcom/android/server/LightsService;
 
     #getter for: Lcom/android/server/LightsService;->mContext:Landroid/content/Context;
@@ -123,7 +123,7 @@
 
     if-eqz v2, :cond_24
 
-    .line 165
+    .line 171
     new-instance v2, Ljava/lang/SecurityException;
 
     const-string v3, "Requires FLASHLIGHT or HARDWARE_TEST permission"
@@ -132,7 +132,7 @@
 
     throw v2
 
-    .line 168
+    .line 174
     :cond_24
     :try_start_24
     new-instance v1, Ljava/io/FileOutputStream;
@@ -141,13 +141,13 @@
 
     invoke-direct {v1, v2}, Ljava/io/FileOutputStream;-><init>(Ljava/lang/String;)V
 
-    .line 169
+    .line 175
     .local v1, fos:Ljava/io/FileOutputStream;
     const/4 v2, 0x2
 
     new-array v0, v2, [B
 
-    .line 170
+    .line 176
     .local v0, bytes:[B
     const/4 v3, 0x0
 
@@ -160,28 +160,28 @@
 
     aput-byte v2, v0, v3
 
-    .line 171
+    .line 177
     const/4 v2, 0x1
 
     const/16 v3, 0xa
 
     aput-byte v3, v0, v2
 
-    .line 172
+    .line 178
     invoke-virtual {v1, v0}, Ljava/io/FileOutputStream;->write([B)V
 
-    .line 173
+    .line 179
     invoke-virtual {v1}, Ljava/io/FileOutputStream;->close()V
     :try_end_41
     .catch Ljava/lang/Exception; {:try_start_24 .. :try_end_41} :catch_45
 
-    .line 177
+    .line 183
     .end local v0           #bytes:[B
     .end local v1           #fos:Ljava/io/FileOutputStream;
     :goto_41
     return-void
 
-    .line 170
+    .line 176
     .restart local v0       #bytes:[B
     .restart local v1       #fos:Ljava/io/FileOutputStream;
     :cond_42
@@ -189,7 +189,7 @@
 
     goto :goto_33
 
-    .line 174
+    .line 180
     .end local v0           #bytes:[B
     .end local v1           #fos:Ljava/io/FileOutputStream;
     :catch_45

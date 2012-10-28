@@ -52,85 +52,83 @@
 
 .field private final mLegacyFlashlightHack:Landroid/os/IHardwareService$Stub;
 
-.field final mLights:[Lcom/android/server/LightsService$Light;
-    .annotation build Landroid/annotation/MiuiHook;
-        value = .enum Landroid/annotation/MiuiHook$MiuiHookType;->CHANGE_ACCESS:Landroid/annotation/MiuiHook$MiuiHookType;
-    .end annotation
-.end field
+.field private final mLights:[Lcom/android/server/LightsService$Light;
 
 .field private mNativePointer:I
 
 
 # direct methods
 .method constructor <init>(Landroid/content/Context;)V
-    .registers 6
+    .registers 7
     .parameter "context"
 
     .prologue
-    const/16 v3, 0x8
+    const/16 v4, 0x8
 
-    .line 180
+    .line 186
     invoke-direct/range {p0 .. p0}, Ljava/lang/Object;-><init>()V
 
-    .line 60
-    new-array v1, v3, [Lcom/android/server/LightsService$Light;
+    .line 63
+    new-array v1, v4, [Lcom/android/server/LightsService$Light;
 
     iput-object v1, p0, Lcom/android/server/LightsService;->mLights:[Lcom/android/server/LightsService$Light;
 
-    .line 145
+    .line 151
     new-instance v1, Lcom/android/server/LightsService$1;
 
     invoke-direct {v1, p0}, Lcom/android/server/LightsService$1;-><init>(Lcom/android/server/LightsService;)V
 
     iput-object v1, p0, Lcom/android/server/LightsService;->mLegacyFlashlightHack:Landroid/os/IHardwareService$Stub;
 
-    .line 201
+    .line 207
     new-instance v1, Lcom/android/server/LightsService$2;
 
     invoke-direct {v1, p0}, Lcom/android/server/LightsService$2;-><init>(Lcom/android/server/LightsService;)V
 
     iput-object v1, p0, Lcom/android/server/LightsService;->mH:Landroid/os/Handler;
 
-    .line 182
+    .line 188
     invoke-static {}, Lcom/android/server/LightsService;->init_native()I
 
     move-result v1
 
     iput v1, p0, Lcom/android/server/LightsService;->mNativePointer:I
 
-    .line 183
+    .line 189
     iput-object p1, p0, Lcom/android/server/LightsService;->mContext:Landroid/content/Context;
 
-    .line 185
+    .line 191
     const-string v1, "hardware"
 
     iget-object v2, p0, Lcom/android/server/LightsService;->mLegacyFlashlightHack:Landroid/os/IHardwareService$Stub;
 
     invoke-static {v1, v2}, Landroid/os/ServiceManager;->addService(Ljava/lang/String;Landroid/os/IBinder;)V
 
-    .line 187
+    .line 193
     const/4 v0, 0x0
 
     .local v0, i:I
     :goto_27
-    if-ge v0, v3, :cond_35
+    if-ge v0, v4, :cond_36
 
-    .line 188
+    .line 194
     iget-object v1, p0, Lcom/android/server/LightsService;->mLights:[Lcom/android/server/LightsService$Light;
 
     new-instance v2, Lcom/android/server/LightsService$Light;
 
-    invoke-direct {v2, p0, v0}, Lcom/android/server/LightsService$Light;-><init>(Lcom/android/server/LightsService;I)V
+    const/4 v3, 0x0
+
+    invoke-direct {v2, p0, v0, v3}, Lcom/android/server/LightsService$Light;-><init>(Lcom/android/server/LightsService;ILcom/android/server/LightsService$1;)V
 
     aput-object v2, v1, v0
 
-    .line 187
+    .line 193
     add-int/lit8 v0, v0, 0x1
 
     goto :goto_27
 
-    .line 190
-    :cond_35
+    .line 196
+    :cond_36
     return-void
 .end method
 
@@ -204,15 +202,15 @@
     .end annotation
 
     .prologue
-    .line 193
+    .line 199
     iget v0, p0, Lcom/android/server/LightsService;->mNativePointer:I
 
     invoke-static {v0}, Lcom/android/server/LightsService;->finalize_native(I)V
 
-    .line 194
+    .line 200
     invoke-super {p0}, Ljava/lang/Object;->finalize()V
 
-    .line 195
+    .line 201
     return-void
 .end method
 
@@ -221,10 +219,27 @@
     .parameter "id"
 
     .prologue
-    .line 198
+    .line 204
     iget-object v0, p0, Lcom/android/server/LightsService;->mLights:[Lcom/android/server/LightsService$Light;
 
     aget-object v0, v0, p1
 
     return-object v0
+.end method
+
+.method setLight(ILcom/android/server/LightsService$Light;)V
+    .registers 4
+    .parameter "id"
+    .parameter "light"
+    .annotation build Landroid/annotation/MiuiHook;
+        value = .enum Landroid/annotation/MiuiHook$MiuiHookType;->NEW_METHOD:Landroid/annotation/MiuiHook$MiuiHookType;
+    .end annotation
+
+    .prologue
+    .line 34
+    iget-object v0, p0, Lcom/android/server/LightsService;->mLights:[Lcom/android/server/LightsService$Light;
+
+    aput-object p2, v0, p1
+
+    return-void
 .end method

@@ -38,10 +38,10 @@ import miui.provider.ExtraGuard;
 import org.xmlpull.v1.*;
 
 // Referenced classes of package com.android.server.pm:
-//            Settings, MiuiSharedUids, Installer, UserManager, 
-//            PackageSetting, GrantedPermissions, PackageSettingBase, PreferredActivity, 
+//            Settings, Installer, UserManager, PackageSetting, 
+//            GrantedPermissions, PackageSettingBase, ExtraPackageManagerServices, PreferredActivity, 
 //            BasePermission, PackageSignatures, SharedUserSetting, PackageVerificationState, 
-//            PackageVerificationResponse
+//            PackageVerificationResponse, MiuiSharedUids
 
 public class PackageManagerService extends android.content.pm.IPackageManager.Stub {
     static class DumpState {
@@ -1518,32 +1518,6 @@ _L3:
 
     class PackageHandler extends Handler {
 
-        private boolean checkApk(HandlerParams handlerparams) {
-label0:
-            {
-                {
-                    if(!(handlerparams instanceof InstallParams))
-                        break label0;
-                    InstallParams installparams = (InstallParams)handlerparams;
-                    if(ExtraGuard.checkApk(mContext, installparams.getPackageUri()))
-                        break label0;
-                    boolean flag;
-                    if(installparams.observer != null)
-                        try {
-                            installparams.observer.packageInstalled(null, -22);
-                        }
-                        catch(RemoteException remoteexception) { }
-                    flag = false;
-                }
-                return flag;
-            }
-            flag = true;
-            if(false)
-                ;
-            else
-                break MISSING_BLOCK_LABEL_50;
-        }
-
         private boolean connectToService() {
             boolean flag = true;
             Intent intent = (new Intent()).setComponent(PackageManagerService.DEFAULT_CONTAINER_COMPONENT);
@@ -1569,41 +1543,39 @@ label0:
         void doHandleMessage(Message message) {
             message.what;
             JVM INSTR tableswitch 1 16: default 84
-        //                       1 548
+        //                       1 539
         //                       2 84
-        //                       3 187
+        //                       3 178
         //                       4 84
         //                       5 85
-        //                       6 474
-        //                       7 824
+        //                       6 465
+        //                       7 815
         //                       8 84
-        //                       9 909
-        //                       10 393
-        //                       11 536
-        //                       12 1251
-        //                       13 1351
-        //                       14 1418
-        //                       15 1628
-        //                       16 1521;
+        //                       9 900
+        //                       10 384
+        //                       11 527
+        //                       12 1242
+        //                       13 1342
+        //                       14 1409
+        //                       15 1619
+        //                       16 1512;
                goto _L1 _L2 _L1 _L3 _L1 _L4 _L5 _L6 _L1 _L7 _L8 _L9 _L10 _L11 _L12 _L13 _L14
 _L1:
             return;
 _L4:
             HandlerParams handlerparams1 = (HandlerParams)message.obj;
-            if(checkApk(handlerparams1)) {
-                int k2 = mPendingInstalls.size();
-                if(!mBound) {
-                    if(!connectToService()) {
-                        Slog.e("PackageManager", "Failed to bind to media container service");
-                        handlerparams1.serviceError();
-                    } else {
-                        mPendingInstalls.add(k2, handlerparams1);
-                    }
+            int k2 = mPendingInstalls.size();
+            if(!mBound) {
+                if(!connectToService()) {
+                    Slog.e("PackageManager", "Failed to bind to media container service");
+                    handlerparams1.serviceError();
                 } else {
                     mPendingInstalls.add(k2, handlerparams1);
-                    if(k2 == 0)
-                        mHandler.sendEmptyMessage(3);
                 }
+            } else {
+                mPendingInstalls.add(k2, handlerparams1);
+                if(k2 == 0)
+                    mHandler.sendEmptyMessage(3);
             }
               goto _L1
 _L3:
@@ -1661,7 +1633,7 @@ _L2:
             JVM INSTR monitorenter ;
             if(mPendingBroadcasts != null) goto _L15; else goto _L1
 _L15:
-            break MISSING_BLOCK_LABEL_588;
+            break MISSING_BLOCK_LABEL_579;
             Exception exception4;
             exception4;
             throw exception4;
@@ -1691,7 +1663,7 @@ _L19:
             aarraylist[k1] = (ArrayList)entry.getValue();
             PackageSetting packagesetting = (PackageSetting)mSettings.mPackages.get(entry.getKey());
             if(packagesetting == null)
-                break MISSING_BLOCK_LABEL_1813;
+                break MISSING_BLOCK_LABEL_1804;
             j2 = packagesetting.appId;
 _L23:
             ai[k1] = j2;
@@ -1819,7 +1791,7 @@ _L12:
             for(Iterator iterator = mDirtyUsers.iterator(); iterator.hasNext(); mSettings.writePackageRestrictionsLPr(i1))
                 i1 = ((Integer)iterator.next()).intValue();
 
-            break MISSING_BLOCK_LABEL_1500;
+            break MISSING_BLOCK_LABEL_1491;
             Exception exception;
             exception;
             throw exception;
@@ -1861,7 +1833,7 @@ _L21:
             mPendingVerification.remove(i);
             installargs = packageverificationstate.getInstallArgs();
             if(!packageverificationstate.isInstallAllowed())
-                break MISSING_BLOCK_LABEL_1806;
+                break MISSING_BLOCK_LABEL_1797;
             j = -110;
             int k = installargs.copyApk(mContainerService, true);
             j = k;
@@ -1880,7 +1852,7 @@ _L22:
         }
 
         public void handleMessage(Message message) {
-            doHandleMessage(message);
+            Injector.doHandleMessage(PackageManagerService.this, this, message);
             Process.setThreadPriority(10);
             return;
             Exception exception;
@@ -1930,6 +1902,111 @@ _L22:
         DefaultContainerConnection() {
             this$0 = PackageManagerService.this;
             super();
+        }
+    }
+
+    static class Injector {
+
+        static void addMiuiSharedUids(PackageManagerService packagemanagerservice) {
+            MiuiSharedUids.add(packagemanagerservice.mSettings, true);
+        }
+
+        static boolean addPackageToSlice(ParceledListSlice parceledlistslice, PackageInfo packageinfo, int i) {
+            boolean flag;
+            if((0x20000 & i) != 0)
+                if(packageinfo.activities != null && packageinfo.activities.length > 0)
+                    packageinfo.activities = null;
+                else
+                    packageinfo = null;
+            if((0x40000 & i) != 0)
+                if(packageinfo.activities != null && packageinfo.activities.length > 0 || packageinfo.services != null && packageinfo.services.length > 0) {
+                    packageinfo.activities = null;
+                    packageinfo.services = null;
+                } else {
+                    packageinfo = null;
+                }
+            if(packageinfo != null)
+                flag = parceledlistslice.append(packageinfo);
+            else
+                flag = false;
+            return flag;
+        }
+
+        static boolean checkApk(PackageManagerService packagemanagerservice, Message message) {
+label0:
+            {
+                {
+                    HandlerParams handlerparams = (HandlerParams)message.obj;
+                    if(!(handlerparams instanceof InstallParams))
+                        break label0;
+                    InstallParams installparams = (InstallParams)handlerparams;
+                    if(ExtraGuard.checkApk(packagemanagerservice.mContext, installparams.getPackageUri()))
+                        break label0;
+                    boolean flag;
+                    if(installparams.observer != null)
+                        try {
+                            installparams.observer.packageInstalled(null, -22);
+                        }
+                        catch(RemoteException remoteexception) { }
+                    flag = false;
+                }
+                return flag;
+            }
+            flag = true;
+            if(false)
+                ;
+            else
+                break MISSING_BLOCK_LABEL_59;
+        }
+
+        static void doHandleMessage(PackageManagerService packagemanagerservice, PackageHandler packagehandler, Message message) {
+            if(message.what != 5 || checkApk(packagemanagerservice, message))
+                packagehandler.doHandleMessage(message);
+        }
+
+        static void ignoreMiuiFrameworkRes(PackageManagerService packagemanagerservice, HashSet hashset) {
+            hashset.add((new StringBuilder()).append(packagemanagerservice.mFrameworkDir.getPath()).append("/framework-miui-res.apk").toString());
+        }
+
+        static boolean setAccessControl(PackageManagerService packagemanagerservice, String s, int i, int j) {
+            HashMap hashmap = packagemanagerservice.mPackages;
+            Settings settings = packagemanagerservice.mSettings;
+            hashmap;
+            JVM INSTR monitorenter ;
+            if(i == 0x80000000) goto _L2; else goto _L1
+_L1:
+            boolean flag = false;
+              goto _L3
+_L2:
+            android.content.pm.PackageParser.Package package1;
+            PackageSetting packagesetting;
+            package1 = (android.content.pm.PackageParser.Package)hashmap.get(s);
+            packagesetting = (PackageSetting)settings.mPackages.get(s);
+            if(package1 == null || packagesetting == null) goto _L5; else goto _L4
+_L4:
+            if(j != 0x80000000) goto _L7; else goto _L6
+_L6:
+            packagesetting.pkgFlags = 0x80000000 | ((GrantedPermissions) (packagesetting)).pkgFlags;
+            ApplicationInfo applicationinfo1 = package1.applicationInfo;
+            applicationinfo1.flags = 0x80000000 | applicationinfo1.flags;
+_L8:
+            settings.writeLPr();
+_L5:
+            flag = true;
+            break; /* Loop/switch isn't completed */
+            Exception exception;
+            exception;
+            throw exception;
+_L7:
+            packagesetting.pkgFlags = 0x7fffffff & ((GrantedPermissions) (packagesetting)).pkgFlags;
+            ApplicationInfo applicationinfo = package1.applicationInfo;
+            applicationinfo.flags = 0x7fffffff & applicationinfo.flags;
+            if(true) goto _L8; else goto _L3
+_L3:
+            return flag;
+        }
+
+        Injector() {
         }
     }
 
@@ -1997,7 +2074,7 @@ _L22:
         mSettings.addSharedUserLPw("android.uid.phone", 1001, 1);
         mSettings.addSharedUserLPw("android.uid.log", 1007, 1);
         mSettings.addSharedUserLPw("android.uid.nfc", 1027, 1);
-        MiuiSharedUids.add(mSettings, true);
+        Injector.addMiuiSharedUids(this);
         s1 = SystemProperties.get("debug.separate_processes");
         if(s1 != null && s1.length() > 0) {
             if("*".equals(s1)) {
@@ -2044,15 +2121,15 @@ _L22:
         flag2 = false;
         s2 = System.getProperty("java.boot.class.path");
         if(s2 == null)
-            break MISSING_BLOCK_LABEL_1063;
+            break MISSING_BLOCK_LABEL_1059;
         as2 = splitString(s2, ':');
         k2 = 0;
 _L1:
         l2 = as2.length;
         if(k2 >= l2)
-            break MISSING_BLOCK_LABEL_1072;
+            break MISSING_BLOCK_LABEL_1068;
         if(!DexFile.isDexOptNeeded(as2[k2]))
-            break MISSING_BLOCK_LABEL_889;
+            break MISSING_BLOCK_LABEL_885;
         hashset.add(as2[k2]);
         mInstaller.dexopt(as2[k2], 1000, true);
         flag2 = true;
@@ -2076,12 +2153,12 @@ _L2:
         Slog.w("PackageManager", "No BOOTCLASSPATH found!");
         Iterator iterator3;
         if(mSharedLibraries.size() <= 0)
-            break MISSING_BLOCK_LABEL_1232;
+            break MISSING_BLOCK_LABEL_1228;
         iterator3 = mSharedLibraries.values().iterator();
 _L4:
         String s7;
         if(!iterator3.hasNext())
-            break MISSING_BLOCK_LABEL_1232;
+            break MISSING_BLOCK_LABEL_1228;
         s7 = (String)iterator3.next();
         if(!DexFile.isDexOptNeeded(s7)) goto _L4; else goto _L3
 _L3:
@@ -2099,7 +2176,7 @@ _L3:
           goto _L4
         String as[];
         hashset.add((new StringBuilder()).append(mFrameworkDir.getPath()).append("/framework-res.apk").toString());
-        hashset.add((new StringBuilder()).append(mFrameworkDir.getPath()).append("/framework-miui-res.apk").toString());
+        Injector.ignoreMiuiFrameworkRes(this, hashset);
         as = mFrameworkDir.list();
         if(as == null) goto _L6; else goto _L5
 _L5:
@@ -2200,6 +2277,7 @@ _L14:
             j++;
         } while(true);
         deleteTempPackageFiles();
+        ExtraPackageManagerServices.performPreinstallApp(mSettings);
         if(!mOnlyCore) {
             EventLog.writeEvent(3080, SystemClock.uptimeMillis());
             mAppInstallObserver = new AppDirObserver(mAppInstallDir.getPath(), 712, false);
@@ -2255,7 +2333,7 @@ _L28:
             if(mActivities.mActivities.get(preferredactivity1.mPref.mComponent) == null)
                 arraylist2.add(preferredactivity1);
         } while(true);
-        break MISSING_BLOCK_LABEL_2799;
+        break MISSING_BLOCK_LABEL_2776;
 _L24:
         int j1 = arraylist2.size();
         int i1;
@@ -2290,27 +2368,6 @@ _L21:
           goto _L28
         i1 = 0;
           goto _L24
-    }
-
-    private boolean addPackageToSlice(ParceledListSlice parceledlistslice, PackageInfo packageinfo, int i) {
-        boolean flag;
-        if((0x20000 & i) != 0)
-            if(packageinfo.activities != null && packageinfo.activities.length > 0)
-                packageinfo.activities = null;
-            else
-                packageinfo = null;
-        if((0x40000 & i) != 0)
-            if(packageinfo.activities != null && packageinfo.activities.length > 0 || packageinfo.services != null && packageinfo.services.length > 0) {
-                packageinfo.activities = null;
-                packageinfo.services = null;
-            } else {
-                packageinfo = null;
-            }
-        if(packageinfo != null)
-            flag = parceledlistslice.append(packageinfo);
-        else
-            flag = false;
-        return flag;
     }
 
     static int[] appendInts(int ai[], int ai1[]) {
@@ -5846,43 +5903,6 @@ _L7:
         }
     }
 
-    private boolean setAccessControl(String s, int i, int j) {
-        HashMap hashmap = mPackages;
-        hashmap;
-        JVM INSTR monitorenter ;
-        if(i == 0x80000000) goto _L2; else goto _L1
-_L1:
-        boolean flag = false;
-          goto _L3
-_L2:
-        android.content.pm.PackageParser.Package package1;
-        PackageSetting packagesetting;
-        package1 = (android.content.pm.PackageParser.Package)mPackages.get(s);
-        packagesetting = (PackageSetting)mSettings.mPackages.get(s);
-        if(package1 == null || packagesetting == null) goto _L5; else goto _L4
-_L4:
-        if(j != 0x80000000) goto _L7; else goto _L6
-_L6:
-        packagesetting.pkgFlags = 0x80000000 | ((GrantedPermissions) (packagesetting)).pkgFlags;
-        ApplicationInfo applicationinfo1 = package1.applicationInfo;
-        applicationinfo1.flags = 0x80000000 | applicationinfo1.flags;
-_L8:
-        mSettings.writeLPr();
-_L5:
-        flag = true;
-        break; /* Loop/switch isn't completed */
-        Exception exception;
-        exception;
-        throw exception;
-_L7:
-        packagesetting.pkgFlags = 0x7fffffff & ((GrantedPermissions) (packagesetting)).pkgFlags;
-        ApplicationInfo applicationinfo = package1.applicationInfo;
-        applicationinfo.flags = 0x7fffffff & applicationinfo.flags;
-        if(true) goto _L8; else goto _L3
-_L3:
-        return flag;
-    }
-
     private static void setApplicationInfoPaths(android.content.pm.PackageParser.Package package1, String s, String s1) {
         package1.mScanPath = s;
         package1.mPath = s;
@@ -7634,7 +7654,7 @@ _L1:
             if(package1 != null)
                 packageinfo = generatePackageInfo(package1, i, j);
         }
-        if(packageinfo == null || !addPackageToSlice(parceledlistslice, packageinfo, i)) goto _L4; else goto _L3
+        if(packageinfo == null || !Injector.addPackageToSlice(parceledlistslice, packageinfo, i)) goto _L4; else goto _L3
 _L3:
         if(j1 == l)
             parceledlistslice.setLastSlice(true);
@@ -9283,7 +9303,7 @@ _L3:
     }
 
     public void setApplicationEnabledSetting(String s, int i, int j, int k) {
-        if(sUserManager.exists(k) && !setAccessControl(s, i, j))
+        if(sUserManager.exists(k) && !Injector.setAccessControl(this, s, i, j))
             setEnabledSetting(s, null, i, j, k);
     }
 

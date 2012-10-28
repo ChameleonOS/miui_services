@@ -24,7 +24,7 @@
     .parameter
 
     .prologue
-    .line 1335
+    .line 1370
     iput-object p1, p0, Lcom/android/server/BackupManagerService$1;->this$0:Lcom/android/server/BackupManagerService;
 
     invoke-direct {p0}, Landroid/content/BroadcastReceiver;-><init>()V
@@ -42,7 +42,7 @@
     .prologue
     const/4 v11, 0x0
 
-    .line 1337
+    .line 1372
     const-string v8, "BackupManagerService"
 
     new-instance v9, Ljava/lang/StringBuilder;
@@ -65,30 +65,30 @@
 
     invoke-static {v8, v9}, Landroid/util/Slog;->d(Ljava/lang/String;Ljava/lang/String;)I
 
-    .line 1339
+    .line 1374
     invoke-virtual {p2}, Landroid/content/Intent;->getAction()Ljava/lang/String;
 
     move-result-object v0
 
-    .line 1340
+    .line 1375
     .local v0, action:Ljava/lang/String;
     const/4 v5, 0x0
 
-    .line 1341
+    .line 1376
     .local v5, replacing:Z
     const/4 v1, 0x0
 
-    .line 1342
+    .line 1377
     .local v1, added:Z
     invoke-virtual {p2}, Landroid/content/Intent;->getExtras()Landroid/os/Bundle;
 
     move-result-object v2
 
-    .line 1343
+    .line 1378
     .local v2, extras:Landroid/os/Bundle;
     const/4 v3, 0x0
 
-    .line 1344
+    .line 1379
     .local v3, pkgList:[Ljava/lang/String;
     const-string v8, "android.intent.action.PACKAGE_ADDED"
 
@@ -106,34 +106,34 @@
 
     if-eqz v8, :cond_75
 
-    .line 1346
+    .line 1381
     :cond_34
     invoke-virtual {p2}, Landroid/content/Intent;->getData()Landroid/net/Uri;
 
     move-result-object v7
 
-    .line 1347
+    .line 1382
     .local v7, uri:Landroid/net/Uri;
     if-nez v7, :cond_3b
 
-    .line 1387
+    .line 1422
     .end local v7           #uri:Landroid/net/Uri;
     :cond_3a
     :goto_3a
     return-void
 
-    .line 1350
+    .line 1385
     .restart local v7       #uri:Landroid/net/Uri;
     :cond_3b
     invoke-virtual {v7}, Landroid/net/Uri;->getSchemeSpecificPart()Ljava/lang/String;
 
     move-result-object v4
 
-    .line 1351
+    .line 1386
     .local v4, pkgName:Ljava/lang/String;
     if-eqz v4, :cond_46
 
-    .line 1352
+    .line 1387
     const/4 v8, 0x1
 
     new-array v3, v8, [Ljava/lang/String;
@@ -141,7 +141,7 @@
     .end local v3           #pkgList:[Ljava/lang/String;
     aput-object v4, v3, v11
 
-    .line 1354
+    .line 1389
     .restart local v3       #pkgList:[Ljava/lang/String;
     :cond_46
     const-string v8, "android.intent.action.PACKAGE_ADDED"
@@ -150,14 +150,14 @@
 
     move-result v1
 
-    .line 1355
+    .line 1390
     const-string v8, "android.intent.extra.REPLACING"
 
     invoke-virtual {v2, v8, v11}, Landroid/os/Bundle;->getBoolean(Ljava/lang/String;Z)Z
 
     move-result v5
 
-    .line 1364
+    .line 1399
     .end local v4           #pkgName:Ljava/lang/String;
     .end local v7           #uri:Landroid/net/Uri;
     :cond_52
@@ -168,40 +168,40 @@
 
     if-eqz v8, :cond_3a
 
-    .line 1368
+    .line 1403
     const-string v8, "android.intent.extra.UID"
 
     invoke-virtual {v2, v8}, Landroid/os/Bundle;->getInt(Ljava/lang/String;)I
 
     move-result v6
 
-    .line 1369
+    .line 1404
     .local v6, uid:I
     if-eqz v1, :cond_95
 
-    .line 1370
+    .line 1405
     iget-object v8, p0, Lcom/android/server/BackupManagerService$1;->this$0:Lcom/android/server/BackupManagerService;
 
     iget-object v9, v8, Lcom/android/server/BackupManagerService;->mBackupParticipants:Landroid/util/SparseArray;
 
     monitor-enter v9
 
-    .line 1371
+    .line 1406
     if-eqz v5, :cond_6b
 
-    .line 1374
+    .line 1409
     :try_start_66
     iget-object v8, p0, Lcom/android/server/BackupManagerService$1;->this$0:Lcom/android/server/BackupManagerService;
 
     invoke-virtual {v8, v3, v6}, Lcom/android/server/BackupManagerService;->removePackageParticipantsLocked([Ljava/lang/String;I)V
 
-    .line 1376
+    .line 1411
     :cond_6b
     iget-object v8, p0, Lcom/android/server/BackupManagerService$1;->this$0:Lcom/android/server/BackupManagerService;
 
     invoke-virtual {v8, v3}, Lcom/android/server/BackupManagerService;->addPackageParticipantsLocked([Ljava/lang/String;)V
 
-    .line 1377
+    .line 1412
     monitor-exit v9
 
     goto :goto_3a
@@ -215,7 +215,7 @@
 
     throw v8
 
-    .line 1356
+    .line 1391
     .end local v6           #uid:I
     :cond_75
     const-string v8, "android.intent.action.EXTERNAL_APPLICATIONS_AVAILABLE"
@@ -226,10 +226,10 @@
 
     if-eqz v8, :cond_85
 
-    .line 1357
+    .line 1392
     const/4 v1, 0x1
 
-    .line 1358
+    .line 1393
     const-string v8, "android.intent.extra.changed_package_list"
 
     invoke-virtual {p2, v8}, Landroid/content/Intent;->getStringArrayExtra(Ljava/lang/String;)[Ljava/lang/String;
@@ -238,7 +238,7 @@
 
     goto :goto_52
 
-    .line 1359
+    .line 1394
     :cond_85
     const-string v8, "android.intent.action.EXTERNAL_APPLICATIONS_UNAVAILABLE"
 
@@ -248,10 +248,10 @@
 
     if-eqz v8, :cond_52
 
-    .line 1360
+    .line 1395
     const/4 v1, 0x0
 
-    .line 1361
+    .line 1396
     const-string v8, "android.intent.extra.changed_package_list"
 
     invoke-virtual {p2, v8}, Landroid/content/Intent;->getStringArrayExtra(Ljava/lang/String;)[Ljava/lang/String;
@@ -260,25 +260,25 @@
 
     goto :goto_52
 
-    .line 1379
+    .line 1414
     .restart local v6       #uid:I
     :cond_95
     if-nez v5, :cond_3a
 
-    .line 1382
+    .line 1417
     iget-object v8, p0, Lcom/android/server/BackupManagerService$1;->this$0:Lcom/android/server/BackupManagerService;
 
     iget-object v9, v8, Lcom/android/server/BackupManagerService;->mBackupParticipants:Landroid/util/SparseArray;
 
     monitor-enter v9
 
-    .line 1383
+    .line 1418
     :try_start_9c
     iget-object v8, p0, Lcom/android/server/BackupManagerService$1;->this$0:Lcom/android/server/BackupManagerService;
 
     invoke-virtual {v8, v3, v6}, Lcom/android/server/BackupManagerService;->removePackageParticipantsLocked([Ljava/lang/String;I)V
 
-    .line 1384
+    .line 1419
     monitor-exit v9
 
     goto :goto_3a

@@ -154,6 +154,24 @@ _L3:
         }
     }
 
+    static class Injector {
+
+        static void updateNotificationLight(NotificationManagerService notificationmanagerservice) {
+            Context context = notificationmanagerservice.mContext;
+            int i = notificationmanagerservice.getDefaultNotificationColor();
+            NotificationRecord notificationrecord = notificationmanagerservice.getLedNotification();
+            int j = android.provider.Settings.System.getInt(context.getContentResolver(), "breathing_light_color", i);
+            int k = context.getResources().getInteger(0x608000a);
+            int ai[] = ExtraNotification.getLedPwmOffOn(android.provider.Settings.System.getInt(context.getContentResolver(), "breathing_light_freq", k));
+            notificationrecord.notification.ledARGB = j;
+            notificationrecord.notification.ledOnMS = ai[1];
+            notificationrecord.notification.ledOffMS = ai[0];
+        }
+
+        Injector() {
+        }
+    }
+
 
     NotificationManagerService(Context context, StatusBarManagerService statusbarmanagerservice, LightsService lightsservice) {
         mScreenOn = true;
@@ -770,7 +788,7 @@ _L2:
             mDefaultNotificationColor;
             mDefaultNotificationLedOn;
             mDefaultNotificationLedOff;
-            updateNotificationLight();
+            Injector.updateNotificationLight(this);
             i = mLedNotification.notification.ledARGB;
             j = mLedNotification.notification.ledOnMS;
             k = mLedNotification.notification.ledOffMS;
@@ -779,15 +797,6 @@ _L2:
             mNotificationLight.setFlashing(i, 1, j, k);
         if(true) goto _L4; else goto _L3
 _L3:
-    }
-
-    private void updateNotificationLight() {
-        int i = android.provider.Settings.System.getInt(mContext.getContentResolver(), "breathing_light_color", mDefaultNotificationColor);
-        int j = mContext.getResources().getInteger(0x608000a);
-        int ai[] = ExtraNotification.getLedPwmOffOn(android.provider.Settings.System.getInt(mContext.getContentResolver(), "breathing_light_freq", j));
-        mLedNotification.notification.ledARGB = i;
-        mLedNotification.notification.ledOnMS = ai[1];
-        mLedNotification.notification.ledOffMS = ai[0];
     }
 
     private void updateNotificationPulse() {
@@ -1339,6 +1348,14 @@ _L5:
         Binder.restoreCallingIdentity(l);
         throw exception1;
           goto _L3
+    }
+
+    int getDefaultNotificationColor() {
+        return mDefaultNotificationColor;
+    }
+
+    NotificationRecord getLedNotification() {
+        return mLedNotification;
     }
 
     public void setNotificationsEnabledForPackage(String s, boolean flag) {

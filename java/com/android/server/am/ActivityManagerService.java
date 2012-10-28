@@ -136,8 +136,8 @@ import java.util.concurrent.atomic.AtomicLong;
 //            ConnectionRecord, AppBindRecord, IntentBindRecord, BroadcastRecord, 
 //            BroadcastFilter, ExtraActivityManagerService, UriPermission, ContentProviderRecord, 
 //            ContentProviderConnection, ReceiverList, TaskRecord, AppErrorResult, 
-//            TransferPipe, AppErrorDialog, MiuiErrorReport, PendingIntentRecord, 
-//            ThumbnailHolder, PendingThumbnailsRecord, UriPermissionOwner, CompatModeDialog, 
+//            TransferPipe, PendingIntentRecord, ThumbnailHolder, PendingThumbnailsRecord, 
+//            UriPermissionOwner, CompatModeDialog, AppErrorDialog, MiuiErrorReport, 
 //            AppNotRespondingDialog, StrictModeViolationDialog, FactoryErrorDialog, AppWaitingForDebuggerDialog, 
 //            BaseErrorDialog, LaunchWarningWindow
 
@@ -596,6 +596,57 @@ _L2:
         }
     }
 
+    static class Injector {
+
+        static String getCallingUidPackage(ActivityManagerService activitymanagerservice, IBinder ibinder) {
+            String s;
+            ActivityRecord activityrecord;
+            s = null;
+            activityrecord = activitymanagerservice.mMainStack.isInStackLocked(ibinder);
+            if(activityrecord != null) goto _L2; else goto _L1
+_L1:
+            return s;
+_L2:
+            int i = activityrecord.launchedFromUid;
+            if(i > 0)
+                try {
+                    String as[] = AppGlobals.getPackageManager().getPackagesForUid(i);
+                    if(as.length > 0)
+                        s = as[0];
+                }
+                catch(RemoteException remoteexception) { }
+            if(true) goto _L1; else goto _L3
+_L3:
+        }
+
+        static boolean isForegroudApp(ActivityManagerService activitymanagerservice, ProcessRecord processrecord, ProcessRecord processrecord1) {
+            boolean flag = true;
+            if(processrecord != processrecord1 && (processrecord != activitymanagerservice.mHomeProcess || android.provider.Settings.System.getInt(activitymanagerservice.mContext.getContentResolver(), "keep_launcher_in_memory", flag) == 0))
+                flag = false;
+            return flag;
+        }
+
+        static boolean showAppCrashDialog(ActivityManagerService activitymanagerservice, HashMap hashmap) {
+            ProcessRecord processrecord = (ProcessRecord)hashmap.get("app");
+            AppErrorResult apperrorresult = (AppErrorResult)hashmap.get("result");
+            android.app.ApplicationErrorReport.CrashInfo crashinfo = (android.app.ApplicationErrorReport.CrashInfo)hashmap.get("crash");
+            if(miui.provider.ExtraSettings.Secure.isForceCloseDialogEnabled(activitymanagerservice.mContext)) {
+                AppErrorDialog apperrordialog = new AppErrorDialog(activitymanagerservice.mContext, apperrorresult, processrecord, crashinfo);
+                apperrordialog.show();
+                processrecord.crashDialog = apperrordialog;
+            } else {
+                if(processrecord != null && crashinfo != null)
+                    MiuiErrorReport.sendFcErrorReport(activitymanagerservice.mContext, processrecord, crashinfo, false);
+                activitymanagerservice.mMainStack.moveHomeToFrontLocked();
+                apperrorresult.set(0);
+            }
+            return true;
+        }
+
+        Injector() {
+        }
+    }
+
 
     private ActivityManagerService() {
         mShowDialogs = true;
@@ -728,38 +779,38 @@ _L2:
                 message.what;
                 JVM INSTR tableswitch 1 33: default 152
             //                           1 153
-            //                           2 309
-            //                           3 721
-            //                           4 761
-            //                           5 785
-            //                           6 815
+            //                           2 344
+            //                           3 756
+            //                           4 796
+            //                           5 820
+            //                           6 850
             //                           7 152
             //                           8 152
             //                           9 152
             //                           10 152
             //                           11 152
-            //                           12 927
-            //                           13 1004
-            //                           14 1441
-            //                           15 1573
+            //                           12 962
+            //                           13 1039
+            //                           14 1476
+            //                           15 1608
             //                           16 152
             //                           17 152
             //                           18 152
             //                           19 152
-            //                           20 1604
-            //                           21 1705
-            //                           22 1736
-            //                           23 1813
-            //                           24 1826
-            //                           25 2070
-            //                           26 528
-            //                           27 2112
-            //                           28 1130
-            //                           29 1256
-            //                           30 2163
-            //                           31 2262
-            //                           32 2272
-            //                           33 2298;
+            //                           20 1639
+            //                           21 1740
+            //                           22 1771
+            //                           23 1848
+            //                           24 1861
+            //                           25 2105
+            //                           26 563
+            //                           27 2147
+            //                           28 1165
+            //                           29 1291
+            //                           30 2198
+            //                           31 2297
+            //                           32 2307
+            //                           33 2333;
                    goto _L1 _L2 _L3 _L4 _L5 _L6 _L7 _L1 _L1 _L1 _L1 _L1 _L8 _L9 _L10 _L11 _L1 _L1 _L1 _L1 _L12 _L13 _L14 _L15 _L16 _L17 _L18 _L19 _L20 _L21 _L22 _L23 _L24 _L25
 _L1:
                 return;
@@ -768,7 +819,8 @@ _L2:
                 ActivityManagerService activitymanagerservice13 = ActivityManagerService.this;
                 activitymanagerservice13;
                 JVM INSTR monitorenter ;
-                ProcessRecord processrecord8 = (ProcessRecord)hashmap2.get("app");
+                ProcessRecord processrecord8;
+                processrecord8 = (ProcessRecord)hashmap2.get("app");
                 if(processrecord8 != null && processrecord8.crashDialog != null) {
                     Slog.e("ActivityManager", (new StringBuilder()).append("App already has crash dialog: ").append(processrecord8).toString());
                     continue; /* Loop/switch isn't completed */
@@ -780,8 +832,12 @@ _L2:
                 AppErrorResult apperrorresult1;
                 apperrorresult1 = (AppErrorResult)hashmap2.get("result");
                 if(!mShowDialogs || mSleeping || mShuttingDown)
-                    break MISSING_BLOCK_LABEL_300;
-                showAppCrashDialog(hashmap2);
+                    break MISSING_BLOCK_LABEL_335;
+                if(!Injector.showAppCrashDialog(ActivityManagerService.this, hashmap2)) {
+                    AppErrorDialog apperrordialog = new AppErrorDialog(mContext, apperrorresult1, processrecord8);
+                    apperrordialog.show();
+                    processrecord8.crashDialog = apperrordialog;
+                }
 _L26:
                 activitymanagerservice13;
                 JVM INSTR monitorexit ;
@@ -801,7 +857,7 @@ _L3:
                     Slog.e("ActivityManager", (new StringBuilder()).append("App already has anr dialog: ").append(processrecord7).toString());
                     continue; /* Loop/switch isn't completed */
                 }
-                break MISSING_BLOCK_LABEL_392;
+                break MISSING_BLOCK_LABEL_427;
                 Exception exception7;
                 exception7;
                 throw exception7;
@@ -810,7 +866,7 @@ _L3:
                     intent.addFlags(0x50000000);
                 broadcastIntentLocked(null, null, intent, null, null, 0, null, null, null, false, false, ActivityManagerService.MY_PID, 1000, 0);
                 if(!mShowDialogs)
-                    break MISSING_BLOCK_LABEL_515;
+                    break MISSING_BLOCK_LABEL_550;
                 AppNotRespondingDialog appnotrespondingdialog = new AppNotRespondingDialog(ActivityManagerService.this, mContext, processrecord7, (ActivityRecord)hashmap1.get("activity"));
                 appnotrespondingdialog.show();
                 processrecord7.anrDialog = appnotrespondingdialog;
@@ -832,12 +888,12 @@ _L18:
                     Slog.e("ActivityManager", "App not found when showing strict mode dialog.");
                     continue; /* Loop/switch isn't completed */
                 }
-                break MISSING_BLOCK_LABEL_585;
+                break MISSING_BLOCK_LABEL_620;
                 Exception exception6;
                 exception6;
                 throw exception6;
                 if(processrecord6.crashDialog == null)
-                    break MISSING_BLOCK_LABEL_625;
+                    break MISSING_BLOCK_LABEL_660;
                 Slog.e("ActivityManager", (new StringBuilder()).append("App already has strict mode dialog: ").append(processrecord6).toString());
                 activitymanagerservice11;
                 JVM INSTR monitorexit ;
@@ -845,7 +901,7 @@ _L18:
                 AppErrorResult apperrorresult;
                 apperrorresult = (AppErrorResult)hashmap.get("result");
                 if(!mShowDialogs || mSleeping || mShuttingDown)
-                    break MISSING_BLOCK_LABEL_712;
+                    break MISSING_BLOCK_LABEL_747;
                 StrictModeViolationDialog strictmodeviolationdialog = new StrictModeViolationDialog(mContext, apperrorresult, processrecord6);
                 strictmodeviolationdialog.show();
                 processrecord6.crashDialog = strictmodeviolationdialog;
@@ -915,7 +971,7 @@ _L33:
                 ProcessRecord processrecord4;
                 IApplicationThread iapplicationthread2;
                 if(k1 < 0)
-                    break MISSING_BLOCK_LABEL_1124;
+                    break MISSING_BLOCK_LABEL_1159;
                 processrecord4 = (ProcessRecord)mLruProcesses.get(k1);
                 iapplicationthread2 = processrecord4.thread;
                 Exception exception4;
@@ -946,7 +1002,7 @@ _L35:
                 ProcessRecord processrecord3;
                 IApplicationThread iapplicationthread1;
                 if(j1 < 0)
-                    break MISSING_BLOCK_LABEL_1250;
+                    break MISSING_BLOCK_LABEL_1285;
                 processrecord3 = (ProcessRecord)mLruProcesses.get(j1);
                 iapplicationthread1 = processrecord3.thread;
                 Exception exception3;
@@ -989,7 +1045,7 @@ _L37:
                 ProcessRecord processrecord2;
                 IApplicationThread iapplicationthread;
                 if(i1 < 0)
-                    break MISSING_BLOCK_LABEL_1435;
+                    break MISSING_BLOCK_LABEL_1470;
                 processrecord2 = (ProcessRecord)mLruProcesses.get(i1);
                 iapplicationthread = processrecord2.thread;
                 Exception exception2;
@@ -1149,7 +1205,7 @@ _L22:
                 if(mCompatModeDialog != null) {
                     if(mCompatModeDialog.mAppInfo.packageName.equals(activityrecord.info.applicationInfo.packageName))
                         continue; /* Loop/switch isn't completed */
-                    break MISSING_BLOCK_LABEL_2235;
+                    break MISSING_BLOCK_LABEL_2270;
                 }
                   goto _L38
                 exception1;
@@ -1174,7 +1230,7 @@ _L25:
                 l = SystemClock.uptimeMillis();
                 if(l < 0x493e0L + mLastMemUsageReportTime)
                     continue; /* Loop/switch isn't completed */
-                break MISSING_BLOCK_LABEL_2355;
+                break MISSING_BLOCK_LABEL_2390;
                 exception;
                 throw exception;
                 mLastMemUsageReportTime = l;
@@ -2651,7 +2707,7 @@ label1:
         ArrayList arraylist;
         int k4;
         int i5;
-        if(processrecord == processrecord1 || processrecord == mHomeProcess && android.provider.Settings.System.getInt(mContext.getContentResolver(), "keep_launcher_in_memory", 1) != 0) {
+        if(Injector.isForegroudApp(this, processrecord, processrecord1)) {
             k = 0;
             l = -1;
             processrecord.adjType = "top-activity";
@@ -2753,7 +2809,7 @@ _L8:
             processrecord.hidden = false;
         }
         if(processrecord.services.size() == 0 || k <= 0 && l != 0)
-            break MISSING_BLOCK_LABEL_1633;
+            break MISSING_BLOCK_LABEL_1612;
         l4 = SystemClock.uptimeMillis();
         iterator1 = processrecord.services.iterator();
 label2:
@@ -3055,7 +3111,7 @@ _L16:
         if(i2 >= 0) {
             processchangeitem = (ProcessChangeItem)mPendingProcessChanges.get(i2);
             if(processchangeitem.pid != processrecord.pid)
-                break MISSING_BLOCK_LABEL_2619;
+                break MISSING_BLOCK_LABEL_2598;
         }
         if(i2 < 0) {
             l2 = mAvailProcessChanges.size();
@@ -6091,22 +6147,6 @@ _L4:
         if(configuration.keyboard == flag && configuration.touchscreen == flag)
             flag = false;
         return flag;
-    }
-
-    private void showAppCrashDialog(HashMap hashmap) {
-        ProcessRecord processrecord = (ProcessRecord)hashmap.get("app");
-        AppErrorResult apperrorresult = (AppErrorResult)hashmap.get("result");
-        android.app.ApplicationErrorReport.CrashInfo crashinfo = (android.app.ApplicationErrorReport.CrashInfo)hashmap.get("crash");
-        if(miui.provider.ExtraSettings.Secure.isForceCloseDialogEnabled(mContext)) {
-            AppErrorDialog apperrordialog = new AppErrorDialog(mContext, apperrorresult, processrecord, crashinfo);
-            apperrordialog.show();
-            processrecord.crashDialog = apperrordialog;
-        } else {
-            if(processrecord != null && crashinfo != null)
-                MiuiErrorReport.sendFcErrorReport(mContext, processrecord, crashinfo, false);
-            mMainStack.moveHomeToFrontLocked();
-            apperrorresult.set(0);
-        }
     }
 
     private final void startProcessLocked(ProcessRecord processrecord, String s, String s1) {
@@ -10184,33 +10224,14 @@ _L2:
     }
 
     public String getCallingPackage(IBinder ibinder) {
-        String s = null;
         this;
         JVM INSTR monitorenter ;
-        ActivityRecord activityrecord;
-        activityrecord = mMainStack.isInStackLocked(ibinder);
-        if(activityrecord == null)
-            break MISSING_BLOCK_LABEL_113;
-        if(activityrecord.resultTo != null) {
-            ActivityRecord activityrecord1 = activityrecord.resultTo;
-            if(activityrecord1 != null && activityrecord1.app != null)
-                s = ((ComponentInfo) (activityrecord1.info)).packageName;
-            break MISSING_BLOCK_LABEL_113;
-        }
-        break MISSING_BLOCK_LABEL_71;
-        Exception exception;
-        exception;
-        throw exception;
-        int i = activityrecord.launchedFromUid;
-        this;
-        JVM INSTR monitorexit ;
-        if(i > 0)
-            try {
-                String as[] = AppGlobals.getPackageManager().getPackagesForUid(i);
-                if(as.length > 0)
-                    s = as[0];
-            }
-            catch(RemoteException remoteexception) { }
+        ActivityRecord activityrecord = getCallingRecordLocked(ibinder);
+        String s;
+        if(activityrecord != null && activityrecord.app != null)
+            s = ((ComponentInfo) (activityrecord.info)).packageName;
+        else
+            s = Injector.getCallingUidPackage(this, ibinder);
         return s;
     }
 
@@ -12055,4 +12076,207 @@ _L10:
 _L12:
         long l;
         l = Binder.clearCallingIdentity();
-        for(int
+        for(int i1 = j; i1 > k; i1--) {
+            ActivityRecord activityrecord2 = (ActivityRecord)arraylist.get(i1);
+            mMainStack.requestFinishActivityLocked(activityrecord2.appToken, i, intent1, "navigate-up");
+            i = 0;
+            intent1 = null;
+        }
+
+        if(activityrecord1 == null || !flag) goto _L17; else goto _L16
+_L16:
+        int j1;
+        int k1;
+        j1 = activityrecord1.info.launchMode;
+        k1 = intent.getFlags();
+        if(j1 != 3 && j1 != 2 && j1 != 1 && (0x4000000 & k1) == 0) goto _L19; else goto _L18
+_L18:
+        int l1 = activityrecord.info.applicationInfo.uid;
+        activityrecord1.deliverNewIntentLocked(l1, intent);
+_L17:
+        Binder.restoreCallingIdentity(l);
+        this;
+        JVM INSTR monitorexit ;
+          goto _L3
+_L19:
+        int i2;
+        ActivityInfo activityinfo = AppGlobals.getPackageManager().getActivityInfo(intent.getComponent(), 0, UserId.getCallingUserId());
+        i2 = mMainStack.startActivityLocked(activityrecord.app.thread, intent, null, activityinfo, activityrecord1.appToken, null, 0, -1, activityrecord1.launchedFromUid, 0, null, true, null);
+        if(i2 == 0)
+            flag = true;
+        else
+            flag = false;
+_L20:
+        mMainStack.requestFinishActivityLocked(activityrecord1.appToken, i, intent1, "navigate-up");
+          goto _L17
+        RemoteException remoteexception;
+        remoteexception;
+        flag = false;
+          goto _L20
+_L3:
+        return flag;
+        j2--;
+          goto _L21
+    }
+
+
+// JavaClassFileOutputException: Prev chain is broken
+
+    public IBinder newUriPermissionOwner(String s) {
+        enforceNotIsolatedCaller("newUriPermissionOwner");
+        this;
+        JVM INSTR monitorenter ;
+        Binder binder = (new UriPermissionOwner(this, s)).getExternalTokenLocked();
+        return binder;
+    }
+
+    public void noteWakeupAlarm(IIntentSender iintentsender) {
+        if(iintentsender instanceof PendingIntentRecord) goto _L2; else goto _L1
+_L1:
+        return;
+_L2:
+        BatteryStatsImpl batterystatsimpl = mBatteryStatsService.getActiveStatistics();
+        batterystatsimpl;
+        JVM INSTR monitorenter ;
+        if(!mBatteryStatsService.isOnBattery()) goto _L4; else goto _L3
+_L3:
+        PendingIntentRecord pendingintentrecord;
+        int j;
+        mBatteryStatsService.enforceCallingPermission();
+        pendingintentrecord = (PendingIntentRecord)iintentsender;
+        int i = Binder.getCallingUid();
+        if(pendingintentrecord.uid != i)
+            break MISSING_BLOCK_LABEL_88;
+        j = 1000;
+_L5:
+        batterystatsimpl.getPackageStatsLocked(j, pendingintentrecord.key.packageName).incWakeupsLocked();
+_L4:
+        batterystatsimpl;
+        JVM INSTR monitorexit ;
+          goto _L1
+        Exception exception;
+        exception;
+        throw exception;
+        j = pendingintentrecord.uid;
+          goto _L5
+    }
+
+    void onCoreSettingsChange(Bundle bundle) {
+        int i = -1 + mLruProcesses.size();
+        while(i >= 0)  {
+            ProcessRecord processrecord = (ProcessRecord)mLruProcesses.get(i);
+            try {
+                if(processrecord.thread != null)
+                    processrecord.thread.setCoreSettings(bundle);
+            }
+            catch(RemoteException remoteexception) { }
+            i--;
+        }
+    }
+
+    public boolean onTransact(int i, Parcel parcel, Parcel parcel1, int j) throws RemoteException {
+        if(i != 0x5f535052) goto _L2; else goto _L1
+_L1:
+        ArrayList arraylist = new ArrayList();
+        this;
+        JVM INSTR monitorenter ;
+        Iterator iterator = mProcessNames.getMap().values().iterator();
+_L9:
+        if(!iterator.hasNext()) goto _L4; else goto _L3
+_L3:
+        SparseArray sparsearray;
+        int i1;
+        int j1;
+        sparsearray = (SparseArray)iterator.next();
+        i1 = sparsearray.size();
+        j1 = 0;
+_L7:
+        if(j1 >= i1)
+            continue; /* Loop/switch isn't completed */
+        ProcessRecord processrecord = (ProcessRecord)sparsearray.valueAt(j1);
+        if(processrecord.thread != null)
+            arraylist.add(processrecord.thread.asBinder());
+          goto _L5
+_L4:
+        this;
+        JVM INSTR monitorexit ;
+        int k = arraylist.size();
+        int l = 0;
+        while(l < k)  {
+            Parcel parcel2 = Parcel.obtain();
+            Exception exception;
+            RuntimeException runtimeexception;
+            boolean flag;
+            try {
+                ((IBinder)arraylist.get(l)).transact(0x5f535052, parcel2, null, 0);
+            }
+            catch(RemoteException remoteexception) { }
+            parcel2.recycle();
+            l++;
+        }
+          goto _L2
+        exception;
+        this;
+        JVM INSTR monitorexit ;
+        throw exception;
+_L2:
+        try {
+            flag = super.onTransact(i, parcel, parcel1, j);
+        }
+        // Misplaced declaration of an exception variable
+        catch(RuntimeException runtimeexception) {
+            if(!(runtimeexception instanceof SecurityException))
+                Slog.e("ActivityManager", "Activity Manager Crash", runtimeexception);
+            throw runtimeexception;
+        }
+        return flag;
+_L5:
+        j1++;
+        if(true) goto _L7; else goto _L6
+_L6:
+        if(true) goto _L9; else goto _L8
+_L8:
+    }
+
+    public ParcelFileDescriptor openContentUri(Uri uri) throws RemoteException {
+        String s;
+        android.app.IActivityManager.ContentProviderHolder contentproviderholder;
+        ParcelFileDescriptor parcelfiledescriptor;
+        enforceNotIsolatedCaller("openContentUri");
+        s = uri.getAuthority();
+        contentproviderholder = getContentProviderExternalUnchecked(s, null);
+        parcelfiledescriptor = null;
+        if(contentproviderholder == null) goto _L2; else goto _L1
+_L1:
+        sCallerIdentity.set(new Identity(Binder.getCallingPid(), Binder.getCallingUid()));
+        ParcelFileDescriptor parcelfiledescriptor1 = contentproviderholder.provider.openFile(uri, "r");
+        ThreadLocal threadlocal;
+        parcelfiledescriptor = parcelfiledescriptor1;
+        threadlocal = sCallerIdentity;
+_L6:
+        threadlocal.remove();
+        removeContentProviderExternalUnchecked(s, null);
+_L4:
+        return parcelfiledescriptor;
+        Exception exception;
+        exception;
+        sCallerIdentity.remove();
+        throw exception;
+_L2:
+        Slog.d("ActivityManager", (new StringBuilder()).append("Failed to get provider for authority '").append(s).append("'").toString());
+        if(true) goto _L4; else goto _L3
+_L3:
+        FileNotFoundException filenotfoundexception;
+        filenotfoundexception;
+        threadlocal = sCallerIdentity;
+        if(true) goto _L6; else goto _L5
+_L5:
+    }
+
+    public void overridePendingTransition(IBinder ibinder, String s, int i, int j) {
+        this;
+        JVM INSTR monitorenter ;
+        ActivityRecord activityrecord = mMainStack.isInStackLocked(ibinder);
+        if(activityrecord != null) {
+            long l = Binder.clearCallingIdentity();
+            if(activityrecord.state == ActivityStack.Activit

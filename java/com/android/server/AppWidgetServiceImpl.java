@@ -102,6 +102,28 @@ _L1:
         }
     }
 
+    static class Injector {
+
+        static boolean isDuplicateWidgetId(AppWidgetServiceImpl appwidgetserviceimpl, int i) {
+            Iterator iterator = appwidgetserviceimpl.mAppWidgetIds.iterator();
+_L4:
+            if(!iterator.hasNext()) goto _L2; else goto _L1
+_L1:
+            if(((AppWidgetId)iterator.next()).appWidgetId != i) goto _L4; else goto _L3
+_L3:
+            boolean flag = true;
+_L6:
+            return flag;
+_L2:
+            flag = false;
+            if(true) goto _L6; else goto _L5
+_L5:
+        }
+
+        Injector() {
+        }
+    }
+
 
     AppWidgetServiceImpl(Context context, int i) {
         mInstalledProviders = new ArrayList();
@@ -338,22 +360,6 @@ _L3:
             mRemoteViewsServicesAppWidgets.put(filtercomparison, hashset);
         }
         hashset.add(Integer.valueOf(i));
-    }
-
-    private boolean isDuplicateWidgetId(int i) {
-        Iterator iterator = mAppWidgetIds.iterator();
-_L4:
-        if(!iterator.hasNext()) goto _L2; else goto _L1
-_L1:
-        if(((AppWidgetId)iterator.next()).appWidgetId != i) goto _L4; else goto _L3
-_L3:
-        boolean flag = true;
-_L6:
-        return flag;
-_L2:
-        flag = false;
-        if(true) goto _L6; else goto _L5
-_L5:
     }
 
     private Provider parseProviderInfoXml(ComponentName componentname, ResolveInfo resolveinfo) {
@@ -1352,7 +1358,7 @@ _L13:
 _L14:
         appwidgetid = new AppWidgetId();
         appwidgetid.appWidgetId = Integer.parseInt(xmlpullparser.getAttributeValue(null, "id"), 16);
-        if(isDuplicateWidgetId(appwidgetid.appWidgetId)) goto _L2; else goto _L15
+        if(Injector.isDuplicateWidgetId(this, appwidgetid.appWidgetId)) goto _L2; else goto _L15
 _L15:
         if(appwidgetid.appWidgetId >= mNextAppWidgetId)
             mNextAppWidgetId = 1 + appwidgetid.appWidgetId;
@@ -1408,7 +1414,7 @@ _L17:
         throw exception;
     }
 
-    public void reload() {
+    void reload() {
         synchronized(mAppWidgetIds) {
             mAppWidgetIds.clear();
             mHosts.clear();

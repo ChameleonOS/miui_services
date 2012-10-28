@@ -4340,6 +4340,41 @@ _L14:
         }
     }
 
+    static class Injector {
+
+        static void startConfirmationTimeout(BackupManagerService backupmanagerservice, int i, FullParams fullparams) {
+        }
+
+        static boolean startConfirmationUi(BackupManagerService backupmanagerservice, int i, String s) {
+            SparseArray sparsearray = backupmanagerservice.mFullConfirmations;
+            sparsearray;
+            JVM INSTR monitorenter ;
+            FullParams fullparams = (FullParams)backupmanagerservice.mFullConfirmations.get(i);
+            if(fullparams != null) {
+                backupmanagerservice.mFullConfirmations.delete(i);
+                byte byte0;
+                Message message;
+                if(fullparams instanceof FullBackupParams)
+                    byte0 = 2;
+                else
+                    byte0 = 10;
+                fullparams.observer = null;
+                fullparams.curPassword = "";
+                fullparams.encryptPassword = android.provider.Settings.Secure.getString(backupmanagerservice.getContext().getContentResolver(), miui.provider.ExtraSettings.Secure.APP_ENCRYPT_PASSWORD);
+                Slog.d("BackupManagerService", (new StringBuilder()).append("Sending conf message with verb ").append(byte0).toString());
+                backupmanagerservice.mWakelock.acquire();
+                message = backupmanagerservice.mBackupHandler.obtainMessage(byte0, fullparams);
+                backupmanagerservice.mBackupHandler.sendMessage(message);
+            } else {
+                Slog.w("BackupManagerService", "Attempted to ack full backup/restore with invalid token");
+            }
+            return true;
+        }
+
+        Injector() {
+        }
+    }
+
 
     public BackupManagerService(Context context) {
         ApplicationInfo applicationinfo;
@@ -5716,9 +5751,6 @@ label0:
         return flag;
     }
 
-    void doNothing(int i, FullParams fullparams) {
-    }
-
     public void dump(FileDescriptor filedescriptor, PrintWriter printwriter, String as[]) {
         long l;
         mContext.enforceCallingOrSelfPermission("android.permission.DUMP", "BackupManagerService");
@@ -5766,7 +5798,7 @@ _L2:
             mFullConfirmations.put(i, fullbackupparams);
         }
         Slog.d("BackupManagerService", (new StringBuilder()).append("Starting backup confirmation UI, token=").append(i).toString());
-        if(startBackupRestore(i, "fullback"))
+        if(Injector.startConfirmationUi(this, i, "fullback"))
             break MISSING_BLOCK_LABEL_316;
         Slog.e("BackupManagerService", "Unable to launch full backup confirmation");
         mFullConfirmations.delete(i);
@@ -5792,7 +5824,7 @@ _L2:
         Slog.d("BackupManagerService", "Full backup processing complete.");
         throw exception;
         mPowerManager.userActivity(SystemClock.uptimeMillis(), false);
-        doNothing(i, fullbackupparams);
+        Injector.startConfirmationTimeout(this, i, fullbackupparams);
         Slog.d("BackupManagerService", "Waiting for full backup completion...");
         waitForCompletion(fullbackupparams);
         try {
@@ -5839,7 +5871,7 @@ _L2:
             mFullConfirmations.put(i, fullrestoreparams);
         }
         Slog.d("BackupManagerService", (new StringBuilder()).append("Starting restore confirmation UI, token=").append(i).toString());
-        if(startBackupRestore(i, "fullrest"))
+        if(Injector.startConfirmationUi(this, i, "fullrest"))
             break MISSING_BLOCK_LABEL_215;
         Slog.e("BackupManagerService", "Unable to launch full restore confirmation");
         mFullConfirmations.delete(i);
@@ -5869,7 +5901,7 @@ _L2:
         Slog.i("BackupManagerService", "Full restore processing complete.");
         throw exception;
         mPowerManager.userActivity(SystemClock.uptimeMillis(), false);
-        doNothing(i, fullrestoreparams);
+        Injector.startConfirmationTimeout(this, i, fullrestoreparams);
         Slog.d("BackupManagerService", "Waiting for full restore completion...");
         waitForCompletion(fullrestoreparams);
         try {
@@ -5934,6 +5966,10 @@ _L3:
         remoteexception;
         if(true) goto _L2; else goto _L4
 _L4:
+    }
+
+    Context getContext() {
+        return mContext;
     }
 
     public String getCurrentTransport() {
@@ -6530,32 +6566,6 @@ _L5:
         fullparams.latch.set(true);
         fullparams.latch.notifyAll();
         return;
-    }
-
-    boolean startBackupRestore(int i, String s) {
-        SparseArray sparsearray = mFullConfirmations;
-        sparsearray;
-        JVM INSTR monitorenter ;
-        FullParams fullparams = (FullParams)mFullConfirmations.get(i);
-        if(fullparams != null) {
-            mFullConfirmations.delete(i);
-            byte byte0;
-            Message message;
-            if(fullparams instanceof FullBackupParams)
-                byte0 = 2;
-            else
-                byte0 = 10;
-            fullparams.observer = null;
-            fullparams.curPassword = "";
-            fullparams.encryptPassword = android.provider.Settings.Secure.getString(mContext.getContentResolver(), miui.provider.ExtraSettings.Secure.APP_ENCRYPT_PASSWORD);
-            Slog.d("BackupManagerService", (new StringBuilder()).append("Sending conf message with verb ").append(byte0).toString());
-            mWakelock.acquire();
-            message = mBackupHandler.obtainMessage(byte0, fullparams);
-            mBackupHandler.sendMessage(message);
-        } else {
-            Slog.w("BackupManagerService", "Attempted to ack full backup/restore with invalid token");
-        }
-        return true;
     }
 
     void startConfirmationTimeout(int i, FullParams fullparams) {

@@ -25,13 +25,13 @@
     .parameter "handler"
 
     .prologue
-    .line 264
+    .line 299
     iput-object p1, p0, Lcom/android/server/BackupManagerService$ProvisionedObserver;->this$0:Lcom/android/server/BackupManagerService;
 
-    .line 265
+    .line 300
     invoke-direct {p0, p2}, Landroid/database/ContentObserver;-><init>(Landroid/os/Handler;)V
 
-    .line 266
+    .line 301
     return-void
 .end method
 
@@ -42,12 +42,12 @@
     .parameter "selfChange"
 
     .prologue
-    .line 269
+    .line 304
     iget-object v2, p0, Lcom/android/server/BackupManagerService$ProvisionedObserver;->this$0:Lcom/android/server/BackupManagerService;
 
     iget-boolean v1, v2, Lcom/android/server/BackupManagerService;->mProvisioned:Z
 
-    .line 270
+    .line 305
     .local v1, wasProvisioned:Z
     iget-object v2, p0, Lcom/android/server/BackupManagerService$ProvisionedObserver;->this$0:Lcom/android/server/BackupManagerService;
 
@@ -55,7 +55,7 @@
 
     move-result v0
 
-    .line 272
+    .line 307
     .local v0, isProvisioned:Z
     iget-object v3, p0, Lcom/android/server/BackupManagerService$ProvisionedObserver;->this$0:Lcom/android/server/BackupManagerService;
 
@@ -69,14 +69,14 @@
     :goto_11
     iput-boolean v2, v3, Lcom/android/server/BackupManagerService;->mProvisioned:Z
 
-    .line 278
+    .line 313
     iget-object v2, p0, Lcom/android/server/BackupManagerService$ProvisionedObserver;->this$0:Lcom/android/server/BackupManagerService;
 
     iget-object v3, v2, Lcom/android/server/BackupManagerService;->mQueueLock:Ljava/lang/Object;
 
     monitor-enter v3
 
-    .line 279
+    .line 314
     :try_start_18
     iget-object v2, p0, Lcom/android/server/BackupManagerService$ProvisionedObserver;->this$0:Lcom/android/server/BackupManagerService;
 
@@ -92,7 +92,7 @@
 
     if-eqz v2, :cond_2e
 
-    .line 282
+    .line 317
     iget-object v2, p0, Lcom/android/server/BackupManagerService$ProvisionedObserver;->this$0:Lcom/android/server/BackupManagerService;
 
     const-wide/32 v4, 0x2932e00
@@ -100,20 +100,20 @@
     #calls: Lcom/android/server/BackupManagerService;->startBackupAlarmsLocked(J)V
     invoke-static {v2, v4, v5}, Lcom/android/server/BackupManagerService;->access$000(Lcom/android/server/BackupManagerService;J)V
 
-    .line 284
+    .line 319
     :cond_2e
     monitor-exit v3
 
-    .line 285
+    .line 320
     return-void
 
-    .line 272
+    .line 307
     :cond_30
     const/4 v2, 0x0
 
     goto :goto_11
 
-    .line 284
+    .line 319
     :catchall_32
     move-exception v2
 

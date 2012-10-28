@@ -24,7 +24,7 @@
     .parameter
 
     .prologue
-    .line 133
+    .line 158
     iput-object p1, p0, Lcom/android/server/UiModeManagerService$1;->this$0:Lcom/android/server/UiModeManagerService;
 
     invoke-direct {p0}, Landroid/content/BroadcastReceiver;-><init>()V
@@ -40,7 +40,7 @@
     .parameter "intent"
 
     .prologue
-    .line 136
+    .line 161
     invoke-virtual/range {p0 .. p0}, Lcom/android/server/UiModeManagerService$1;->getResultCode()I
 
     move-result v1
@@ -49,11 +49,11 @@
 
     if-eq v1, v2, :cond_8
 
-    .line 211
+    .line 236
     :goto_7
     return-void
 
-    .line 144
+    .line 169
     :cond_8
     const-string v1, "enableFlags"
 
@@ -65,7 +65,7 @@
 
     move-result v14
 
-    .line 145
+    .line 170
     .local v14, enableFlags:I
     const-string v1, "disableFlags"
 
@@ -77,7 +77,7 @@
 
     move-result v12
 
-    .line 147
+    .line 172
     .local v12, disableFlags:I
     move-object/from16 v0, p0
 
@@ -87,10 +87,10 @@
 
     monitor-enter v15
 
-    .line 149
+    .line 174
     const/4 v11, 0x0
 
-    .line 150
+    .line 175
     .local v11, category:Ljava/lang/String;
     :try_start_22
     sget-object v1, Landroid/app/UiModeManager;->ACTION_ENTER_CAR_MODE:Ljava/lang/String;
@@ -105,29 +105,29 @@
 
     if-eqz v1, :cond_93
 
-    .line 153
+    .line 178
     and-int/lit8 v1, v14, 0x1
 
     if-eqz v1, :cond_34
 
-    .line 155
+    .line 180
     const-string v11, "android.intent.category.CAR_DOCK"
 
-    .line 178
+    .line 203
     :cond_34
     :goto_34
     if-eqz v11, :cond_73
 
-    .line 181
+    .line 206
     invoke-static {v11}, Lcom/android/server/UiModeManagerService;->buildHomeIntent(Ljava/lang/String;)Landroid/content/Intent;
 
     move-result-object v3
 
-    .line 190
+    .line 215
     .local v3, homeIntent:Landroid/content/Intent;
     const/4 v9, 0x0
 
-    .line 191
+    .line 216
     .local v9, newConfig:Landroid/content/res/Configuration;
     move-object/from16 v0, p0
 
@@ -140,7 +140,7 @@
 
     if-eqz v1, :cond_5d
 
-    .line 192
+    .line 217
     move-object/from16 v0, p0
 
     iget-object v1, v0, Lcom/android/server/UiModeManagerService$1;->this$0:Lcom/android/server/UiModeManagerService;
@@ -150,7 +150,7 @@
     #setter for: Lcom/android/server/UiModeManagerService;->mHoldingConfiguration:Z
     invoke-static {v1, v2}, Lcom/android/server/UiModeManagerService;->access$002(Lcom/android/server/UiModeManagerService;Z)Z
 
-    .line 193
+    .line 218
     move-object/from16 v0, p0
 
     iget-object v1, v0, Lcom/android/server/UiModeManagerService$1;->this$0:Lcom/android/server/UiModeManagerService;
@@ -159,7 +159,7 @@
 
     invoke-virtual {v1, v2}, Lcom/android/server/UiModeManagerService;->updateConfigurationLocked(Z)V
 
-    .line 194
+    .line 219
     move-object/from16 v0, p0
 
     iget-object v1, v0, Lcom/android/server/UiModeManagerService$1;->this$0:Lcom/android/server/UiModeManagerService;
@@ -171,7 +171,7 @@
 
     move-result-object v9
 
-    .line 197
+    .line 222
     :cond_5d
     :try_start_5d
     invoke-static {}, Landroid/app/ActivityManagerNative;->getDefault()Landroid/app/IActivityManager;
@@ -194,7 +194,7 @@
 
     invoke-interface/range {v1 .. v10}, Landroid/app/IActivityManager;->startActivityWithConfig(Landroid/app/IApplicationThread;Landroid/content/Intent;Ljava/lang/String;Landroid/os/IBinder;Ljava/lang/String;IILandroid/content/res/Configuration;Landroid/os/Bundle;)I
 
-    .line 200
+    .line 225
     move-object/from16 v0, p0
 
     iget-object v1, v0, Lcom/android/server/UiModeManagerService$1;->this$0:Lcom/android/server/UiModeManagerService;
@@ -207,7 +207,7 @@
     .catchall {:try_start_5d .. :try_end_73} :catchall_90
     .catch Landroid/os/RemoteException; {:try_start_5d .. :try_end_73} :catch_ad
 
-    .line 206
+    .line 231
     .end local v3           #homeIntent:Landroid/content/Intent;
     .end local v9           #newConfig:Landroid/content/res/Configuration;
     :cond_73
@@ -224,7 +224,7 @@
 
     if-eqz v1, :cond_8d
 
-    .line 207
+    .line 232
     move-object/from16 v0, p0
 
     iget-object v1, v0, Lcom/android/server/UiModeManagerService$1;->this$0:Lcom/android/server/UiModeManagerService;
@@ -234,7 +234,7 @@
     #setter for: Lcom/android/server/UiModeManagerService;->mHoldingConfiguration:Z
     invoke-static {v1, v2}, Lcom/android/server/UiModeManagerService;->access$002(Lcom/android/server/UiModeManagerService;Z)Z
 
-    .line 208
+    .line 233
     move-object/from16 v0, p0
 
     iget-object v1, v0, Lcom/android/server/UiModeManagerService$1;->this$0:Lcom/android/server/UiModeManagerService;
@@ -243,7 +243,7 @@
 
     invoke-virtual {v1, v2}, Lcom/android/server/UiModeManagerService;->updateConfigurationLocked(Z)V
 
-    .line 210
+    .line 235
     :cond_8d
     monitor-exit v15
 
@@ -258,7 +258,7 @@
 
     throw v1
 
-    .line 157
+    .line 182
     :cond_93
     :try_start_93
     sget-object v1, Landroid/app/UiModeManager;->ACTION_ENTER_DESK_MODE:Ljava/lang/String;
@@ -273,34 +273,34 @@
 
     if-eqz v1, :cond_a6
 
-    .line 161
+    .line 186
     and-int/lit8 v1, v14, 0x1
 
     if-eqz v1, :cond_34
 
-    .line 163
+    .line 188
     const-string v11, "android.intent.category.DESK_DOCK"
 
     goto :goto_34
 
-    .line 167
+    .line 192
     :cond_a6
     and-int/lit8 v1, v12, 0x1
 
     if-eqz v1, :cond_34
 
-    .line 168
+    .line 193
     const-string v11, "android.intent.category.HOME"
 
     goto :goto_34
 
-    .line 201
+    .line 226
     .restart local v3       #homeIntent:Landroid/content/Intent;
     .restart local v9       #newConfig:Landroid/content/res/Configuration;
     :catch_ad
     move-exception v13
 
-    .line 202
+    .line 227
     .local v13, e:Landroid/os/RemoteException;
     invoke-static {}, Lcom/android/server/UiModeManagerService;->access$200()Ljava/lang/String;
 

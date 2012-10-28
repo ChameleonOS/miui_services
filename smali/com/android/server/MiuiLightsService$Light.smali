@@ -47,13 +47,15 @@
     .parameter "id"
 
     .prologue
+    const/4 v2, 0x0
+
     const/4 v4, 0x1
 
     .line 32
     iput-object p1, p0, Lcom/android/server/MiuiLightsService$Light;->this$0:Lcom/android/server/MiuiLightsService;
 
     .line 33
-    invoke-direct {p0, p1, p2}, Lcom/android/server/LightsService$Light;-><init>(Lcom/android/server/LightsService;I)V
+    invoke-direct {p0, p1, p2, v2}, Lcom/android/server/LightsService$Light;-><init>(Lcom/android/server/LightsService;II)V
 
     .line 25
     iput-boolean v4, p0, Lcom/android/server/MiuiLightsService$Light;->mTurnOn:Z
@@ -77,8 +79,6 @@
     move-result-object v0
 
     const-string v1, "screen_buttons_state"
-
-    const/4 v2, 0x0
 
     invoke-static {v0, v1, v2}, Landroid/provider/Settings$Secure;->putInt(Landroid/content/ContentResolver;Ljava/lang/String;I)Z
 

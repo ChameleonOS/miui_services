@@ -25,7 +25,6 @@ import com.android.internal.widget.LockSettingsService;
 import com.android.server.accessibility.AccessibilityManagerService;
 import com.android.server.am.ActivityManagerService;
 import com.android.server.input.InputManagerService;
-import com.android.server.net.MiuiNetworkPolicyManagerService;
 import com.android.server.net.NetworkPolicyManagerService;
 import com.android.server.net.NetworkStatsService;
 import com.android.server.pm.PackageManagerService;
@@ -93,7 +92,7 @@ class ServerThread extends Thread {
         TextServicesManagerService textservicesmanagerservice;
         LockSettingsService locksettingsservice;
         DreamManagerService dreammanagerservice;
-        MiuiNetworkPolicyManagerService miuinetworkpolicymanagerservice;
+        NetworkPolicyManagerService networkpolicymanagerservice;
         MountService mountservice;
         DreamManagerService dreammanagerservice1;
         CommonTimeManagementService commontimemanagementservice1;
@@ -149,7 +148,7 @@ class ServerThread extends Thread {
             final BatteryService batteryF;
             final NetworkManagementService networkManagementF;
             final NetworkStatsService networkStatsF;
-            final MiuiNetworkPolicyManagerService networkPolicyF;
+            final NetworkPolicyManagerService networkPolicyF;
             final ConnectivityService connectivityF;
             final DockObserver dockF;
             final UsbService usbF;
@@ -436,8 +435,8 @@ _L25:
 _L26:
         Slog.i("SystemServer", "NetworkPolicy Service");
         activitymanagerservice = ActivityManagerService.self();
-        miuinetworkpolicymanagerservice = new MiuiNetworkPolicyManagerService(context, activitymanagerservice, powermanagerservice, networkstatsservice, networkmanagementservice);
-        ServiceManager.addService("netpolicy", miuinetworkpolicymanagerservice);
+        networkpolicymanagerservice = new NetworkPolicyManagerService(context, activitymanagerservice, powermanagerservice, networkstatsservice, networkmanagementservice);
+        ServiceManager.addService("netpolicy", networkpolicymanagerservice);
 _L27:
         Slog.i("SystemServer", "Wi-Fi P2pService");
         wifip2pservice1 = new WifiP2pService(context);
@@ -450,10 +449,10 @@ _L28:
         wifiservice = wifiservice1;
 _L29:
         Slog.i("SystemServer", "Connectivity Service");
-        connectivityservice1 = new ConnectivityService(context, networkmanagementservice, networkstatsservice, miuinetworkpolicymanagerservice);
+        connectivityservice1 = new ConnectivityService(context, networkmanagementservice, networkstatsservice, networkpolicymanagerservice);
         ServiceManager.addService("connectivity", connectivityservice1);
         networkstatsservice.bindConnectivityManager(connectivityservice1);
-        miuinetworkpolicymanagerservice.bindConnectivityManager(connectivityservice1);
+        networkpolicymanagerservice.bindConnectivityManager(connectivityservice1);
         wifiservice.checkAndStartWifi();
         wifip2pservice.connectivityServiceReady();
         connectivityservice = connectivityservice1;
@@ -500,7 +499,7 @@ _L31:
         Slog.i("SystemServer", "Notification Manager");
         notificationmanagerservice1 = new NotificationManagerService(context, statusbarmanagerservice, miuilightsservice);
         ServiceManager.addService("notification", notificationmanagerservice1);
-        miuinetworkpolicymanagerservice.bindNotificationManager(notificationmanagerservice1);
+        networkpolicymanagerservice.bindNotificationManager(notificationmanagerservice1);
         notificationmanagerservice = notificationmanagerservice1;
 _L32:
         try {
@@ -700,7 +699,7 @@ _L44:
         batteryF = batteryservice;
         networkManagementF = networkmanagementservice;
         networkStatsF = networkstatsservice;
-        networkPolicyF = miuinetworkpolicymanagerservice;
+        networkPolicyF = networkpolicymanagerservice;
         connectivityF = connectivityservice;
         dockF = dockobserver;
         usbF = usbservice;
@@ -1003,7 +1002,7 @@ _L60:
         reportWtf("starting NetworkStats Service", throwable14);
           goto _L26
         throwable15;
-        miuinetworkpolicymanagerservice = null;
+        networkpolicymanagerservice = null;
 _L59:
         reportWtf("starting NetworkPolicy Service", throwable15);
           goto _L27
@@ -1172,7 +1171,7 @@ _L46:
         accountmanagerservice = accountmanagerservice1;
           goto _L68
 _L14:
-        miuinetworkpolicymanagerservice = null;
+        networkpolicymanagerservice = null;
           goto _L44
 _L3:
         if(i != 0)

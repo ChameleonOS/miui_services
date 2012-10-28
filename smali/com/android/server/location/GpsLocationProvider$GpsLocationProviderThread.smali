@@ -24,15 +24,15 @@
     .parameter
 
     .prologue
-    .line 1626
+    .line 1633
     iput-object p1, p0, Lcom/android/server/location/GpsLocationProvider$GpsLocationProviderThread;->this$0:Lcom/android/server/location/GpsLocationProvider;
 
-    .line 1627
+    .line 1634
     const-string v0, "GpsLocationProvider"
 
     invoke-direct {p0, v0}, Ljava/lang/Thread;-><init>(Ljava/lang/String;)V
 
-    .line 1628
+    .line 1635
     return-void
 .end method
 
@@ -42,21 +42,21 @@
     .registers 5
 
     .prologue
-    .line 1631
+    .line 1638
     const/16 v0, 0xa
 
     invoke-static {v0}, Landroid/os/Process;->setThreadPriority(I)V
 
-    .line 1632
+    .line 1639
     iget-object v0, p0, Lcom/android/server/location/GpsLocationProvider$GpsLocationProviderThread;->this$0:Lcom/android/server/location/GpsLocationProvider;
 
     #calls: Lcom/android/server/location/GpsLocationProvider;->initialize()V
     invoke-static {v0}, Lcom/android/server/location/GpsLocationProvider;->access$2000(Lcom/android/server/location/GpsLocationProvider;)V
 
-    .line 1633
+    .line 1640
     invoke-static {}, Landroid/os/Looper;->prepare()V
 
-    .line 1634
+    .line 1641
     iget-object v0, p0, Lcom/android/server/location/GpsLocationProvider$GpsLocationProviderThread;->this$0:Lcom/android/server/location/GpsLocationProvider;
 
     new-instance v1, Lcom/android/server/location/GpsLocationProvider$ProviderHandler;
@@ -70,7 +70,7 @@
     #setter for: Lcom/android/server/location/GpsLocationProvider;->mHandler:Landroid/os/Handler;
     invoke-static {v0, v1}, Lcom/android/server/location/GpsLocationProvider;->access$2102(Lcom/android/server/location/GpsLocationProvider;Landroid/os/Handler;)Landroid/os/Handler;
 
-    .line 1636
+    .line 1643
     iget-object v0, p0, Lcom/android/server/location/GpsLocationProvider$GpsLocationProviderThread;->this$0:Lcom/android/server/location/GpsLocationProvider;
 
     #getter for: Lcom/android/server/location/GpsLocationProvider;->mInitializedLatch:Ljava/util/concurrent/CountDownLatch;
@@ -80,9 +80,9 @@
 
     invoke-virtual {v0}, Ljava/util/concurrent/CountDownLatch;->countDown()V
 
-    .line 1637
+    .line 1644
     invoke-static {}, Landroid/os/Looper;->loop()V
 
-    .line 1638
+    .line 1645
     return-void
 .end method

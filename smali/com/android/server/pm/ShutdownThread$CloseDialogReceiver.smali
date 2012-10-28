@@ -29,79 +29,47 @@
     .parameter "context"
 
     .prologue
-    .line 172
+    .line 221
     invoke-direct {p0}, Landroid/content/BroadcastReceiver;-><init>()V
 
-    .line 173
+    .line 222
     iput-object p1, p0, Lcom/android/server/pm/ShutdownThread$CloseDialogReceiver;->mContext:Landroid/content/Context;
 
-    .line 174
+    .line 223
     new-instance v0, Landroid/content/IntentFilter;
 
     const-string v1, "android.intent.action.CLOSE_SYSTEM_DIALOGS"
 
     invoke-direct {v0, v1}, Landroid/content/IntentFilter;-><init>(Ljava/lang/String;)V
 
-    .line 175
+    .line 224
     .local v0, filter:Landroid/content/IntentFilter;
     invoke-virtual {p1, p0, v0}, Landroid/content/Context;->registerReceiver(Landroid/content/BroadcastReceiver;Landroid/content/IntentFilter;)Landroid/content/Intent;
 
-    .line 176
+    .line 225
     return-void
 .end method
 
 
 # virtual methods
 .method public onDismiss(Landroid/content/DialogInterface;)V
-    .registers 4
+    .registers 3
     .parameter "unused"
     .annotation build Landroid/annotation/MiuiHook;
         value = .enum Landroid/annotation/MiuiHook$MiuiHookType;->CHANGE_CODE:Landroid/annotation/MiuiHook$MiuiHookType;
     .end annotation
 
     .prologue
-    .line 185
+    .line 234
     iget-object v0, p0, Lcom/android/server/pm/ShutdownThread$CloseDialogReceiver;->mContext:Landroid/content/Context;
 
     invoke-virtual {v0, p0}, Landroid/content/Context;->unregisterReceiver(Landroid/content/BroadcastReceiver;)V
 
-    .line 186
-    sget-object v1, Lcom/android/server/pm/ShutdownThread;->sIsStartedGuard:Ljava/lang/Object;
+    .line 235
+    invoke-static {p1}, Lcom/android/server/pm/ShutdownThread$Injector;->onDismiss(Landroid/content/DialogInterface;)V
 
-    monitor-enter v1
-
-    .line 187
-    :try_start_8
-    sget-boolean v0, Lcom/android/server/pm/ShutdownThread;->sIsStarted:Z
-
-    if-nez v0, :cond_12
-
-    .line 188
-    const/4 v0, 0x0
-
-    sput-boolean v0, Lcom/android/server/pm/ShutdownThread;->mReboot:Z
-
-    .line 189
-    const/4 v0, 0x0
-
-    sput-object v0, Lcom/android/server/pm/ShutdownThread;->mRebootReason:Ljava/lang/String;
-
-    .line 191
-    :cond_12
-    monitor-exit v1
-
-    .line 192
+    .line 236
     return-void
-
-    .line 191
-    :catchall_14
-    move-exception v0
-
-    monitor-exit v1
-    :try_end_16
-    .catchall {:try_start_8 .. :try_end_16} :catchall_14
-
-    throw v0
 .end method
 
 .method public onReceive(Landroid/content/Context;Landroid/content/Intent;)V
@@ -110,11 +78,11 @@
     .parameter "intent"
 
     .prologue
-    .line 180
+    .line 229
     iget-object v0, p0, Lcom/android/server/pm/ShutdownThread$CloseDialogReceiver;->dialog:Landroid/app/Dialog;
 
     invoke-virtual {v0}, Landroid/app/Dialog;->cancel()V
 
-    .line 181
+    .line 230
     return-void
 .end method

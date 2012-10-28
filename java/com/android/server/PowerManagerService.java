@@ -215,22 +215,6 @@ _L12:
             printwriter.println((new StringBuilder()).append("  currentMask:").append(PowerManagerService.dumpPowerState(currentMask)).toString());
         }
 
-        public void forceAnimateTo(int i, int j) {
-            this;
-            JVM INSTR monitorenter ;
-            endValue = i;
-            currentValue = i;
-            this;
-            JVM INSTR monitorexit ;
-            mScreenBrightnessHandler.removeCallbacksAndMessages(null);
-            return;
-            Exception exception;
-            exception;
-            this;
-            JVM INSTR monitorexit ;
-            throw exception;
-        }
-
         public int getCurrentBrightness() {
             this;
             JVM INSTR monitorenter ;
@@ -607,6 +591,38 @@ label0:
             mTag = s;
             mToken = new Binder();
             mRefCounted = flag;
+        }
+    }
+
+    static class Injector {
+
+        static void animateTo(PowerManagerService powermanagerservice, ScreenBrightnessAnimator screenbrightnessanimator, int i, int j, int k) {
+            screenbrightnessanimator;
+            JVM INSTR monitorenter ;
+            screenbrightnessanimator.endValue = i;
+            screenbrightnessanimator.currentValue = i;
+            screenbrightnessanimator;
+            JVM INSTR monitorexit ;
+            powermanagerservice.getScreenBrightnessHandler().removeCallbacksAndMessages(null);
+            return;
+            Exception exception;
+            exception;
+            screenbrightnessanimator;
+            JVM INSTR monitorexit ;
+            throw exception;
+        }
+
+        static void sleepIfProximitySensorActive(PowerManagerService powermanagerservice) {
+            if(powermanagerservice.getProximitySensorActive() && (1 & powermanagerservice.getPowerState()) != 0) {
+                powermanagerservice.callGoToSleepLocked(SystemClock.uptimeMillis(), 4);
+                powermanagerservice.setProxIgnoredBecauseScreenTurnedOff(false);
+            }
+        }
+
+        static boolean FALSE = false;
+
+
+        Injector() {
         }
     }
 
@@ -1760,7 +1776,7 @@ _L7:
 
     private int setScreenStateLocked(boolean flag) {
         if(flag && mInitialized && ((1 & mPowerState) == 0 || mSkippedScreenOn))
-            mScreenBrightnessAnimator.forceAnimateTo(0, 2);
+            Injector.animateTo(this, mScreenBrightnessAnimator, 0, 2, 0);
         int i = nativeSetScreenState(flag);
         if(i == 0) {
             long l;
@@ -2082,8 +2098,8 @@ _L4:
         if(mLastEventTime > l && !flag1) goto _L7; else goto _L6
 _L6:
         mLastEventTime = l;
-        if(!mUserActivityAllowed && !flag1) goto _L7; else goto _L8
-_L8:
+          goto _L8
+_L16:
         if(i != 1 || mUseSoftwareAutoBrightness) goto _L10; else goto _L9
 _L9:
         if(!mKeyboardVisible) goto _L12; else goto _L11
@@ -2122,7 +2138,8 @@ _L10:
         exception1;
         Binder.restoreCallingIdentity(l2);
         throw exception1;
-          goto _L1
+_L8:
+        if((!mUserActivityAllowed || Injector.FALSE) && !flag1) goto _L7; else goto _L16
     }
 
     public void acquireWakeLock(int i, IBinder ibinder, String s, WorkSource worksource) {
@@ -2261,6 +2278,10 @@ _L3:
         updateWakeLockLocked();
         mLocks.notifyAll();
         return;
+    }
+
+    void callGoToSleepLocked(long l, int i) {
+        goToSleepLocked(l, i);
     }
 
     public void clearUserActivityTimeout(long l, long l1) {
@@ -2423,6 +2444,18 @@ _L4:
             }
             catch(InterruptedException interruptedexception) { }
         return mPolicy;
+    }
+
+    int getPowerState() {
+        return mPowerState;
+    }
+
+    boolean getProximitySensorActive() {
+        return mProximitySensorActive;
+    }
+
+    Handler getScreenBrightnessHandler() {
+        return mScreenBrightnessHandler;
     }
 
     int getStayOnConditionsLocked() {
@@ -2711,36 +2744,23 @@ _L6:
         LockList locklist = mLocks;
         locklist;
         JVM INSTR monitorenter ;
-        if(!flag) goto _L2; else goto _L1
-_L1:
-        mPreventScreenOnPartialLock.acquire();
-        mHandler.removeCallbacks(mForceReenableScreenTask);
-        mHandler.postDelayed(mForceReenableScreenTask, 5000L);
-        mPreventScreenOn = true;
-_L4:
-        locklist;
-        JVM INSTR monitorexit ;
-        return;
-_L2:
-        mPreventScreenOn = false;
-        mHandler.removeCallbacks(mForceReenableScreenTask);
-        if((1 & mPowerState) != 0) {
-            if(mProximitySensorActive)
-                break; /* Loop/switch isn't completed */
-            int i = setScreenStateLocked(true);
-            if(i != 0)
-                Slog.w("PowerManagerService", (new StringBuilder()).append("preventScreenOn: error from setScreenStateLocked(): ").append(i).toString());
+        if(flag) {
+            mPreventScreenOnPartialLock.acquire();
+            mHandler.removeCallbacks(mForceReenableScreenTask);
+            mHandler.postDelayed(mForceReenableScreenTask, 5000L);
+            mPreventScreenOn = true;
+        } else {
+            mPreventScreenOn = false;
+            mHandler.removeCallbacks(mForceReenableScreenTask);
+            Injector.sleepIfProximitySensorActive(this);
+            if(!mProximitySensorActive && (1 & mPowerState) != 0) {
+                int i = setScreenStateLocked(true);
+                if(i != 0)
+                    Slog.w("PowerManagerService", (new StringBuilder()).append("preventScreenOn: error from setScreenStateLocked(): ").append(i).toString());
+            }
+            mPreventScreenOnPartialLock.release();
         }
-_L5:
-        mPreventScreenOnPartialLock.release();
-        if(true) goto _L4; else goto _L3
-        Exception exception;
-        exception;
-        throw exception;
-_L3:
-        goToSleepLocked(SystemClock.uptimeMillis(), 4);
-        mProxIgnoredBecauseScreenTurnedOff = false;
-          goto _L5
+        return;
     }
 
     public void reboot(final String finalReason) {
@@ -2984,6 +3004,10 @@ _L3:
         mPolicy = windowmanagerpolicy;
         mLocks.notifyAll();
         return;
+    }
+
+    void setProxIgnoredBecauseScreenTurnedOff(boolean flag) {
+        mProxIgnoredBecauseScreenTurnedOff = flag;
     }
 
     public void setScreenBrightnessOverride(int i) {

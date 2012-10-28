@@ -24,10 +24,41 @@ import java.util.List;
 //            TwilightCalculator
 
 class UiModeManagerService extends android.app.IUiModeManager.Stub {
+    static class Injector {
+
+        static void registerUIModeScaleChangedOjbserver(UiModeManagerService uimodemanagerservice, Context context) {
+            ContentObserver contentobserver = new ContentObserver(context) {
+
+                public void onChange(boolean flag) {
+                    Object obj = service.mLock;
+                    obj;
+                    JVM INSTR monitorenter ;
+                    service.mNormalType = android.provider.Settings.System.getInt(context.getContentResolver(), "ui_mode_scale", 1);
+                    return;
+                }
+
+                final Context val$context;
+                final UiModeManagerService val$service;
+
+                 {
+                    service = uimodemanagerservice;
+                    context = context1;
+                    super(final_handler);
+                }
+            };
+            context.getContentResolver().registerContentObserver(android.provider.Settings.System.getUriFor("ui_mode_scale"), false, contentobserver);
+            contentobserver.onChange(false);
+        }
+
+        Injector() {
+        }
+    }
+
 
     public UiModeManagerService(Context context) {
         boolean flag = true;
         super();
+        mNormalType = ((flag) ? 1 : 0);
         mDockState = 0;
         mLastBroadcastState = 0;
         mNightMode = ((flag) ? 1 : 0);
@@ -37,7 +68,6 @@ class UiModeManagerService extends android.app.IUiModeManager.Stub {
         mSetUiMode = 0;
         mHoldingConfiguration = false;
         mConfiguration = new Configuration();
-        mNormalType = ((flag) ? 1 : 0);
         mContext = context;
         ServiceManager.addService("uimode", this);
         mAlarmManager = (AlarmManager)mContext.getSystemService("alarm");
@@ -48,8 +78,7 @@ class UiModeManagerService extends android.app.IUiModeManager.Stub {
         IntentFilter intentfilter = new IntentFilter("android.intent.action.AIRPLANE_MODE");
         intentfilter.addAction("android.intent.action.TIMEZONE_CHANGED");
         mContext.registerReceiver(mUpdateLocationReceiver, intentfilter);
-        mContext.getContentResolver().registerContentObserver(android.provider.Settings.System.getUriFor("ui_mode_scale"), false, mUIModeScaleChangedObserver);
-        mUIModeScaleChangedObserver.onChange(false);
+        Injector.registerUIModeScaleChangedOjbserver(this, mContext);
         mWakeLock = ((PowerManager)context.getSystemService("power")).newWakeLock(26, TAG);
         mConfiguration.setToDefaults();
         mDefaultUiModeType = context.getResources().getInteger(0x10e0011);
@@ -727,7 +756,7 @@ _L3:
     private LocationManager mLocationManager;
     final Object mLock = new Object();
     private int mNightMode;
-    private int mNormalType;
+    int mNormalType;
     private NotificationManager mNotificationManager;
     private final BroadcastReceiver mResultReceiver = new BroadcastReceiver() {
 
@@ -822,23 +851,6 @@ label0:
                 super();
             }
     };
-    private final ContentObserver mUIModeScaleChangedObserver = new ContentObserver(new Handler()) {
-
-        public void onChange(boolean flag2) {
-            Object obj = mLock;
-            obj;
-            JVM INSTR monitorenter ;
-            mNormalType = android.provider.Settings.System.getInt(mContext.getContentResolver(), "ui_mode_scale", 1);
-            return;
-        }
-
-        final UiModeManagerService this$0;
-
-             {
-                this$0 = UiModeManagerService.this;
-                super(handler);
-            }
-    };
     private final BroadcastReceiver mUpdateLocationReceiver = new BroadcastReceiver() {
 
         public void onReceive(Context context1, Intent intent) {
@@ -876,8 +888,6 @@ label0:
 
 
 
-
-
 /*
     static boolean access$502(UiModeManagerService uimodemanagerservice, boolean flag) {
         uimodemanagerservice.mCharging = flag;
@@ -888,22 +898,14 @@ label0:
 
 
 
-/*
-    static int access$702(UiModeManagerService uimodemanagerservice, int i) {
-        uimodemanagerservice.mNormalType = i;
-        return i;
-    }
-
-*/
-
-
-
 
 /*
-    static Location access$902(UiModeManagerService uimodemanagerservice, Location location) {
+    static Location access$702(UiModeManagerService uimodemanagerservice, Location location) {
         uimodemanagerservice.mLocation = location;
         return location;
     }
 
 */
+
+
 }

@@ -15,10 +15,6 @@
 
 # instance fields
 .field private final mHandler:Landroid/os/Handler;
-    .annotation build Landroid/annotation/MiuiHook;
-        value = .enum Landroid/annotation/MiuiHook$MiuiHookType;->CHANGE_CODE:Landroid/annotation/MiuiHook$MiuiHookType;
-    .end annotation
-.end field
 
 .field private final mProc:Lcom/android/server/am/ProcessRecord;
 

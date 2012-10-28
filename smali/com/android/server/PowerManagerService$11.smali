@@ -28,7 +28,7 @@
     .parameter
 
     .prologue
-    .line 2839
+    .line 2862
     iput-object p1, p0, Lcom/android/server/PowerManagerService$11;->this$0:Lcom/android/server/PowerManagerService;
 
     iput-object p3, p0, Lcom/android/server/PowerManagerService$11;->val$message:Ljava/lang/String;
@@ -44,7 +44,7 @@
     .registers 3
 
     .prologue
-    .line 2840
+    .line 2863
     new-instance v0, Ljava/lang/RuntimeException;
 
     iget-object v1, p0, Lcom/android/server/PowerManagerService$11;->val$message:Ljava/lang/String;

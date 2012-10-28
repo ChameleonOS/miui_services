@@ -85,7 +85,7 @@ public class MiuiLightsService extends LightsService {
 
         private Light(int i) {
             this$0 = MiuiLightsService.this;
-            super(MiuiLightsService.this, i);
+            super(MiuiLightsService.this, i, 0);
             mTurnOn = true;
             mHandler = new Handler() {
 
@@ -226,8 +226,8 @@ _L3:
         super(context);
         mContext = context;
         mResolver = context.getContentResolver();
-        super.mLights[2] = new Light(2);
-        super.mLights[4] = new Light(4);
+        setLight(2, new Light(2));
+        setLight(4, new Light(4));
     }
 
     private Context mContext;
