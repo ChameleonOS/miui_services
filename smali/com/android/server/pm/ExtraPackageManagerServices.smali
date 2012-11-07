@@ -6,13 +6,15 @@
 # static fields
 .field private static final INSTALL_DIR:Ljava/lang/String; = "/data/app/"
 
-.field private static final PREINSTALL_DIR:Ljava/lang/String; = "/data/media/preinstall_apps/"
-
 .field private static final PREINSTALL_HISTORY_FILE:Ljava/lang/String; = "/data/system/preinstall_history"
 
-.field private static final REINSTALL_MARK_FILE:Ljava/lang/String; = "/data/media/preinstall_apps/reinstall_apps"
+.field private static final REINSTALL_MARK_FILE:Ljava/lang/String; = "reinstall_apps"
 
-.field private static final TAG:Ljava/lang/String; = "ExtraPackageManager"
+.field private static final TAG:Ljava/lang/String; = "ExtraPackageManagerServices"
+
+.field private static final THIRD_PART_DEV_PREINSTALL_DIR:Ljava/lang/String; = "/data/preinstall_apps/"
+
+.field private static final XIAOMI_PREINSTALL_DIR:Ljava/lang/String; = "/data/media/preinstall_apps/"
 
 
 # direct methods
@@ -20,7 +22,7 @@
     .registers 1
 
     .prologue
-    .line 17
+    .line 19
     invoke-direct/range {p0 .. p0}, Ljava/lang/Object;-><init>()V
 
     return-void
@@ -31,7 +33,7 @@
     .parameter "apkName"
 
     .prologue
-    .line 70
+    .line 73
     const-string v2, ".apk"
 
     const-string v3, ".odex"
@@ -40,7 +42,7 @@
 
     move-result-object v1
 
-    .line 71
+    .line 74
     .local v1, odexName:Ljava/lang/String;
     new-instance v0, Ljava/io/File;
 
@@ -64,7 +66,7 @@
 
     invoke-direct {v0, v2}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
-    .line 72
+    .line 75
     .local v0, installOdex:Ljava/io/File;
     invoke-virtual {v0}, Ljava/io/File;->exists()Z
 
@@ -72,10 +74,10 @@
 
     if-eqz v2, :cond_29
 
-    .line 73
+    .line 76
     invoke-virtual {v0}, Ljava/io/File;->delete()Z
 
-    .line 75
+    .line 78
     :cond_29
     return-void
 .end method
@@ -85,12 +87,12 @@
     .parameter "apkFile"
 
     .prologue
-    .line 78
+    .line 81
     invoke-virtual {p0}, Ljava/io/File;->getName()Ljava/lang/String;
 
     move-result-object v0
 
-    .line 79
+    .line 82
     .local v0, apkName:Ljava/lang/String;
     new-instance v1, Ljava/io/File;
 
@@ -114,21 +116,21 @@
 
     invoke-direct {v1, v2}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
-    .line 80
+    .line 83
     .local v1, installApk:Ljava/io/File;
     invoke-static {p0, v1}, Landroid/os/FileUtils;->copyFile(Ljava/io/File;Ljava/io/File;)Z
 
-    .line 81
+    .line 84
     const/4 v2, 0x1
 
     const/4 v3, 0x0
 
     invoke-virtual {v1, v2, v3}, Ljava/io/File;->setReadable(ZZ)Z
 
-    .line 82
+    .line 85
     invoke-static {v0}, Lcom/android/server/pm/ExtraPackageManagerServices;->deleteOdexFile(Ljava/lang/String;)V
 
-    .line 83
+    .line 86
     return-void
 .end method
 
@@ -137,7 +139,7 @@
     .parameter "name"
 
     .prologue
-    .line 86
+    .line 89
     if-eqz p0, :cond_c
 
     const-string v0, ".apk"
@@ -166,14 +168,14 @@
     .parameter "pkg"
 
     .prologue
-    .line 98
+    .line 101
     iget-object v6, p1, Lcom/android/server/pm/PackageSetting;->sharedUser:Lcom/android/server/pm/SharedUserSetting;
 
     if-eqz v6, :cond_3d
 
     iget-object v2, p1, Lcom/android/server/pm/PackageSetting;->sharedUser:Lcom/android/server/pm/SharedUserSetting;
 
-    .line 99
+    .line 102
     .local v2, gp:Lcom/android/server/pm/GrantedPermissions;
     :goto_6
     iget-object v6, p2, Landroid/content/pm/PackageParser$Package;->requestedPermissions:Ljava/util/ArrayList;
@@ -182,7 +184,7 @@
 
     move-result v0
 
-    .line 100
+    .line 103
     .local v0, N:I
     const/4 v3, 0x0
 
@@ -190,7 +192,7 @@
     :goto_d
     if-ge v3, v0, :cond_4e
 
-    .line 101
+    .line 104
     iget-object v6, p2, Landroid/content/pm/PackageParser$Package;->requestedPermissions:Ljava/util/ArrayList;
 
     invoke-virtual {v6, v3}, Ljava/util/ArrayList;->get(I)Ljava/lang/Object;
@@ -199,7 +201,7 @@
 
     check-cast v4, Ljava/lang/String;
 
-    .line 102
+    .line 105
     .local v4, name:Ljava/lang/String;
     iget-object v6, p0, Lcom/android/server/pm/Settings;->mPermissions:Ljava/util/HashMap;
 
@@ -209,14 +211,14 @@
 
     check-cast v1, Lcom/android/server/pm/BasePermission;
 
-    .line 103
+    .line 106
     .local v1, bp:Lcom/android/server/pm/BasePermission;
     if-eqz v1, :cond_3a
 
-    .line 104
+    .line 107
     iget-object v5, v1, Lcom/android/server/pm/BasePermission;->name:Ljava/lang/String;
 
-    .line 105
+    .line 108
     .local v5, perm:Ljava/lang/String;
     iget-object v6, v2, Lcom/android/server/pm/GrantedPermissions;->grantedPermissions:Ljava/util/HashSet;
 
@@ -226,12 +228,12 @@
 
     if-nez v6, :cond_3f
 
-    .line 106
+    .line 109
     iget-object v6, v2, Lcom/android/server/pm/GrantedPermissions;->grantedPermissions:Ljava/util/HashSet;
 
     invoke-virtual {v6, v5}, Ljava/util/HashSet;->add(Ljava/lang/Object;)Z
 
-    .line 107
+    .line 110
     iget-object v6, v2, Lcom/android/server/pm/GrantedPermissions;->gids:[I
 
     iget-object v7, v1, Lcom/android/server/pm/BasePermission;->gids:[I
@@ -242,7 +244,7 @@
 
     iput-object v6, v2, Lcom/android/server/pm/GrantedPermissions;->gids:[I
 
-    .line 100
+    .line 103
     .end local v5           #perm:Ljava/lang/String;
     :cond_3a
     :goto_3a
@@ -258,10 +260,10 @@
     :cond_3d
     move-object v2, p1
 
-    .line 98
+    .line 101
     goto :goto_6
 
-    .line 108
+    .line 111
     .restart local v0       #N:I
     .restart local v1       #bp:Lcom/android/server/pm/BasePermission;
     .restart local v2       #gp:Lcom/android/server/pm/GrantedPermissions;
@@ -273,7 +275,7 @@
 
     if-nez v6, :cond_3a
 
-    .line 109
+    .line 112
     iget-object v6, v2, Lcom/android/server/pm/GrantedPermissions;->gids:[I
 
     iget-object v7, v1, Lcom/android/server/pm/BasePermission;->gids:[I
@@ -286,7 +288,7 @@
 
     goto :goto_3a
 
-    .line 113
+    .line 116
     .end local v1           #bp:Lcom/android/server/pm/BasePermission;
     .end local v4           #name:Ljava/lang/String;
     .end local v5           #perm:Ljava/lang/String;
@@ -299,22 +301,22 @@
     .parameter "apkFile"
 
     .prologue
-    .line 90
+    .line 93
     invoke-virtual {p0}, Ljava/io/File;->getPath()Ljava/lang/String;
 
     move-result-object v0
 
-    .line 91
+    .line 94
     .local v0, apkPath:Ljava/lang/String;
     const/4 v1, 0x4
 
-    .line 92
+    .line 95
     .local v1, parseFlags:I
     new-instance v2, Landroid/content/pm/PackageParser;
 
     invoke-direct {v2, v0}, Landroid/content/pm/PackageParser;-><init>(Ljava/lang/String;)V
 
-    .line 93
+    .line 96
     .local v2, pp:Landroid/content/pm/PackageParser;
     const/4 v3, 0x0
 
@@ -326,243 +328,284 @@
 .end method
 
 .method public static performPreinstallApp(Lcom/android/server/pm/Settings;)V
-    .registers 16
+    .registers 18
     .parameter "curPkgSettings"
 
     .prologue
-    .line 116
-    new-instance v5, Ljava/io/File;
-
-    const-string v12, "/data/media/preinstall_apps/"
-
-    invoke-direct {v5, v12}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-
-    .line 118
-    .local v5, preinstallAppDir:Ljava/io/File;
-    invoke-virtual {v5}, Ljava/io/File;->list()[Ljava/lang/String;
-
-    move-result-object v6
-
     .line 119
-    .local v6, preinstallAppNames:[Ljava/lang/String;
-    if-nez v6, :cond_26
-
-    .line 120
-    const-string v12, "ExtraPackageManager"
-
-    new-instance v13, Ljava/lang/StringBuilder;
-
-    invoke-direct {v13}, Ljava/lang/StringBuilder;-><init>()V
-
-    const-string v14, "No files in preinstall app dir "
-
-    invoke-virtual {v13, v14}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v13
-
-    invoke-virtual {v13, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
-
-    move-result-object v13
-
-    invoke-virtual {v13}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v13
-
-    invoke-static {v12, v13}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    .line 179
-    :cond_25
-    :goto_25
-    return-void
-
-    .line 124
-    :cond_26
-    const-string v12, "/data/system/preinstall_history"
-
-    invoke-static {v12}, Lcom/android/server/pm/ExtraPackageManagerServices;->readPreinstallAppHistory(Ljava/lang/String;)Ljava/util/ArrayList;
-
-    move-result-object v2
-
-    .line 126
-    .local v2, installHistory:Ljava/util/ArrayList;,"Ljava/util/ArrayList<Ljava/lang/String;>;"
-    new-instance v9, Ljava/io/File;
-
-    const-string v12, "/data/media/preinstall_apps/reinstall_apps"
-
-    invoke-direct {v9, v12}, Ljava/io/File;-><init>(Ljava/lang/String;)V
-
-    .line 127
-    .local v9, reinstallMarkFile:Ljava/io/File;
-    invoke-virtual {v9}, Ljava/io/File;->exists()Z
-
-    move-result v3
-
-    .line 129
-    .local v3, isNeedReinstall:Z
     const/4 v1, 0x0
 
-    .local v1, i:I
-    :goto_38
-    array-length v12, v6
+    .line 121
+    .local v1, dir:Ljava/lang/String;
+    sget-boolean v14, Lmiui/os/Build;->IS_XIAOMI:Z
 
-    if-ge v1, v12, :cond_aa
+    if-eqz v14, :cond_2b
 
-    .line 130
-    aget-object v7, v6, v1
+    .line 122
+    const-string v1, "/data/media/preinstall_apps/"
 
-    .line 131
-    .local v7, preinstallName:Ljava/lang/String;
-    invoke-static {v7}, Lcom/android/server/pm/ExtraPackageManagerServices;->isPackageFilename(Ljava/lang/String;)Z
+    .line 127
+    :goto_7
+    new-instance v7, Ljava/io/File;
 
-    move-result v12
-
-    if-nez v12, :cond_46
+    invoke-direct {v7, v1}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
     .line 129
-    :cond_43
-    :goto_43
-    add-int/lit8 v1, v1, 0x1
-
-    goto :goto_38
-
-    .line 136
-    :cond_46
-    invoke-virtual {v2, v7}, Ljava/util/ArrayList;->contains(Ljava/lang/Object;)Z
-
-    move-result v0
-
-    .line 137
-    .local v0, hasRecorded:Z
-    new-instance v4, Ljava/io/File;
-
-    invoke-direct {v4, v5, v7}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
-
-    .line 138
-    .local v4, preinstallApp:Ljava/io/File;
-    invoke-static {v4}, Lcom/android/server/pm/ExtraPackageManagerServices;->parsePackage(Ljava/io/File;)Landroid/content/pm/PackageParser$Package;
+    .local v7, preinstallAppDir:Ljava/io/File;
+    invoke-virtual {v7}, Ljava/io/File;->list()[Ljava/lang/String;
 
     move-result-object v8
 
-    .line 139
-    .local v8, preinstallPkg:Landroid/content/pm/PackageParser$Package;
-    if-nez v8, :cond_74
+    .line 130
+    .local v8, preinstallAppNames:[Ljava/lang/String;
+    if-nez v8, :cond_2e
+
+    .line 131
+    const-string v14, "ExtraPackageManagerServices"
+
+    new-instance v15, Ljava/lang/StringBuilder;
+
+    invoke-direct {v15}, Ljava/lang/StringBuilder;-><init>()V
+
+    const-string v16, "No files in preinstall app dir "
+
+    invoke-virtual/range {v15 .. v16}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v15
+
+    invoke-virtual {v15, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
+
+    move-result-object v15
+
+    invoke-virtual {v15}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v15
+
+    invoke-static {v14, v15}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    .line 190
+    :cond_2a
+    :goto_2a
+    return-void
+
+    .line 124
+    .end local v7           #preinstallAppDir:Ljava/io/File;
+    .end local v8           #preinstallAppNames:[Ljava/lang/String;
+    :cond_2b
+    const-string v1, "/data/preinstall_apps/"
+
+    goto :goto_7
+
+    .line 135
+    .restart local v7       #preinstallAppDir:Ljava/io/File;
+    .restart local v8       #preinstallAppNames:[Ljava/lang/String;
+    :cond_2e
+    const-string v14, "/data/system/preinstall_history"
+
+    invoke-static {v14}, Lcom/android/server/pm/ExtraPackageManagerServices;->readPreinstallAppHistory(Ljava/lang/String;)Ljava/util/ArrayList;
+
+    move-result-object v4
+
+    .line 137
+    .local v4, installHistory:Ljava/util/ArrayList;,"Ljava/util/ArrayList<Ljava/lang/String;>;"
+    new-instance v11, Ljava/io/File;
+
+    new-instance v14, Ljava/lang/StringBuilder;
+
+    invoke-direct {v14}, Ljava/lang/StringBuilder;-><init>()V
+
+    invoke-virtual {v14, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v14
+
+    const-string v15, "reinstall_apps"
+
+    invoke-virtual {v14, v15}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v14
+
+    invoke-virtual {v14}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v14
+
+    invoke-direct {v11, v14}, Ljava/io/File;-><init>(Ljava/lang/String;)V
+
+    .line 138
+    .local v11, reinstallMarkFile:Ljava/io/File;
+    invoke-virtual {v11}, Ljava/io/File;->exists()Z
+
+    move-result v5
 
     .line 140
-    const-string v12, "ExtraPackageManager"
+    .local v5, isNeedReinstall:Z
+    const/4 v3, 0x0
 
-    new-instance v13, Ljava/lang/StringBuilder;
+    .local v3, i:I
+    :goto_51
+    array-length v14, v8
 
-    invoke-direct {v13}, Ljava/lang/StringBuilder;-><init>()V
+    if-ge v3, v14, :cond_c7
 
-    const-string v14, "preinstall app "
+    .line 141
+    aget-object v9, v8, v3
 
-    invoke-virtual {v13, v14}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    .line 142
+    .local v9, preinstallName:Ljava/lang/String;
+    invoke-static {v9}, Lcom/android/server/pm/ExtraPackageManagerServices;->isPackageFilename(Ljava/lang/String;)Z
 
-    move-result-object v13
+    move-result v14
 
-    invoke-virtual {v13, v7}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+    if-nez v14, :cond_5f
 
-    move-result-object v13
+    .line 140
+    :cond_5c
+    :goto_5c
+    add-int/lit8 v3, v3, 0x1
 
-    const-string v14, " package parser fail!"
-
-    invoke-virtual {v13, v14}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-
-    move-result-object v13
-
-    invoke-virtual {v13}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-
-    move-result-object v13
-
-    invoke-static {v12, v13}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
-
-    goto :goto_43
-
-    .line 144
-    :cond_74
-    iget-object v12, v8, Landroid/content/pm/PackageParser$Package;->packageName:Ljava/lang/String;
-
-    invoke-virtual {p0, v12}, Lcom/android/server/pm/Settings;->peekPackageLPr(Ljava/lang/String;)Lcom/android/server/pm/PackageSetting;
-
-    move-result-object v11
+    goto :goto_51
 
     .line 147
-    .local v11, userPkgSetting:Lcom/android/server/pm/PackageSetting;
-    if-eqz v11, :cond_a2
+    :cond_5f
+    invoke-virtual {v4, v9}, Ljava/util/ArrayList;->contains(Ljava/lang/Object;)Z
+
+    move-result v2
+
+    .line 148
+    .local v2, hasRecorded:Z
+    new-instance v6, Ljava/io/File;
+
+    invoke-direct {v6, v7, v9}, Ljava/io/File;-><init>(Ljava/io/File;Ljava/lang/String;)V
 
     .line 149
-    iget v12, v8, Landroid/content/pm/PackageParser$Package;->mVersionCode:I
+    .local v6, preinstallApp:Ljava/io/File;
+    invoke-static {v6}, Lcom/android/server/pm/ExtraPackageManagerServices;->parsePackage(Ljava/io/File;)Landroid/content/pm/PackageParser$Package;
 
-    iget v13, v11, Lcom/android/server/pm/PackageSettingBase;->versionCode:I
+    move-result-object v10
 
-    if-le v12, v13, :cond_9a
+    .line 150
+    .local v10, preinstallPkg:Landroid/content/pm/PackageParser$Package;
+    if-nez v10, :cond_8d
 
-    .line 152
-    iget v12, v11, Lcom/android/server/pm/GrantedPermissions;->pkgFlags:I
+    .line 151
+    const-string v14, "ExtraPackageManagerServices"
 
-    and-int/lit8 v12, v12, 0x1
+    new-instance v15, Ljava/lang/StringBuilder;
 
-    if-nez v12, :cond_94
+    invoke-direct {v15}, Ljava/lang/StringBuilder;-><init>()V
 
-    .line 153
-    iget-object v10, v11, Lcom/android/server/pm/PackageSettingBase;->codePath:Ljava/io/File;
+    const-string v16, "preinstall app "
 
-    .line 154
-    .local v10, userApkFile:Ljava/io/File;
-    invoke-virtual {v10}, Ljava/io/File;->getName()Ljava/lang/String;
+    invoke-virtual/range {v15 .. v16}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 
-    move-result-object v12
+    move-result-object v15
 
-    invoke-static {v12}, Lcom/android/server/pm/ExtraPackageManagerServices;->deleteOdexFile(Ljava/lang/String;)V
+    invoke-virtual {v15, v9}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v15
+
+    const-string v16, " package parser fail!"
+
+    invoke-virtual/range {v15 .. v16}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
+
+    move-result-object v15
+
+    invoke-virtual {v15}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
+
+    move-result-object v15
+
+    invoke-static {v14, v15}, Landroid/util/Log;->d(Ljava/lang/String;Ljava/lang/String;)I
+
+    goto :goto_5c
 
     .line 155
-    invoke-virtual {v10}, Ljava/io/File;->delete()Z
+    :cond_8d
+    iget-object v14, v10, Landroid/content/pm/PackageParser$Package;->packageName:Ljava/lang/String;
+
+    move-object/from16 v0, p0
+
+    invoke-virtual {v0, v14}, Lcom/android/server/pm/Settings;->peekPackageLPr(Ljava/lang/String;)Lcom/android/server/pm/PackageSetting;
+
+    move-result-object v13
 
     .line 158
-    .end local v10           #userApkFile:Ljava/io/File;
-    :cond_94
-    invoke-static {v4}, Lcom/android/server/pm/ExtraPackageManagerServices;->installPreinstallApp(Ljava/io/File;)V
+    .local v13, userPkgSetting:Lcom/android/server/pm/PackageSetting;
+    if-eqz v13, :cond_bf
 
-    .line 162
-    invoke-static {p0, v11, v8}, Lcom/android/server/pm/ExtraPackageManagerServices;->packagePermissionsUpdate(Lcom/android/server/pm/Settings;Lcom/android/server/pm/PackageSetting;Landroid/content/pm/PackageParser$Package;)V
+    .line 160
+    iget v14, v10, Landroid/content/pm/PackageParser$Package;->mVersionCode:I
 
-    .line 171
-    :cond_9a
-    :goto_9a
-    if-nez v0, :cond_43
+    iget v15, v13, Lcom/android/server/pm/PackageSettingBase;->versionCode:I
 
-    .line 172
-    const-string v12, "/data/system/preinstall_history"
+    if-le v14, v15, :cond_b7
 
-    invoke-static {v12, v7}, Lcom/android/server/pm/ExtraPackageManagerServices;->writePreinstallAppHistory(Ljava/lang/String;Ljava/lang/String;)V
+    .line 163
+    iget v14, v13, Lcom/android/server/pm/GrantedPermissions;->pkgFlags:I
 
-    goto :goto_43
+    and-int/lit8 v14, v14, 0x1
+
+    if-nez v14, :cond_af
+
+    .line 164
+    iget-object v12, v13, Lcom/android/server/pm/PackageSettingBase;->codePath:Ljava/io/File;
+
+    .line 165
+    .local v12, userApkFile:Ljava/io/File;
+    invoke-virtual {v12}, Ljava/io/File;->getName()Ljava/lang/String;
+
+    move-result-object v14
+
+    invoke-static {v14}, Lcom/android/server/pm/ExtraPackageManagerServices;->deleteOdexFile(Ljava/lang/String;)V
 
     .line 166
-    :cond_a2
-    if-eqz v0, :cond_a6
+    invoke-virtual {v12}, Ljava/io/File;->delete()Z
 
-    if-eqz v3, :cond_9a
+    .line 169
+    .end local v12           #userApkFile:Ljava/io/File;
+    :cond_af
+    invoke-static {v6}, Lcom/android/server/pm/ExtraPackageManagerServices;->installPreinstallApp(Ljava/io/File;)V
 
-    .line 167
-    :cond_a6
-    invoke-static {v4}, Lcom/android/server/pm/ExtraPackageManagerServices;->installPreinstallApp(Ljava/io/File;)V
+    .line 173
+    move-object/from16 v0, p0
 
-    goto :goto_9a
+    invoke-static {v0, v13, v10}, Lcom/android/server/pm/ExtraPackageManagerServices;->packagePermissionsUpdate(Lcom/android/server/pm/Settings;Lcom/android/server/pm/PackageSetting;Landroid/content/pm/PackageParser$Package;)V
 
-    .line 176
-    .end local v0           #hasRecorded:Z
-    .end local v4           #preinstallApp:Ljava/io/File;
-    .end local v7           #preinstallName:Ljava/lang/String;
-    .end local v8           #preinstallPkg:Landroid/content/pm/PackageParser$Package;
-    .end local v11           #userPkgSetting:Lcom/android/server/pm/PackageSetting;
-    :cond_aa
-    if-eqz v3, :cond_25
+    .line 182
+    :cond_b7
+    :goto_b7
+    if-nez v2, :cond_5c
+
+    .line 183
+    const-string v14, "/data/system/preinstall_history"
+
+    invoke-static {v14, v9}, Lcom/android/server/pm/ExtraPackageManagerServices;->writePreinstallAppHistory(Ljava/lang/String;Ljava/lang/String;)V
+
+    goto :goto_5c
 
     .line 177
-    invoke-virtual {v9}, Ljava/io/File;->delete()Z
+    :cond_bf
+    if-eqz v2, :cond_c3
 
-    goto/16 :goto_25
+    if-eqz v5, :cond_b7
+
+    .line 178
+    :cond_c3
+    invoke-static {v6}, Lcom/android/server/pm/ExtraPackageManagerServices;->installPreinstallApp(Ljava/io/File;)V
+
+    goto :goto_b7
+
+    .line 187
+    .end local v2           #hasRecorded:Z
+    .end local v6           #preinstallApp:Ljava/io/File;
+    .end local v9           #preinstallName:Ljava/lang/String;
+    .end local v10           #preinstallPkg:Landroid/content/pm/PackageParser$Package;
+    .end local v13           #userPkgSetting:Lcom/android/server/pm/PackageSetting;
+    :cond_c7
+    if-eqz v5, :cond_2a
+
+    .line 188
+    invoke-virtual {v11}, Ljava/io/File;->delete()Z
+
+    goto/16 :goto_2a
 .end method
 
 .method private static readPreinstallAppHistory(Ljava/lang/String;)Ljava/util/ArrayList;
@@ -581,19 +624,19 @@
     .end annotation
 
     .prologue
-    .line 25
+    .line 28
     new-instance v2, Ljava/util/ArrayList;
 
     invoke-direct {v2}, Ljava/util/ArrayList;-><init>()V
 
-    .line 28
+    .line 31
     .local v2, hisList:Ljava/util/ArrayList;,"Ljava/util/ArrayList<Ljava/lang/String;>;"
     :try_start_5
     new-instance v3, Ljava/io/File;
 
     invoke-direct {v3, p0}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
-    .line 30
+    .line 33
     .local v3, installHistoryFile:Ljava/io/File;
     invoke-virtual {v3}, Ljava/io/File;->exists()Z
 
@@ -601,29 +644,29 @@
 
     if-nez v5, :cond_11
 
-    .line 47
+    .line 50
     .end local v3           #installHistoryFile:Ljava/io/File;
     :goto_10
     return-object v2
 
-    .line 34
+    .line 37
     .restart local v3       #installHistoryFile:Ljava/io/File;
     :cond_11
     new-instance v1, Ljava/io/FileReader;
 
     invoke-direct {v1, v3}, Ljava/io/FileReader;-><init>(Ljava/io/File;)V
 
-    .line 35
+    .line 38
     .local v1, fileReader:Ljava/io/FileReader;
     new-instance v0, Ljava/io/BufferedReader;
 
     invoke-direct {v0, v1}, Ljava/io/BufferedReader;-><init>(Ljava/io/Reader;)V
 
-    .line 36
+    .line 39
     .local v0, bufferReader:Ljava/io/BufferedReader;
     const/4 v4, 0x0
 
-    .line 38
+    .line 41
     .local v4, line:Ljava/lang/String;
     :goto_1c
     invoke-virtual {v0}, Ljava/io/BufferedReader;->readLine()Ljava/lang/String;
@@ -632,12 +675,12 @@
 
     if-eqz v4, :cond_28
 
-    .line 39
+    .line 42
     invoke-virtual {v2, v4}, Ljava/util/ArrayList;->add(Ljava/lang/Object;)Z
 
     goto :goto_1c
 
-    .line 44
+    .line 47
     .end local v0           #bufferReader:Ljava/io/BufferedReader;
     .end local v1           #fileReader:Ljava/io/FileReader;
     .end local v3           #installHistoryFile:Ljava/io/File;
@@ -647,7 +690,7 @@
 
     goto :goto_10
 
-    .line 42
+    .line 45
     .restart local v0       #bufferReader:Ljava/io/BufferedReader;
     .restart local v1       #fileReader:Ljava/io/FileReader;
     .restart local v3       #installHistoryFile:Ljava/io/File;
@@ -655,7 +698,7 @@
     :cond_28
     invoke-virtual {v0}, Ljava/io/BufferedReader;->close()V
 
-    .line 43
+    .line 46
     invoke-virtual {v1}, Ljava/io/FileReader;->close()V
     :try_end_2e
     .catch Ljava/io/IOException; {:try_start_5 .. :try_end_2e} :catch_26
@@ -669,13 +712,13 @@
     .parameter "installPkgName"
 
     .prologue
-    .line 52
+    .line 55
     :try_start_0
     new-instance v2, Ljava/io/File;
 
     invoke-direct {v2, p0}, Ljava/io/File;-><init>(Ljava/lang/String;)V
 
-    .line 54
+    .line 57
     .local v2, installHistoryFile:Ljava/io/File;
     invoke-virtual {v2}, Ljava/io/File;->exists()Z
 
@@ -683,10 +726,10 @@
 
     if-nez v3, :cond_e
 
-    .line 55
+    .line 58
     invoke-virtual {v2}, Ljava/io/File;->createNewFile()Z
 
-    .line 58
+    .line 61
     :cond_e
     new-instance v1, Ljava/io/FileWriter;
 
@@ -694,37 +737,37 @@
 
     invoke-direct {v1, v2, v3}, Ljava/io/FileWriter;-><init>(Ljava/io/File;Z)V
 
-    .line 59
+    .line 62
     .local v1, fileWriter:Ljava/io/FileWriter;
     new-instance v0, Ljava/io/BufferedWriter;
 
     invoke-direct {v0, v1}, Ljava/io/BufferedWriter;-><init>(Ljava/io/Writer;)V
 
-    .line 60
+    .line 63
     .local v0, bufferWriter:Ljava/io/BufferedWriter;
     invoke-virtual {v0, p1}, Ljava/io/BufferedWriter;->write(Ljava/lang/String;)V
 
-    .line 61
+    .line 64
     const-string v3, "\n"
 
     invoke-virtual {v0, v3}, Ljava/io/BufferedWriter;->write(Ljava/lang/String;)V
 
-    .line 63
+    .line 66
     invoke-virtual {v0}, Ljava/io/BufferedWriter;->close()V
 
-    .line 64
+    .line 67
     invoke-virtual {v1}, Ljava/io/FileWriter;->close()V
     :try_end_27
     .catch Ljava/io/IOException; {:try_start_0 .. :try_end_27} :catch_28
 
-    .line 67
+    .line 70
     .end local v0           #bufferWriter:Ljava/io/BufferedWriter;
     .end local v1           #fileWriter:Ljava/io/FileWriter;
     .end local v2           #installHistoryFile:Ljava/io/File;
     :goto_27
     return-void
 
-    .line 65
+    .line 68
     :catch_28
     move-exception v3
 

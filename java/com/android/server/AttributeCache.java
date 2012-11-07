@@ -8,6 +8,7 @@ import android.content.Context;
 import android.content.res.Configuration;
 import android.content.res.TypedArray;
 import android.util.SparseArray;
+import java.lang.ref.WeakReference;
 import java.util.HashMap;
 import java.util.WeakHashMap;
 
@@ -34,6 +35,26 @@ public final class AttributeCache {
         }
     }
 
+    static class Injector {
+
+        static Package getPackage(WeakHashMap weakhashmap, String s) {
+            WeakReference weakreference = (WeakReference)weakhashmap.get(s);
+            Package package1;
+            if(weakreference != null)
+                package1 = (Package)weakreference.get();
+            else
+                package1 = null;
+            return package1;
+        }
+
+        static void putPackage(WeakHashMap weakhashmap, String s, Package package1) {
+            weakhashmap.put(s, new WeakReference(package1));
+        }
+
+        Injector() {
+        }
+    }
+
 
     public AttributeCache(Context context) {
         mContext = context;
@@ -55,7 +76,7 @@ public final class AttributeCache {
         Package package1;
         HashMap hashmap;
         Entry entry1;
-        package1 = (Package)mPackages.get(s);
+        package1 = Injector.getPackage(mPackages, s);
         hashmap = null;
         entry1 = null;
         if(package1 == null) goto _L2; else goto _L1
@@ -88,7 +109,7 @@ _L6:
           goto _L8
 _L7:
         package1 = new Package(context);
-        mPackages.put(s, package1);
+        Injector.putPackage(mPackages, s, package1);
 _L4:
         entry1;
         if(hashmap == null) {

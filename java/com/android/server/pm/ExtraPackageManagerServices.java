@@ -9,6 +9,7 @@ import android.os.FileUtils;
 import android.util.Log;
 import java.io.*;
 import java.util.*;
+import miui.os.Build;
 
 // Referenced classes of package com.android.server.pm:
 //            PackageSetting, Settings, BasePermission, GrantedPermissions, 
@@ -75,28 +76,33 @@ class ExtraPackageManagerServices {
     }
 
     public static void performPreinstallApp(Settings settings) {
+        String s;
         File file;
         String as[];
-        file = new File("/data/media/preinstall_apps/");
+        if(Build.IS_XIAOMI)
+            s = "/data/media/preinstall_apps/";
+        else
+            s = "/data/preinstall_apps/";
+        file = new File(s);
         as = file.list();
         if(as != null) goto _L2; else goto _L1
 _L1:
-        Log.d("ExtraPackageManager", (new StringBuilder()).append("No files in preinstall app dir ").append(file).toString());
+        Log.d("ExtraPackageManagerServices", (new StringBuilder()).append("No files in preinstall app dir ").append(file).toString());
 _L4:
         return;
 _L2:
         ArrayList arraylist = readPreinstallAppHistory("/data/system/preinstall_history");
-        File file1 = new File("/data/media/preinstall_apps/reinstall_apps");
+        File file1 = new File((new StringBuilder()).append(s).append("reinstall_apps").toString());
         boolean flag = file1.exists();
         int i = 0;
         while(i < as.length)  {
-            String s = as[i];
-            if(isPackageFilename(s)) {
-                boolean flag1 = arraylist.contains(s);
-                File file2 = new File(file, s);
+            String s1 = as[i];
+            if(isPackageFilename(s1)) {
+                boolean flag1 = arraylist.contains(s1);
+                File file2 = new File(file, s1);
                 android.content.pm.PackageParser.Package package1 = parsePackage(file2);
                 if(package1 == null) {
-                    Log.d("ExtraPackageManager", (new StringBuilder()).append("preinstall app ").append(s).append(" package parser fail!").toString());
+                    Log.d("ExtraPackageManagerServices", (new StringBuilder()).append("preinstall app ").append(s1).append(" package parser fail!").toString());
                 } else {
                     PackageSetting packagesetting = settings.peekPackageLPr(package1.packageName);
                     if(packagesetting != null) {
@@ -113,7 +119,7 @@ _L2:
                     if(!flag1 || flag)
                         installPreinstallApp(file2);
                     if(!flag1)
-                        writePreinstallAppHistory("/data/system/preinstall_history", s);
+                        writePreinstallAppHistory("/data/system/preinstall_history", s1);
                 }
             }
             i++;
@@ -164,8 +170,9 @@ _L1:
     }
 
     private static final String INSTALL_DIR = "/data/app/";
-    private static final String PREINSTALL_DIR = "/data/media/preinstall_apps/";
     private static final String PREINSTALL_HISTORY_FILE = "/data/system/preinstall_history";
-    private static final String REINSTALL_MARK_FILE = "/data/media/preinstall_apps/reinstall_apps";
-    private static final String TAG = "ExtraPackageManager";
+    private static final String REINSTALL_MARK_FILE = "reinstall_apps";
+    private static final String TAG = "ExtraPackageManagerServices";
+    private static final String THIRD_PART_DEV_PREINSTALL_DIR = "/data/preinstall_apps/";
+    private static final String XIAOMI_PREINSTALL_DIR = "/data/media/preinstall_apps/";
 }
